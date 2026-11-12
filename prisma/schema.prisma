@@ -1,0 +1,354 @@
+// Riad Berber Towers: rooms, pricing, in-house booking engine, content, admin.
+// Database: Neon. Local work uses the `dev` branch, production the `main` branch.
+// DATABASE_URL = pooled connection (app), DIRECT_URL = direct connection (prisma db push / migrate).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Locale {
+  en
+  fr
+  es
+  ar
+}
+
+// ───────────────────────────── Rooms ─────────────────────────────
+
+model Room {
+  id           String            @id @default(cuid())
+  slug         String            @unique
+  code         String            @unique // short internal code, e.g. TBK
+  name         String // canonical name, e.g. "Suite Toubkal"
+  order        Int               @default(0)
+  active       Boolean           @default(true)
+  featured     Boolean           @default(false)
+  basePrice    Decimal           @db.Decimal(10, 2) // per night, breakfast included
+  currency     String            @default("EUR")
+  maxAdults    Int               @default(2)
+  maxChildren  Int               @default(0)
+  bedType      String            @default("")
+  sizeM2       Int?
+  view         String            @default("") // mountain | village | garden
+  amenities    String[] // keys translated in the UI: heated_floor, balcony, wifi...
+  coverImage   String            @default("")
+  images       String[]
+  translations RoomTranslation[]
+  rates        RateOverride[]
+  blocks       RoomBlock[]
+  icalFeeds    IcalFeed[]
+  bookings     Booking[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model RoomTranslation {
+  id              String @id @default(cuid())
+  roomId          String
+  room            Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  locale          Locale
+  name            String
+  tagline         String @default("")
+  description     String @default("")
+  longDescription String @default("")
+  meaning         String @default("") // meaning of the Tamazight room name, once verified
+
+  @@unique([roomId, locale])
+}
+
+// Seasonal / special prices. roomId null = applies to all rooms.
+model RateOverride {
+  id        String   @id @default(cuid())
+  roomId    String?
+  room      Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  name      String // "Toubkal spring season", "New Year"
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date // exclusive
+  price     Decimal? @db.Decimal(10, 2) // fixed nightly price
+  percent   Int? // or +/- percent on basePrice
+  minNights Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@index([startDate, endDate])
+}
+
+// Nights a room cannot be sold (manual block or imported from Booking.com / Airbnb iCal)
+model RoomBlock {
+  id          String      @id @default(cuid())
+  roomId      String
+  room        Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  startDate   DateTime    @db.Date
+  endDate     DateTime    @db.Date // exclusive
+  source      BlockSource @default(MANUAL)
+  reason      String      @default("")
+  externalUid String?
+  feedId      String?
+  feed        IcalFeed?   @relation(fields: [feedId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+
+  @@unique([feedId, externalUid])
+  @@index([roomId, startDate, endDate])
+}
+
+enum BlockSource {
+  MANUAL
+  ICAL
+  MAINTENANCE
+}
+
+model IcalFeed {
+  id           String      @id @default(cuid())
+  roomId       String
+  room         Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  channel      String // "booking.com" | "airbnb" | "other"
+  url          String
+  active       Boolean     @default(true)
+  lastSyncedAt DateTime?
+  lastError    String?
+  blocks       RoomBlock[]
+  createdAt    DateTime    @default(now())
+}
+
+// ───────────────────────────── Booking engine ─────────────────────────────
+
+model Guest {
+  id        String    @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String
+  phone     String    @default("")
+  country   String    @default("")
+  locale    Locale    @default(en)
+  notes     String    @default("")
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([email])
+}
+
+model Booking {
+  id              String         @id @default(cuid())
+  reference       String         @unique // RBT-26-0001
+  roomId          String
+  room            Room           @relation(fields: [roomId], references: [id])
+  guestId         String
+  guest           Guest          @relation(fields: [guestId], references: [id])
+  checkIn         DateTime       @db.Date
+  checkOut        DateTime       @db.Date // exclusive
+  nights          Int
+  adults          Int            @default(2)
+  children        Int            @default(0)
+  status          BookingStatus  @default(PENDING)
+  source          BookingSource  @default(WEBSITE)
+  roomTotal       Decimal        @db.Decimal(10, 2)
+  extrasTotal     Decimal        @default(0) @db.Decimal(10, 2)
+  total           Decimal        @db.Decimal(10, 2)
+  currency        String         @default("EUR")
+  nightlyRates    Json // [{date, price}] snapshot at booking time
+  depositAmount   Decimal        @default(0) @db.Decimal(10, 2)
+  paymentStatus   PaymentStatus  @default(UNPAID)
+  paymentMethod   String?
+  arrivalTime     String         @default("")
+  specialRequests String         @default("")
+  internalNotes   String         @default("")
+  locale          Locale         @default(en)
+  extras          BookingExtra[]
+  cancelledAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([roomId, checkIn, checkOut])
+  @@index([status])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+  NO_SHOW
+}
+
+enum BookingSource {
+  WEBSITE
+  WHATSAPP
+  PHONE
+  EMAIL
+  BOOKING_COM
+  AIRBNB
+  AGENCY
+  WALK_IN
+}
+
+enum PaymentStatus {
+  UNPAID
+  DEPOSIT_PAID
+  PAID
+  REFUNDED
+}
+
+model Extra {
+  id           String             @id @default(cuid())
+  slug         String             @unique
+  price        Decimal            @db.Decimal(10, 2)
+  priceType    ExtraPriceType     @default(PER_STAY)
+  active       Boolean            @default(true)
+  order        Int                @default(0)
+  translations ExtraTranslation[]
+  bookings     BookingExtra[]
+}
+
+enum ExtraPriceType {
+  PER_STAY
+  PER_PERSON
+  PER_NIGHT
+  PER_PERSON_NIGHT
+}
+
+model ExtraTranslation {
+  id          String @id @default(cuid())
+  extraId     String
+  extra       Extra  @relation(fields: [extraId], references: [id], onDelete: Cascade)
+  locale      Locale
+  name        String
+  description String @default("")
+
+  @@unique([extraId, locale])
+}
+
+model BookingExtra {
+  id        String  @id @default(cuid())
+  bookingId String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  extraId   String
+  extra     Extra   @relation(fields: [extraId], references: [id])
+  quantity  Int     @default(1)
+  unitPrice Decimal @db.Decimal(10, 2)
+  total     Decimal @db.Decimal(10, 2)
+}
+
+// ───────────────────────────── Content ─────────────────────────────
+
+model Activity {
+  id           String                @id @default(cuid())
+  slug         String                @unique
+  category     String                @default("") // trek | culture | food
+  duration     String                @default("")
+  price        Decimal?              @db.Decimal(10, 2)
+  coverImage   String                @default("")
+  images       String[]
+  featured     Boolean               @default(false)
+  active       Boolean               @default(true)
+  order        Int                   @default(0)
+  translations ActivityTranslation[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+}
+
+model ActivityTranslation {
+  id          String   @id @default(cuid())
+  activityId  String
+  activity    Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  locale      Locale
+  name        String
+  summary     String   @default("")
+  description String   @default("")
+  includes    String[]
+
+  @@unique([activityId, locale])
+}
+
+model BlogPost {
+  id           String                @id @default(cuid())
+  slug         String                @unique
+  category     String                @default("")
+  coverImage   String                @default("")
+  author       String                @default("")
+  published    Boolean               @default(false)
+  publishedAt  DateTime?
+  translations BlogPostTranslation[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+}
+
+model BlogPostTranslation {
+  id       String   @id @default(cuid())
+  postId   String
+  post     BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  locale   Locale
+  title    String
+  excerpt  String   @default("")
+  content  String   @default("") // HTML
+  seoTitle String   @default("")
+  seoDesc  String   @default("")
+
+  @@unique([postId, locale])
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  url       String
+  category  String   @default("") // rooms | terrace | craft | village | food
+  alt       Json     @default("{}") // { en, fr, es, ar }
+  featured  Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  quote     String
+  author    String
+  origin    String   @default("") // city, country
+  rating    Int      @default(5)
+  source    String   @default("website") // booking.com | google | tripadvisor
+  sourceUrl String   @default("")
+  locale    Locale   @default(en)
+  active    Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String   @default("")
+  subject   String   @default("")
+  message   String
+  locale    Locale   @default(en)
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ───────────────────────────── Admin ─────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String // bcrypt hash
+  name      String   @default("")
+  role      Role     @default(STAFF)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  STAFF
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

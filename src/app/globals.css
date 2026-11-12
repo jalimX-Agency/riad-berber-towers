@@ -1,0 +1,63 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Riad Berber Towers brand tokens (see brand book v1.0) */
+:root {
+  --paper: #eee7d6;    /* Tadelakt Lime: main background */
+  --snow: #f7f3ea;     /* Toubkal Snow: light surfaces */
+  --ink: #2f2016;      /* Cedar Ink: text, outlines */
+  --walnut: #4a3628;   /* Walnut Beam: dark surfaces */
+  --earth: #955738;    /* Imlil Earth: warm accent */
+  --granite: #6c7472;  /* Granite Seguia: cool accent, brand line */
+  --ochre: #b08a55;    /* Autumn Walnut: rare accent (<=5%) */
+  --rule: #d8cdb6;
+  --muted: #6a5a4c;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-snow: var(--snow);
+  --color-ink: var(--ink);
+  --color-walnut: var(--walnut);
+  --color-earth: var(--earth);
+  --color-granite: var(--granite);
+  --color-ochre: var(--ochre);
+  --color-rule: var(--rule);
+  --color-muted: var(--muted);
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-jost), "Jost", "Segoe UI", system-ui, sans-serif;
+  --font-arabic: var(--font-naskh), "Noto Naskh Arabic", "Geeza Pro", serif;
+
+  --radius-card: 6px;
+}
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  html[dir="rtl"] body { font-family: var(--font-arabic); font-weight: 400; }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.08; text-wrap: balance; }
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3 { font-family: var(--font-arabic); font-weight: 600; }
+  :focus-visible { outline: 2px solid var(--earth); outline-offset: 3px; }
+}
+
+@layer components {
+  .label { font-family: var(--font-sans); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--granite); }
+  .btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--ink); color: var(--snow); font-family: var(--font-sans); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; padding: 0.85rem 1.8rem; border-radius: 999px; transition: background 0.25s ease; }
+  .btn-primary:hover { background: var(--earth); }
+  .btn-outline { display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid var(--ink); color: var(--ink); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; padding: 0.85rem 1.8rem; border-radius: 999px; transition: color 0.25s, border-color 0.25s; }
+  .btn-outline:hover { color: var(--earth); border-color: var(--earth); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

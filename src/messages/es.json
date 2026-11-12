@@ -1,0 +1,10 @@
+{
+  "meta": {
+    "title": "Riad Berber Towers · Casa de huéspedes hecha a mano en Imlil, Alto Atlas",
+    "description": "Siete habitaciones hechas a mano en el corazón de Imlil, a pocos pasos del sendero del Toubkal. Tadelakt, zellige de Fez y cedro tallado del Atlas. Desayuno incluido."
+  },
+  "nav": { "home": "Inicio", "rooms": "Habitaciones", "activities": "Actividades", "imlil": "Guía de Imlil", "gallery": "Galería", "story": "Nuestra historia", "contact": "Contacto", "book": "Reservar" },
+  "brand": { "tagline": "breathe the atlas", "descriptor": "Hecho a mano en el corazón de Imlil." },
+  "home": { "eyebrow": "Imlil · Alto Atlas · 1.740 m", "title": "Siete habitaciones. Un valle. Hecho a mano.", "cta": "Ver disponibilidad", "comingSoon": "Estamos construyendo nuestra nueva web." },
+  "footer": { "address": "Imlil Centro, Asni · Al Haouz, Marruecos", "rights": "Todos los derechos reservados." }
+}
