@@ -3,8 +3,54 @@
     "title": "Riad Berber Towers · Hand-built guesthouse in Imlil, High Atlas",
     "description": "Seven hand-built rooms in the heart of Imlil, steps from the Toubkal trail. Tadelakt, Fes zellij and carved Atlas cedar. Breakfast included."
   },
-  "nav": { "home": "Home", "rooms": "Rooms", "activities": "Activities", "imlil": "Imlil guide", "gallery": "Gallery", "story": "Our story", "contact": "Contact", "book": "Book a room" },
-  "brand": { "tagline": "breathe the atlas", "descriptor": "Made by hand in the heart of Imlil." },
-  "home": { "eyebrow": "Imlil · High Atlas · 1,740 m", "title": "Seven rooms. One valley. Made by hand.", "cta": "Check availability", "comingSoon": "Our new website is being built." },
-  "footer": { "address": "Imlil Centre, Asni · Al Haouz, Morocco", "rights": "All rights reserved." }
+  "nav": {
+    "home": "Home",
+    "rooms": "Rooms",
+    "activities": "Activities",
+    "imlil": "Imlil guide",
+    "gallery": "Gallery",
+    "story": "Our story",
+    "contact": "Contact",
+    "book": "Book a room",
+    "menu": "Menu",
+    "close": "Close",
+    "language": "Language",
+    "skip": "Skip to content",
+    "primary": "Main"
+  },
+  "brand": {
+    "tagline": "breathe the atlas",
+    "descriptor": "Made by hand in the heart of Imlil."
+  },
+  "home": {
+    "eyebrow": "Imlil · High Atlas · 1,740 m",
+    "title": "Seven rooms. One valley. Made by hand.",
+    "cta": "Check availability",
+    "comingSoon": "Our new website is being built."
+  },
+  "footer": {
+    "address": "Imlil Centre, Asni · Al Haouz, Morocco",
+    "rights": "All rights reserved.",
+    "explore": "Explore",
+    "contact": "Contact",
+    "gettingHere": "Getting here",
+    "fromMarrakech": "64 km from Marrakech, about 90 minutes by road",
+    "altitude": "Altitude 1,740 m",
+    "trail": "Toubkal trailhead at the door",
+    "gallery": "Gallery",
+    "blog": "Journal",
+    "privacy": "Privacy",
+    "terms": "Booking terms"
+  },
+  "whatsapp": {
+    "label": "Chat on WhatsApp",
+    "message": "Hello, I would like to book a room at Riad Berber Towers."
+  },
+  "wip": {
+    "badge": "Build in progress",
+    "title": "This page is being built",
+    "body": "We are crafting this page by hand, like the house itself. In the meantime, our team answers every question on WhatsApp and by email.",
+    "whatsapp": "Ask us on WhatsApp",
+    "home": "Back to home"
+  }
 }

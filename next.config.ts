@@ -14,11 +14,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     // Old PHP site URLs (riad-berber-towers.com) -> new routes
     return [
-      { source: "/rooms.php", destination: "/en/rooms", permanent: true },
-      { source: "/contact.php", destination: "/en/contact", permanent: true },
-      { source: "/index.php", destination: "/en", permanent: true },
-      { source: "/booking_details.php", destination: "/en/rooms", permanent: true },
-      { source: "/booking_confirm.php", destination: "/en/rooms", permanent: true },
+      { source: "/rooms.php", destination: "/rooms", permanent: true },
+      { source: "/contact.php", destination: "/contact", permanent: true },
+      { source: "/index.php", destination: "/", permanent: true },
+      { source: "/booking_details.php", destination: "/rooms", permanent: true },
+      { source: "/booking_confirm.php", destination: "/rooms", permanent: true },
     ];
   },
 };

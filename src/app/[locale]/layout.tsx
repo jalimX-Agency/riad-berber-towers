@@ -2,9 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { routing, isRtl } from "@/i18n/routing";
+import { routing, isRtl, localePath } from "@/i18n/routing";
 import { fontVariables } from "@/lib/fonts";
 import { site } from "@/lib/site";
+import { SiteHeader } from "@/components/site/SiteHeader";
+import { SiteFooter } from "@/components/site/SiteFooter";
+import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -14,18 +17,18 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
-  const languages = Object.fromEntries(routing.locales.map((l) => [l, `/${l}`]));
+  const languages = Object.fromEntries(routing.locales.map((l) => [l, localePath(l)]));
   return {
     metadataBase: new URL(site.url),
     title: { default: t("title"), template: `%s · ${site.name}` },
     description: t("description"),
-    alternates: { canonical: `/${locale}`, languages: { ...languages, "x-default": "/en" } },
+    alternates: { canonical: localePath(locale), languages: { ...languages, "x-default": "/" } },
     openGraph: {
       type: "website",
       siteName: site.name,
       title: t("title"),
       description: t("description"),
-      url: `/${locale}`,
+      url: localePath(locale),
       images: [{ url: "/og-image.png", width: 1200, height: 630, alt: site.name }],
     },
     twitter: { card: "summary_large_image" },
@@ -75,7 +78,12 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"} className={fontVariables}>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <SiteHeader />
+          <main id="main">{children}</main>
+          <SiteFooter />
+          <WhatsAppButton />
+        </NextIntlClientProvider>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(lodging) }} />
       </body>
     </html>

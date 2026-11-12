@@ -43,3 +43,6 @@ next-env.d.ts
 # allow committing the env template
 !.env.example
 
+
+# local tooling
+/.claude

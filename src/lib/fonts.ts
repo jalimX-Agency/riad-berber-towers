@@ -1,4 +1,4 @@
-import { Cormorant_Garamond, Jost, Noto_Naskh_Arabic } from "next/font/google";
+import { Cormorant_Garamond, Jost, Aref_Ruqaa, IBM_Plex_Sans_Arabic, IBM_Plex_Mono } from "next/font/google";
 
 export const cormorant = Cormorant_Garamond({
   subsets: ["latin", "latin-ext"],
@@ -15,11 +15,27 @@ export const jost = Jost({
   display: "swap",
 });
 
-export const naskh = Noto_Naskh_Arabic({
+// Arabic: hand-written ruqʿa for headings, IBM Plex Sans Arabic for text and UI
+export const ruqaa = Aref_Ruqaa({
   subsets: ["arabic"],
-  weight: ["400", "600"],
-  variable: "--font-naskh",
+  weight: ["400", "700"],
+  variable: "--font-ruqaa",
   display: "swap",
 });
 
-export const fontVariables = `${cormorant.variable} ${jost.variable} ${naskh.variable}`;
+export const plexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic"],
+  weight: ["300", "400", "500"],
+  variable: "--font-plex-arabic",
+  display: "swap",
+});
+
+// Meta voice: altitude, coordinates, counters, prices in tables
+export const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-plex-mono",
+  display: "swap",
+});
+
+export const fontVariables = `${cormorant.variable} ${jost.variable} ${ruqaa.variable} ${plexArabic.variable} ${plexMono.variable}`;

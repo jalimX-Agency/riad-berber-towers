@@ -60,7 +60,7 @@ Brand book: https://claude.ai/artifact/6rwnj1N2X5nG4eBRQDnV6r
 Full logo package (all formats) and brand book source live outside this repo, in the client media folder.
 
 Colours: Imlil Earth `#955738`, Walnut Beam `#4A3628`, Cedar Ink `#2F2016`, Granite Seguia `#6C7472`, Autumn Walnut `#B08A55`, Tadelakt Lime `#EEE7D6`, Toubkal Snow `#F7F3EA`.
-Fonts: Cormorant Garamond (display), Jost (text), Noto Naskh Arabic (Arabic).
+Fonts: Cormorant Garamond (display), Jost (text), Aref Ruqaa (Arabic headings), IBM Plex Sans Arabic (Arabic text).
 
 ## Notes
 

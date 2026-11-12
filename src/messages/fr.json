@@ -3,8 +3,54 @@
     "title": "Riad Berber Towers · Maison d'hôtes faite main à Imlil, Haut Atlas",
     "description": "Sept chambres faites main au cœur d'Imlil, à quelques pas du sentier du Toubkal. Tadelakt, zellige de Fès et cèdre sculpté de l'Atlas. Petit-déjeuner inclus."
   },
-  "nav": { "home": "Accueil", "rooms": "Chambres", "activities": "Activités", "imlil": "Guide d'Imlil", "gallery": "Galerie", "story": "Notre histoire", "contact": "Contact", "book": "Réserver" },
-  "brand": { "tagline": "breathe the atlas", "descriptor": "Fait main au cœur d'Imlil." },
-  "home": { "eyebrow": "Imlil · Haut Atlas · 1 740 m", "title": "Sept chambres. Une vallée. Fait main.", "cta": "Voir les disponibilités", "comingSoon": "Notre nouveau site est en construction." },
-  "footer": { "address": "Imlil Centre, Asni · Al Haouz, Maroc", "rights": "Tous droits réservés." }
+  "nav": {
+    "home": "Accueil",
+    "rooms": "Chambres",
+    "activities": "Activités",
+    "imlil": "Guide d'Imlil",
+    "gallery": "Galerie",
+    "story": "Notre histoire",
+    "contact": "Contact",
+    "book": "Réserver",
+    "menu": "Menu",
+    "close": "Fermer",
+    "language": "Langue",
+    "skip": "Aller au contenu",
+    "primary": "Principal"
+  },
+  "brand": {
+    "tagline": "breathe the atlas",
+    "descriptor": "Fait main au cœur d'Imlil."
+  },
+  "home": {
+    "eyebrow": "Imlil · Haut Atlas · 1 740 m",
+    "title": "Sept chambres. Une vallée. Fait main.",
+    "cta": "Voir les disponibilités",
+    "comingSoon": "Notre nouveau site est en construction."
+  },
+  "footer": {
+    "address": "Imlil Centre, Asni · Al Haouz, Maroc",
+    "rights": "Tous droits réservés.",
+    "explore": "Explorer",
+    "contact": "Contact",
+    "gettingHere": "Accès",
+    "fromMarrakech": "À 64 km de Marrakech, environ 1 h 30 de route",
+    "altitude": "Altitude 1 740 m",
+    "trail": "Départ du sentier du Toubkal devant la porte",
+    "gallery": "Galerie",
+    "blog": "Journal",
+    "privacy": "Confidentialité",
+    "terms": "Conditions de réservation"
+  },
+  "whatsapp": {
+    "label": "Écrire sur WhatsApp",
+    "message": "Bonjour, je souhaite réserver une chambre au Riad Berber Towers."
+  },
+  "wip": {
+    "badge": "En construction",
+    "title": "Cette page est en préparation",
+    "body": "Nous façonnons cette page à la main, comme la maison elle-même. En attendant, notre équipe répond à toutes vos questions sur WhatsApp et par e-mail.",
+    "whatsapp": "Nous écrire sur WhatsApp",
+    "home": "Retour à l'accueil"
+  }
 }
