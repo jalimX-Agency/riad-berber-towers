@@ -29,6 +29,8 @@ model Room {
   order        Int               @default(0)
   active       Boolean           @default(true)
   featured     Boolean           @default(false)
+  category     String            @default("suite") // standard | suite
+  floor        Int               @default(0) // 0 = ground floor, 1 = first, 2 = second
   basePrice    Decimal           @db.Decimal(10, 2) // per night, breakfast included
   currency     String            @default("EUR")
   maxAdults    Int               @default(2)
