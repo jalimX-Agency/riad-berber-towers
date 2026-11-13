@@ -1,29 +1,42 @@
-// npm run db:seed : rooms from the current site (riad-berber-towers.com, Nov 2026) + first admin.
-// Descriptions are short English placeholders; real copy and FR/ES/AR come from the CMS.
-import { PrismaClient } from "@prisma/client";
+// npm run db:seed : rooms (facts, copy in 4 languages, photos) + first admin.
+// Facts (name, price, floor, order) always follow this file.
+// Copy and photos are written only when empty, so edits made in the admin are kept.
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { PrismaClient, type Locale } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { roomCopy } from "./data/rooms-content";
 
 const db = new PrismaClient();
 
+// Photo keys from the current site, converted to WebP (served from R2, or public/media in dev)
+type Media = { key: string; w: number; h: number };
+const manifest = JSON.parse(readFileSync(path.join(__dirname, "media-manifest.json"), "utf8")) as {
+  rooms: Record<string, Media[]>;
+};
+
 // Prices and floors from the owner (Nov 2026). Order = the owner's room numbers 1-7.
 const rooms = [
-  { slug: "targa", code: "TRG", name: "Targa Room", category: "standard", floor: 0, price: 72, view: "garden", order: 1, tagline: "Garden view and traditional charm", amenities: ["heated_floor", "private_bathroom", "wifi", "air_conditioning"] },
-  { slug: "tarzoute", code: "TRZ", name: "Suite Tarzoute", category: "suite", floor: 0, price: 82, view: "village", order: 2, tagline: "Private terrace over the village and mountains", amenities: ["private_terrace", "heated_floor", "private_bathroom", "wifi"] },
-  { slug: "imlil", code: "IML", name: "Suite Imlil", category: "suite", floor: 1, price: 82, view: "mountain", order: 3, tagline: "Mountains, garden and village views", amenities: ["heated_floor", "private_bathroom", "wifi", "coffee_maker"] },
-  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, tagline: "Balcony with mountain, garden and village views", amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"], featured: true },
-  { slug: "atlas", code: "ATL", name: "Suite Atlas", category: "suite", floor: 1, price: 82, view: "garden", order: 5, tagline: "Balcony over the village and garden, tadelakt shower", amenities: ["balcony", "tadelakt_shower", "heated_floor", "wifi"] },
-  { slug: "taddart", code: "TDR", name: "Suite Taddart", category: "suite", floor: 1, price: 92, view: "mountain", order: 6, tagline: "The widest panorama in the house", amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"] },
-  { slug: "adrar", code: "ADR", name: "Suite Adrar", category: "suite", floor: 2, price: 92, view: "mountain", order: 7, tagline: "Balcony with mountain and village views", amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"] },
+  { slug: "targa", code: "TRG", name: "Targa Room", category: "standard", floor: 0, price: 72, view: "garden", order: 1, amenities: ["heated_floor", "air_conditioning", "private_bathroom", "wifi"] },
+  { slug: "tarzoute", code: "TRZ", name: "Suite Tarzoute", category: "suite", floor: 0, price: 82, view: "village", order: 2, amenities: ["private_terrace", "heated_floor", "private_bathroom", "wifi"] },
+  { slug: "imlil", code: "IML", name: "Suite Imlil", category: "suite", floor: 1, price: 82, view: "mountain", order: 3, amenities: ["heated_floor", "private_bathroom", "wifi", "coffee_maker"] },
+  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"], featured: true },
+  { slug: "atlas", code: "ATL", name: "Suite Atlas", category: "suite", floor: 1, price: 82, view: "garden", order: 5, amenities: ["balcony", "tadelakt_shower", "heated_floor", "wifi"] },
+  { slug: "taddart", code: "TDR", name: "Suite Taddart", category: "suite", floor: 1, price: 92, view: "mountain", order: 6, amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"] },
+  { slug: "adrar", code: "ADR", name: "Suite Adrar", category: "suite", floor: 2, price: 92, view: "mountain", order: 7, amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"] },
 ];
+
+const locales: Locale[] = ["en", "fr", "es", "ar"];
 
 async function main() {
   // The old slug "tarzout" was renamed to "tarzoute" (owner's spelling)
   await db.room.updateMany({ where: { slug: "tarzout" }, data: { slug: "tarzoute" } });
 
   for (const r of rooms) {
-    // Structural facts (name, price, floor, order) follow this file; descriptions edited in the CMS are kept
     const facts = { code: r.code, name: r.name, category: r.category, floor: r.floor, order: r.order, basePrice: r.price };
-    await db.room.upsert({
+    const photos = (manifest.rooms[r.slug] ?? []).map((m) => m.key);
+
+    const room = await db.room.upsert({
       where: { slug: r.slug },
       update: facts,
       create: {
@@ -33,11 +46,29 @@ async function main() {
         maxAdults: 2,
         featured: r.featured ?? false,
         amenities: r.amenities,
-        images: [],
-        translations: { create: [{ locale: "en", name: r.name, tagline: r.tagline }] },
+        coverImage: photos[0] ?? "",
+        images: photos,
       },
     });
-    await db.roomTranslation.updateMany({ where: { room: { slug: r.slug }, locale: "en" }, data: { name: r.name } });
+
+    // photos: only when the room has none yet
+    if (room.images.length === 0 && photos.length) {
+      await db.room.update({ where: { id: room.id }, data: { images: photos, coverImage: photos[0] } });
+    }
+    // amenities: keep the list in sync with this file until the admin manages them
+    await db.room.update({ where: { id: room.id }, data: { amenities: r.amenities, view: r.view } });
+
+    // copy: create missing languages, fill empty descriptions, never overwrite edited text
+    for (const locale of locales) {
+      const copy = roomCopy[r.slug]?.[locale];
+      if (!copy) continue;
+      const existing = await db.roomTranslation.findUnique({ where: { roomId_locale: { roomId: room.id, locale } } });
+      if (!existing) {
+        await db.roomTranslation.create({ data: { roomId: room.id, locale, ...copy } });
+      } else if (!existing.description) {
+        await db.roomTranslation.update({ where: { id: existing.id }, data: copy });
+      }
+    }
   }
 
   const email = process.env.SEED_ADMIN_EMAIL?.toLowerCase();
@@ -49,10 +80,9 @@ async function main() {
       create: { email, name: "Admin", role: "OWNER", password: await bcrypt.hash(password, 12) },
     });
     console.log(`Admin ready: ${email}`);
-  } else {
-    console.log("SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD not set: no admin created.");
   }
-  console.log(`Rooms: ${await db.room.count()}`);
+  const [roomCount, tr] = await Promise.all([db.room.count(), db.roomTranslation.count()]);
+  console.log(`Rooms: ${roomCount}, translations: ${tr}`);
 }
 
 main()

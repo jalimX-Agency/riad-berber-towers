@@ -52,5 +52,56 @@
     "body": "We are crafting this page by hand, like the house itself. In the meantime, our team answers every question on WhatsApp and by email.",
     "whatsapp": "Ask us on WhatsApp",
     "home": "Back to home"
+  },
+  "rooms": {
+    "eyebrow": "Seven rooms · breakfast included",
+    "title": "Rooms & suites",
+    "intro": "Seven rooms on three floors, each built by hand with tadelakt, zellij and carved cedar. Every night includes breakfast on the roof terrace, heated floors and Wi-Fi.",
+    "all": "All",
+    "floor": {
+      "0": "Ground floor",
+      "1": "First floor",
+      "2": "Second floor"
+    },
+    "floorShort": {
+      "0": "Ground",
+      "1": "First",
+      "2": "Second"
+    },
+    "category": {
+      "standard": "Room",
+      "suite": "Suite"
+    },
+    "view": {
+      "mountain": "Mountain view",
+      "village": "Village view",
+      "garden": "Garden view"
+    },
+    "perNight": "per night",
+    "from": "from",
+    "breakfast": "Breakfast included",
+    "guests": "{count} guests",
+    "details": "View the room",
+    "book": "Request this room",
+    "bookWhatsapp": "Book on WhatsApp",
+    "bookEmail": "Or write to us",
+    "onlineSoon": "Online booking opens soon. Until then we confirm every request within a few hours.",
+    "whatsappMessage": "Hello, I would like to book the {room} at Riad Berber Towers. My dates are: ",
+    "facts": "At a glance",
+    "amenitiesTitle": "In the room",
+    "others": "Other rooms",
+    "photos": "{count} photos",
+    "filter": "Filter rooms",
+    "showing": "{count} rooms",
+    "amenities": {
+      "heated_floor": "Heated floors",
+      "air_conditioning": "Air conditioning",
+      "private_bathroom": "Private bathroom, hot shower",
+      "wifi": "Wi-Fi",
+      "private_terrace": "Private terrace",
+      "balcony": "Private balcony",
+      "coffee_maker": "Coffee maker and kettle",
+      "tadelakt_shower": "Tadelakt shower"
+    }
   }
 }

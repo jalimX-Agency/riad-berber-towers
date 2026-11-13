@@ -62,6 +62,13 @@ Full logo package (all formats) and brand book source live outside this repo, in
 Colours: Imlil Earth `#955738`, Walnut Beam `#4A3628`, Cedar Ink `#2F2016`, Granite Seguia `#6C7472`, Autumn Walnut `#B08A55`, Tadelakt Lime `#EEE7D6`, Toubkal Snow `#F7F3EA`.
 Fonts: Cormorant Garamond (display), Jost (text), Aref Ruqaa (Arabic headings), IBM Plex Sans Arabic (Arabic text).
 
+## Photos and R2
+
+- The database stores image **keys** (`rooms/toubkal/01.webp`). `src/lib/media.ts` turns a key into a URL:
+  `NEXT_PUBLIC_R2_URL/<key>` when R2 is configured, otherwise `/media/<key>` from the local, uncommitted `public/media` folder.
+- Source photos (from the old site, converted to WebP) live in the client folder `media/site-photos/web`, with `manifest.json` (also copied to `prisma/media-manifest.json` for the seed).
+- To go live on R2: fill the `R2_*` variables, run `npx tsx --env-file=.env scripts/r2-upload.ts "<client folder>/media/site-photos/web"`, then set `NEXT_PUBLIC_R2_URL`.
+
 ## Notes
 
 - Translations in `src/messages/` for FR, ES and AR are first drafts and need a native review.

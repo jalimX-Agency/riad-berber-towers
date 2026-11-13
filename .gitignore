@@ -46,3 +46,6 @@ next-env.d.ts
 
 # local tooling
 /.claude
+
+# local copy of R2 media (dev fallback only)
+/public/media

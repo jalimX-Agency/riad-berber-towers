@@ -1,0 +1,180 @@
+{
+ "rooms": {
+  "targa": [
+   {
+    "key": "rooms/targa/01.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/targa/02.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/targa/03.webp",
+    "w": 1920,
+    "h": 1280
+   }
+  ],
+  "tarzoute": [
+   {
+    "key": "rooms/tarzoute/01.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/tarzoute/02.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/tarzoute/03.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/tarzoute/04.webp",
+    "w": 1920,
+    "h": 1280
+   }
+  ],
+  "imlil": [
+   {
+    "key": "rooms/imlil/01.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/imlil/02.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/imlil/03.webp",
+    "w": 1920,
+    "h": 1280
+   }
+  ],
+  "toubkal": [
+   {
+    "key": "rooms/toubkal/01.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/toubkal/02.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/toubkal/03.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/toubkal/04.webp",
+    "w": 960,
+    "h": 1440
+   }
+  ],
+  "atlas": [
+   {
+    "key": "rooms/atlas/01.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/atlas/02.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/atlas/03.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/atlas/04.webp",
+    "w": 1920,
+    "h": 1280
+   }
+  ],
+  "taddart": [
+   {
+    "key": "rooms/taddart/01.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/taddart/02.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/taddart/03.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "rooms/taddart/04.webp",
+    "w": 1920,
+    "h": 1280
+   }
+  ],
+  "adrar": [
+   {
+    "key": "rooms/adrar/01.webp",
+    "w": 1280,
+    "h": 853
+   },
+   {
+    "key": "rooms/adrar/02.webp",
+    "w": 1024,
+    "h": 682
+   }
+  ]
+ },
+ "site": {
+  "exterior-day": {
+   "key": "site/exterior-day.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  "exterior-night": {
+   "key": "site/exterior-night.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  "courtyard-lantern": {
+   "key": "site/courtyard-lantern.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  "gallery-upstairs": {
+   "key": "site/gallery-upstairs.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  "lounge-stairs": {
+   "key": "site/lounge-stairs.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  "tea-ceremony": {
+   "key": "site/tea-ceremony.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  "dinner-table": {
+   "key": "site/dinner-table.webp",
+   "w": 1280,
+   "h": 960
+  },
+  "toubkal-valley": {
+   "key": "site/toubkal-valley.webp",
+   "w": 1600,
+   "h": 900
+  }
+ }
+}

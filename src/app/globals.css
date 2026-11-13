@@ -71,3 +71,18 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Signature 1: room photos unveil like a shutter opening as they enter the viewport (no JS) */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal-clip {
+      animation: reveal-clip linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+@keyframes reveal-clip {
+  from { clip-path: inset(12% 8% 12% 8% round 4px); }
+  to { clip-path: inset(0 0 0 0 round 4px); }
+}

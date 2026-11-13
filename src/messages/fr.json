@@ -52,5 +52,56 @@
     "body": "Nous façonnons cette page à la main, comme la maison elle-même. En attendant, notre équipe répond à toutes vos questions sur WhatsApp et par e-mail.",
     "whatsapp": "Nous écrire sur WhatsApp",
     "home": "Retour à l'accueil"
+  },
+  "rooms": {
+    "eyebrow": "Sept chambres · petit-déjeuner inclus",
+    "title": "Chambres & suites",
+    "intro": "Sept chambres sur trois étages, toutes faites main avec tadelakt, zellige et cèdre sculpté. Chaque nuit comprend le petit-déjeuner sur la terrasse, le sol chauffant et le Wi-Fi.",
+    "all": "Toutes",
+    "floor": {
+      "0": "Rez-de-chaussée",
+      "1": "Premier étage",
+      "2": "Deuxième étage"
+    },
+    "floorShort": {
+      "0": "RDC",
+      "1": "1er",
+      "2": "2e"
+    },
+    "category": {
+      "standard": "Chambre",
+      "suite": "Suite"
+    },
+    "view": {
+      "mountain": "Vue montagne",
+      "village": "Vue village",
+      "garden": "Vue jardin"
+    },
+    "perNight": "par nuit",
+    "from": "à partir de",
+    "breakfast": "Petit-déjeuner inclus",
+    "guests": "{count} personnes",
+    "details": "Voir la chambre",
+    "book": "Demander cette chambre",
+    "bookWhatsapp": "Réserver sur WhatsApp",
+    "bookEmail": "Ou écrivez-nous",
+    "onlineSoon": "La réservation en ligne ouvre bientôt. En attendant, nous confirmons chaque demande en quelques heures.",
+    "whatsappMessage": "Bonjour, je souhaite réserver la {room} au Riad Berber Towers. Mes dates : ",
+    "facts": "En bref",
+    "amenitiesTitle": "Dans la chambre",
+    "others": "Autres chambres",
+    "photos": "{count} photos",
+    "filter": "Filtrer les chambres",
+    "showing": "{count} chambres",
+    "amenities": {
+      "heated_floor": "Sol chauffant",
+      "air_conditioning": "Climatisation",
+      "private_bathroom": "Salle de bain privée, douche chaude",
+      "wifi": "Wi-Fi",
+      "private_terrace": "Terrasse privée",
+      "balcony": "Balcon privé",
+      "coffee_maker": "Cafetière et bouilloire",
+      "tadelakt_shower": "Douche en tadelakt"
+    }
   }
 }
