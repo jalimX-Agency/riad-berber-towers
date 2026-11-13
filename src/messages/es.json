@@ -151,5 +151,70 @@
       "min_nights": "Estancia mínima de {count} noches en estas fechas"
     },
     "reserveMessage": "Hola, me gustaría reservar la {room} del {checkIn} al {checkOut} ({nights}, {adults}). Total indicado: {total}."
+  },
+  "book": {
+    "title": "Completa tu reserva",
+    "intro": "Dinos quién viene. No se cobra nada ahora: pagas en el riad al llegar.",
+    "yourDetails": "Tus datos",
+    "firstName": "Nombre",
+    "lastName": "Apellidos",
+    "email": "Correo electrónico",
+    "emailHint": "Te enviaremos la confirmación aquí.",
+    "phone": "Teléfono (WhatsApp si es posible)",
+    "phoneHint": "Con el prefijo del país, para localizarte el día de llegada.",
+    "country": "País",
+    "arrivalTime": "Hora estimada de llegada",
+    "arrival": {
+      "unknown": "Aún no lo sé",
+      "12-14": "12:00 – 14:00",
+      "14-16": "14:00 – 16:00",
+      "16-18": "16:00 – 18:00",
+      "18-20": "18:00 – 20:00",
+      "20-22": "20:00 – 22:00",
+      "22+": "Después de las 22:00"
+    },
+    "requests": "Peticiones especiales",
+    "requestsHint": "Traslado desde Marrakech, dieta, una celebración… Leemos cada mensaje.",
+    "submit": "Solicitar la reserva",
+    "sending": "Enviando…",
+    "noPayment": "Sin pago ahora. Esta web no te cobrará nada.",
+    "payOnArrival": "Pago en el riad a la llegada",
+    "noCard": "No hace falta tarjeta",
+    "priceDetails": "Precio por noche",
+    "show": "Ver",
+    "total": "Total",
+    "reference": "Referencia de la reserva",
+    "room": "Habitación",
+    "stay": "Estancia",
+    "payment": "Pago",
+    "status": "Estado",
+    "pending": "Solicitud recibida, pendiente de confirmación",
+    "checking": "Comprobando disponibilidad…",
+    "seeOtherRooms": "Ver otras habitaciones",
+    "errors": {
+      "invalid": "Revisa los campos marcados.",
+      "unavailable": "Lo sentimos, esta habitación se acaba de reservar para esas fechas. Elige otras fechas u otra habitación.",
+      "too_many": "Ya tienes solicitudes abiertas con este correo. Te responderemos pronto; escríbenos por WhatsApp si es urgente.",
+      "server": "Algo ha fallado por nuestra parte. Inténtalo de nuevo o reserva por WhatsApp.",
+      "dates": "Estas fechas ya no son válidas. Vuelve a elegirlas.",
+      "noRoom": "No encontramos esta habitación."
+    },
+    "confirmed": {
+      "title": "Solicitud recibida",
+      "body": "Gracias, {name}. Hemos enviado los detalles a {email}.",
+      "next": "El riad te confirmará la reserva por correo. No hay que pagar nada hasta tu llegada.",
+      "whatsapp": "Escríbenos por WhatsApp",
+      "whatsappMessage": "Hola, sobre mi reserva {reference} en Riad Berber Towers: ",
+      "home": "Volver al inicio"
+    }
+  },
+  "email": {
+    "guest": {
+      "subject": "Tu solicitud de reserva {reference} · Riad Berber Towers",
+      "title": "Gracias, {name}",
+      "intro": "Hemos recibido tu solicitud de reserva. Estos son los detalles:",
+      "next": "Te confirmaremos la reserva por correo. No pagas nada ahora: pagas en el riad al llegar. ¿Dudas? Responde a este correo o escríbenos por WhatsApp.",
+      "signoff": "Hasta pronto en Imlil. El equipo de Riad Berber Towers"
+    }
   }
 }

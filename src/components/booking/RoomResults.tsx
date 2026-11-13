@@ -7,9 +7,7 @@ import { SlidersHorizontal, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { RoomView } from "@/lib/rooms";
 import { formatPrice } from "@/lib/rooms";
-import { site } from "@/lib/site";
 import { AmenityIcon } from "@/components/rooms/AmenityIcon";
-import { WhatsAppIcon } from "@/components/site/icons";
 import { cn } from "@/lib/utils";
 
 export type Availability = {
@@ -68,8 +66,6 @@ export function RoomResults({
   const availableCount = availability ? rooms.filter((r) => availability[r.id]?.available).length : rooms.length;
   const anyFilter = floors.length || views.length || amenities.length || onlyAvailable;
   const count = (pred: (r: RoomView) => boolean) => rooms.filter(pred).length;
-  const fmtDate = (iso: string) =>
-    new Intl.DateTimeFormat(locale === "ar" ? "ar-MA" : locale, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
 
   const Check = ({ checked, onChange, label, n }: { checked: boolean; onChange: () => void; label: string; n?: number }) => (
     <label className="flex cursor-pointer items-center justify-between gap-3 py-1.5 text-sm">
@@ -164,17 +160,6 @@ export function RoomResults({
             const off = a && !a.available;
             const qs = stay ? `?checkIn=${stay.checkIn}&checkOut=${stay.checkOut}&adults=${stay.adults}` : "";
             const total = a ? formatPrice(a.total, room.currency, locale) : "";
-            const message =
-              stay && a
-                ? t("reserveMessage", {
-                    room: room.name,
-                    checkIn: fmtDate(stay.checkIn),
-                    checkOut: fmtDate(stay.checkOut),
-                    nights: ts("nights", { count: stay.nights }),
-                    adults: ts("adults", { count: stay.adults }),
-                    total,
-                  })
-                : "";
             return (
               <li key={room.slug}>
                 <article className={cn("grid overflow-hidden rounded-[10px] border border-rule bg-snow md:grid-cols-[240px_minmax(0,1fr)_220px]", off && "opacity-60")}>
@@ -232,15 +217,9 @@ export function RoomResults({
                     )}
 
                     {a && a.available ? (
-                      <a
-                        href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-primary justify-center"
-                      >
-                        <WhatsAppIcon className="h-4 w-4" />
+                      <Link href={`/book?room=${room.slug}&${qs.slice(1)}`} className="btn-primary justify-center">
                         {t("reserve")}
-                      </a>
+                      </Link>
                     ) : a ? (
                       <a href="#search" className="btn-outline justify-center">
                         {t("changeDates")}

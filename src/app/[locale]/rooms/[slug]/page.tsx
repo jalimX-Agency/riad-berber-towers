@@ -10,6 +10,8 @@ import { site } from "@/lib/site";
 import { RoomGallery } from "@/components/rooms/RoomGallery";
 import { AmenityIcon } from "@/components/rooms/AmenityIcon";
 import { WhatsAppIcon } from "@/components/site/icons";
+import { BookingBox } from "@/components/booking/BookingBox";
+import { todayInImlil, toISO } from "@/lib/booking/dates";
 
 export const revalidate = 3600;
 
@@ -141,23 +143,24 @@ export default async function RoomPage({ params }: Params) {
           </div>
         </div>
 
-        {/* Booking card: WhatsApp request until the booking engine (phase 4) is live */}
-        <aside className="lg:col-span-4 lg:col-start-9">
-          <div className="grid gap-5 rounded-[8px] border border-rule bg-snow p-6 lg:sticky lg:top-28">
-            <p>
-              <span className="font-display text-5xl font-semibold" dir="ltr">{price}</span>
-              <span className="ms-2 text-muted">{t("perNight")}</span>
-            </p>
+        {/* Booking card: live price for the chosen dates, then checkout */}
+        <aside id="book" className="scroll-mt-28 lg:col-span-4 lg:col-start-9">
+          <div className="grid gap-5 rounded-[10px] border border-rule bg-snow p-5 lg:sticky lg:top-28">
+            <BookingBox slug={room.slug} basePrice={room.price} currency={room.currency} maxAdults={room.maxAdults} today={toISO(todayInImlil())} />
             <p className="label">{t("breakfast")}</p>
-            <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="btn-primary justify-center">
-              <WhatsAppIcon className="h-4 w-4" />
-              {t("bookWhatsapp")}
-            </a>
-            <a href={`mailto:${site.email}?subject=${encodeURIComponent(room.name)}`} className="btn-outline justify-center">
-              <Mail className="h-4 w-4" aria-hidden="true" />
-              {t("bookEmail")}
-            </a>
-            <p className="text-sm text-muted">{t("onlineSoon")}</p>
+            <div className="grid gap-2 border-t border-rule pt-4 text-sm">
+              <span className="text-muted">{t("bookEmail")}</span>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <a href={whatsapp} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-earth hover:underline">
+                  <WhatsAppIcon className="h-4 w-4" />
+                  WhatsApp
+                </a>
+                <a href={`mailto:${site.email}?subject=${encodeURIComponent(room.name)}`} className="inline-flex items-center gap-1.5 text-earth hover:underline">
+                  <Mail className="h-4 w-4" aria-hidden="true" />
+                  Email
+                </a>
+              </div>
+            </div>
           </div>
         </aside>
       </section>

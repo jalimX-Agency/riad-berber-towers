@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { eachNight, nightsBetween, parseDay, todayInImlil, toISO } from "./dates";
 
@@ -45,18 +46,34 @@ export type RoomAvailability = {
  * A night is sold when a non-cancelled booking or a block (manual or iCal) covers it.
  * Price per night: room-specific rate override > house-wide override > base price.
  */
-export async function getAvailability(q: StayQuery): Promise<Map<string, RoomAvailability>> {
+export async function getAvailability(
+  q: StayQuery,
+  /** roomId: only this room. client: a transaction client, so the check and the insert share one transaction. */
+  opts: { roomId?: string; client?: Prisma.TransactionClient } = {},
+): Promise<Map<string, RoomAvailability>> {
+  const client = opts.client ?? db;
   const nights = eachNight(q.checkIn, q.checkOut);
   const overlap = { checkIn: { lt: q.checkOut }, checkOut: { gt: q.checkIn } };
+  const only = opts.roomId ? { roomId: opts.roomId } : {};
 
+  // Inside a transaction Prisma queues these on one connection; outside they run in parallel.
   const [rooms, bookings, blocks, rates] = await Promise.all([
-    db.room.findMany({ where: { active: true }, select: { id: true, basePrice: true, maxAdults: true } }),
-    db.booking.findMany({ where: { status: { not: "CANCELLED" }, ...overlap }, select: { roomId: true } }),
-    db.roomBlock.findMany({
-      where: { startDate: { lt: q.checkOut }, endDate: { gt: q.checkIn } },
+    client.room.findMany({
+      where: { active: true, ...(opts.roomId ? { id: opts.roomId } : {}) },
+      select: { id: true, basePrice: true, maxAdults: true },
+    }),
+    client.booking.findMany({ where: { status: { not: "CANCELLED" }, ...overlap, ...only }, select: { roomId: true } }),
+    client.roomBlock.findMany({
+      where: { startDate: { lt: q.checkOut }, endDate: { gt: q.checkIn }, ...only },
       select: { roomId: true },
     }),
-    db.rateOverride.findMany({ where: { startDate: { lt: q.checkOut }, endDate: { gt: q.checkIn } } }),
+    client.rateOverride.findMany({
+      where: {
+        startDate: { lt: q.checkOut },
+        endDate: { gt: q.checkIn },
+        ...(opts.roomId ? { OR: [{ roomId: opts.roomId }, { roomId: null }] } : {}),
+      },
+    }),
   ]);
 
   const booked = new Set(bookings.map((b) => b.roomId));

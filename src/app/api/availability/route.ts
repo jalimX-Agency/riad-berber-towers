@@ -16,10 +16,15 @@ export async function GET(req: NextRequest) {
   });
   if (!query) return NextResponse.json({ error }, { status: 400 });
 
-  const [availability, rooms] = await Promise.all([
-    getAvailability(query),
-    db.room.findMany({ where: { active: true }, orderBy: { order: "asc" }, select: { id: true, slug: true, currency: true } }),
-  ]);
+  // optional ?room=slug narrows the answer to one room (used by the room page booking box)
+  const slug = p.get("room");
+  const rooms = await db.room.findMany({
+    where: { active: true, ...(slug ? { slug } : {}) },
+    orderBy: { order: "asc" },
+    select: { id: true, slug: true, currency: true },
+  });
+  if (slug && !rooms.length) return NextResponse.json({ error: "room" }, { status: 404 });
+  const availability = await getAvailability(query, slug ? { roomId: rooms[0].id } : {});
 
   return NextResponse.json(
     {
