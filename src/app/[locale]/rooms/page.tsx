@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, localePath } from "@/i18n/routing";
-import { getRooms, formatPrice } from "@/lib/rooms";
+import { getRooms } from "@/lib/rooms";
 import { site } from "@/lib/site";
-import { RoomsBrowser } from "@/components/rooms/RoomsBrowser";
+import { getAvailability, parseStayQuery } from "@/lib/booking/availability";
+import { todayInImlil, toISO } from "@/lib/booking/dates";
+import { SearchBar } from "@/components/booking/SearchBar";
+import { RoomResults, type Availability, type Stay } from "@/components/booking/RoomResults";
 
-export const revalidate = 3600;
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
-type Params = { params: Promise<{ locale: string }> };
-
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "rooms" });
   return {
@@ -22,15 +26,26 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-export default async function RoomsPage({ params }: Params) {
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+export default async function RoomsPage({ params, searchParams }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const sp = await searchParams;
   const t = await getTranslations("rooms");
-  const rooms = await getRooms(locale);
+  const ts = await getTranslations("search");
 
-  const prices = rooms.map((r) => r.price);
-  const currency = rooms[0]?.currency ?? "EUR";
-  const byFloor = [0, 1, 2].map((f) => ({ floor: f, count: rooms.filter((r) => r.floor === f).length }));
+  const rooms = await getRooms(locale);
+  const hasDates = Boolean(one(sp.checkIn) || one(sp.checkOut));
+  const { query, error } = parseStayQuery({ checkIn: one(sp.checkIn), checkOut: one(sp.checkOut), adults: one(sp.adults) });
+
+  let availability: Record<string, Availability> | null = null;
+  let stay: Stay | null = null;
+  if (query) {
+    const map = await getAvailability(query);
+    availability = Object.fromEntries([...map].map(([id, a]) => [id, { available: a.available, reason: a.reason, minNights: a.minNights, total: a.total, perNight: a.perNight }]));
+    stay = { checkIn: toISO(query.checkIn), checkOut: toISO(query.checkOut), nights: query.nights, adults: query.adults };
+  }
 
   const itemList = {
     "@context": "https://schema.org",
@@ -45,32 +60,31 @@ export default async function RoomsPage({ params }: Params) {
 
   return (
     <>
-      <section className="container-site grid gap-10 pb-12 pt-10 md:grid-cols-12 md:pt-16">
-        <div className="grid content-start gap-5 md:col-span-7">
+      <section className="container-site grid gap-6 pb-6 pt-8 md:pt-12">
+        <div className="grid gap-2">
           <p className="label">{t("eyebrow")}</p>
-          <h1 className="text-5xl sm:text-7xl">{t("title")}</h1>
-          <p className="max-w-[58ch] text-lg text-muted">{t("intro")}</p>
+          <h1 className="text-4xl sm:text-5xl">{t("title")}</h1>
+          <p className="max-w-[70ch] text-muted">{t("intro")}</p>
         </div>
-
-        {/* House index: floors, room counts and price range, in the meta voice */}
-        <dl className="grid content-end gap-0 self-end border-t border-ink md:col-span-4 md:col-start-9">
-          {byFloor.map(({ floor, count }) => (
-            <div key={floor} className="flex items-baseline justify-between border-b border-rule py-3">
-              <dt className="text-sm">{t(`floor.${floor}`)}</dt>
-              <dd className="meta text-base">{String(count).padStart(2, "0")}</dd>
-            </div>
-          ))}
-          <div className="flex items-baseline justify-between py-3">
-            <dt className="text-sm first-letter:uppercase">{t("perNight")}</dt>
-            <dd className="meta text-base" dir="ltr">
-              {formatPrice(Math.min(...prices), currency, locale)}–{formatPrice(Math.max(...prices), currency, locale)}
-            </dd>
-          </div>
-        </dl>
+        <div id="search" className="scroll-mt-28">
+          <SearchBar
+            key={`${stay?.checkIn ?? ""}-${stay?.checkOut ?? ""}-${stay?.adults ?? ""}`}
+            checkIn={stay?.checkIn ?? one(sp.checkIn)}
+            checkOut={stay?.checkOut ?? one(sp.checkOut)}
+            adults={stay?.adults ?? 2}
+            today={toISO(todayInImlil())}
+            hasQuery={Boolean(stay)}
+          />
+          {hasDates && error && error !== "missing" && (
+            <p role="alert" className="mt-2 text-sm text-earth">
+              {ts(`errors.${error}`)}
+            </p>
+          )}
+        </div>
       </section>
 
-      <section className="container-site pb-24">
-        <RoomsBrowser rooms={rooms} />
+      <section className="container-site pb-24 pt-2">
+        <RoomResults rooms={rooms} availability={availability} stay={stay} />
       </section>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />

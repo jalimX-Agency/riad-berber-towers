@@ -103,5 +103,53 @@
       "coffee_maker": "آلة قهوة وغلاية",
       "tadelakt_shower": "دُش من التادلاكت"
     }
+  },
+  "search": {
+    "checkIn": "تاريخ الوصول",
+    "checkOut": "تاريخ المغادرة",
+    "guests": "الضيوف",
+    "adults": "{count, plural, one {بالغ واحد} two {بالغان} few {# بالغين} many {# بالغًا} other {# بالغ}}",
+    "search": "بحث",
+    "update": "تحديث",
+    "nights": "{count, plural, one {ليلة واحدة} two {ليلتان} few {# ليالٍ} many {# ليلة} other {# ليلة}}",
+    "chooseDates": "اختر تواريخك لترى سعر إقامتك والغرف المتاحة.",
+    "errors": {
+      "missing": "اختر تاريخ الوصول وتاريخ المغادرة.",
+      "invalid": "هذه التواريخ غير صحيحة.",
+      "past": "لا يمكن أن يكون الوصول في الماضي.",
+      "order": "يجب أن تكون المغادرة بعد الوصول.",
+      "too_long": "للإقامات التي تتجاوز 30 ليلة، راسلنا على واتساب."
+    }
+  },
+  "results": {
+    "available": "{available} من {total} غرف متاحة",
+    "allRooms": "{total} غرف",
+    "filters": "التصفية",
+    "showFilters": "عرض التصفية",
+    "clear": "مسح التصفية",
+    "floor": "الطابق",
+    "view": "الإطلالة",
+    "inRoom": "في الغرفة",
+    "sort": "الترتيب",
+    "sortOptions": {
+      "recommended": "ترتيبنا",
+      "priceAsc": "السعر، من الأقل",
+      "priceDesc": "السعر، من الأعلى"
+    },
+    "onlyAvailable": "الغرف المتاحة فقط",
+    "noResults": "لا توجد غرفة تطابق هذه التصفية.",
+    "stayFor": "{nights}، {adults}",
+    "perNightAvg": "{price} لليلة",
+    "fromPerNight": "ابتداءً من {price} لليلة",
+    "reserve": "احجز",
+    "seeRoom": "عرض الغرفة",
+    "changeDates": "غيّر التواريخ",
+    "reason": {
+      "booked": "محجوزة في هذه التواريخ",
+      "blocked": "غير متاحة في هذه التواريخ",
+      "capacity": "{max} أشخاص كحد أقصى",
+      "min_nights": "أقل مدة إقامة {count} ليالٍ في هذه التواريخ"
+    },
+    "reserveMessage": "مرحبًا، أود حجز {room} من {checkIn} إلى {checkOut} ({nights}، {adults}). المجموع المعروض: {total}."
   }
 }

@@ -103,5 +103,53 @@
       "coffee_maker": "Cafetière et bouilloire",
       "tadelakt_shower": "Douche en tadelakt"
     }
+  },
+  "search": {
+    "checkIn": "Arrivée",
+    "checkOut": "Départ",
+    "guests": "Voyageurs",
+    "adults": "{count, plural, one {# adulte} other {# adultes}}",
+    "search": "Rechercher",
+    "update": "Mettre à jour",
+    "nights": "{count, plural, one {# nuit} other {# nuits}}",
+    "chooseDates": "Choisissez vos dates pour voir le prix de votre séjour et les chambres libres.",
+    "errors": {
+      "missing": "Choisissez une date d’arrivée et de départ.",
+      "invalid": "Ces dates ne sont pas valides.",
+      "past": "L’arrivée ne peut pas être dans le passé.",
+      "order": "Le départ doit être après l’arrivée.",
+      "too_long": "Pour plus de 30 nuits, écrivez-nous sur WhatsApp."
+    }
+  },
+  "results": {
+    "available": "{available} chambres libres sur {total}",
+    "allRooms": "{total} chambres",
+    "filters": "Filtres",
+    "showFilters": "Afficher les filtres",
+    "clear": "Effacer les filtres",
+    "floor": "Étage",
+    "view": "Vue",
+    "inRoom": "Dans la chambre",
+    "sort": "Trier par",
+    "sortOptions": {
+      "recommended": "Notre ordre",
+      "priceAsc": "Prix croissant",
+      "priceDesc": "Prix décroissant"
+    },
+    "onlyAvailable": "Chambres libres uniquement",
+    "noResults": "Aucune chambre ne correspond à ces filtres.",
+    "stayFor": "{nights}, {adults}",
+    "perNightAvg": "{price} par nuit",
+    "fromPerNight": "À partir de {price} par nuit",
+    "reserve": "Réserver",
+    "seeRoom": "Voir la chambre",
+    "changeDates": "Changer les dates",
+    "reason": {
+      "booked": "Réservée à ces dates",
+      "blocked": "Indisponible à ces dates",
+      "capacity": "{max} personnes maximum",
+      "min_nights": "Séjour minimum de {count} nuits à ces dates"
+    },
+    "reserveMessage": "Bonjour, je souhaite réserver la {room} du {checkIn} au {checkOut} ({nights}, {adults}). Total affiché : {total}."
   }
 }

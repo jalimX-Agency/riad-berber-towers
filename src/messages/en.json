@@ -103,5 +103,53 @@
       "coffee_maker": "Coffee maker and kettle",
       "tadelakt_shower": "Tadelakt shower"
     }
+  },
+  "search": {
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "guests": "Guests",
+    "adults": "{count, plural, one {# adult} other {# adults}}",
+    "search": "Search",
+    "update": "Update",
+    "nights": "{count, plural, one {# night} other {# nights}}",
+    "chooseDates": "Choose your dates to see the price of your stay and which rooms are free.",
+    "errors": {
+      "missing": "Choose a check-in and a check-out date.",
+      "invalid": "Those dates are not valid.",
+      "past": "Check-in can’t be in the past.",
+      "order": "Check-out must be after check-in.",
+      "too_long": "For stays over 30 nights, write to us on WhatsApp."
+    }
+  },
+  "results": {
+    "available": "{available} of {total} rooms available",
+    "allRooms": "{total} rooms",
+    "filters": "Filters",
+    "showFilters": "Show filters",
+    "clear": "Clear filters",
+    "floor": "Floor",
+    "view": "View",
+    "inRoom": "In the room",
+    "sort": "Sort by",
+    "sortOptions": {
+      "recommended": "Our order",
+      "priceAsc": "Price, low to high",
+      "priceDesc": "Price, high to low"
+    },
+    "onlyAvailable": "Only available rooms",
+    "noResults": "No room matches these filters.",
+    "stayFor": "{nights}, {adults}",
+    "perNightAvg": "{price} per night",
+    "fromPerNight": "From {price} per night",
+    "reserve": "Reserve",
+    "seeRoom": "See the room",
+    "changeDates": "Change dates",
+    "reason": {
+      "booked": "Booked for these dates",
+      "blocked": "Not available for these dates",
+      "capacity": "Sleeps {max} guests maximum",
+      "min_nights": "Minimum stay {count} nights on these dates"
+    },
+    "reserveMessage": "Hello, I would like to reserve the {room} from {checkIn} to {checkOut} ({nights}, {adults}). Total shown: {total}."
   }
 }

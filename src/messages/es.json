@@ -103,5 +103,53 @@
       "coffee_maker": "Cafetera y hervidor",
       "tadelakt_shower": "Ducha de tadelakt"
     }
+  },
+  "search": {
+    "checkIn": "Entrada",
+    "checkOut": "Salida",
+    "guests": "Huéspedes",
+    "adults": "{count, plural, one {# adulto} other {# adultos}}",
+    "search": "Buscar",
+    "update": "Actualizar",
+    "nights": "{count, plural, one {# noche} other {# noches}}",
+    "chooseDates": "Elige tus fechas para ver el precio de tu estancia y las habitaciones libres.",
+    "errors": {
+      "missing": "Elige una fecha de entrada y de salida.",
+      "invalid": "Esas fechas no son válidas.",
+      "past": "La entrada no puede ser en el pasado.",
+      "order": "La salida debe ser después de la entrada.",
+      "too_long": "Para más de 30 noches, escríbenos por WhatsApp."
+    }
+  },
+  "results": {
+    "available": "{available} de {total} habitaciones libres",
+    "allRooms": "{total} habitaciones",
+    "filters": "Filtros",
+    "showFilters": "Mostrar filtros",
+    "clear": "Borrar filtros",
+    "floor": "Planta",
+    "view": "Vista",
+    "inRoom": "En la habitación",
+    "sort": "Ordenar por",
+    "sortOptions": {
+      "recommended": "Nuestro orden",
+      "priceAsc": "Precio, de menor a mayor",
+      "priceDesc": "Precio, de mayor a menor"
+    },
+    "onlyAvailable": "Solo habitaciones libres",
+    "noResults": "Ninguna habitación coincide con estos filtros.",
+    "stayFor": "{nights}, {adults}",
+    "perNightAvg": "{price} por noche",
+    "fromPerNight": "Desde {price} por noche",
+    "reserve": "Reservar",
+    "seeRoom": "Ver la habitación",
+    "changeDates": "Cambiar fechas",
+    "reason": {
+      "booked": "Reservada en estas fechas",
+      "blocked": "No disponible en estas fechas",
+      "capacity": "Máximo {max} huéspedes",
+      "min_nights": "Estancia mínima de {count} noches en estas fechas"
+    },
+    "reserveMessage": "Hola, me gustaría reservar la {room} del {checkIn} al {checkOut} ({nights}, {adults}). Total indicado: {total}."
   }
 }
