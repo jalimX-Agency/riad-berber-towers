@@ -89,8 +89,18 @@ export default async function BookPage({ params, searchParams }: Props) {
             <p className="max-w-[60ch] text-muted">{t("intro")}</p>
           </div>
           <div className="rounded-[10px] border border-rule bg-paper p-5 sm:p-6">
-            <h2 className="mb-5 text-2xl">{t("yourDetails")}</h2>
-            <GuestForm room={room.slug} checkIn={toISO(query.checkIn)} checkOut={toISO(query.checkOut)} adults={query.adults} />
+            <GuestForm
+              room={room.slug}
+              checkIn={toISO(query.checkIn)}
+              checkOut={toISO(query.checkOut)}
+              adults={query.adults}
+              summary={{
+                room: room.name,
+                dates: `${formatStayDate(query.checkIn, locale)} → ${formatStayDate(query.checkOut, locale)}`,
+                stay: `${ts("nights", { count: query.nights })}, ${ts("adults", { count: query.adults })}`,
+                total: fmt(a.total),
+              }}
+            />
           </div>
         </section>
 

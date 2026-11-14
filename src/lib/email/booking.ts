@@ -114,10 +114,12 @@ ${b.specialRequests ? `<p style="margin-top:16px"><b>Special requests</b><br>${e
         html: ownerHtml,
       }),
     ]);
-    for (const r of results) {
-      if (r.status === "rejected") console.error("[email] send failed", r.reason);
-      else if (r.value.error) console.error("[email] send failed", r.value.error);
-    }
+    results.forEach((r, i) => {
+      const who = i === 0 ? "guest" : "owner";
+      if (r.status === "rejected") console.error(`[email] ${who} send failed for ${b.reference}`, r.reason);
+      else if (r.value.error) console.error(`[email] ${who} send failed for ${b.reference}`, r.value.error);
+      else console.info(`[email] ${who} email sent for ${b.reference} (id ${r.value.data?.id})`);
+    });
   } catch (e) {
     console.error("[email] booking emails failed", e);
   }

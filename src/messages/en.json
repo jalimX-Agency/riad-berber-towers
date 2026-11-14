@@ -102,7 +102,10 @@
       "balcony": "Private balcony",
       "coffee_maker": "Coffee maker and kettle",
       "tadelakt_shower": "Tadelakt shower"
-    }
+    },
+    "photoOf": "photo {current} of {total}",
+    "prevPhoto": "Previous photo",
+    "nextPhoto": "Next photo"
   },
   "search": {
     "checkIn": "Check-in",
@@ -155,7 +158,6 @@
   "book": {
     "title": "Complete your booking",
     "intro": "Tell us who is coming. No payment is taken now: you pay at the riad when you arrive.",
-    "yourDetails": "Your details",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
@@ -206,7 +208,21 @@
       "whatsapp": "Message us on WhatsApp",
       "whatsappMessage": "Hello, about my booking {reference} at Riad Berber Towers: ",
       "home": "Back to home"
-    }
+    },
+    "steps": "Booking steps",
+    "stepOf": "Step {current} of {total}",
+    "step": {
+      "details": "Your details",
+      "arrival": "Your arrival",
+      "review": "Review and confirm"
+    },
+    "continue": "Continue",
+    "back": "Back",
+    "edit": "Edit",
+    "dates": "Dates",
+    "guest": "Guest",
+    "arrivalHint": "Helps us have your room and a mint tea ready.",
+    "reviewNote": "Please check your details. When you confirm, we send your request to the riad and a summary to your email."
   },
   "email": {
     "guest": {

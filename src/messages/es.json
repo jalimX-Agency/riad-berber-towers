@@ -102,7 +102,10 @@
       "balcony": "Balcón privado",
       "coffee_maker": "Cafetera y hervidor",
       "tadelakt_shower": "Ducha de tadelakt"
-    }
+    },
+    "photoOf": "foto {current} de {total}",
+    "prevPhoto": "Foto anterior",
+    "nextPhoto": "Foto siguiente"
   },
   "search": {
     "checkIn": "Entrada",
@@ -155,7 +158,6 @@
   "book": {
     "title": "Completa tu reserva",
     "intro": "Dinos quién viene. No se cobra nada ahora: pagas en el riad al llegar.",
-    "yourDetails": "Tus datos",
     "firstName": "Nombre",
     "lastName": "Apellidos",
     "email": "Correo electrónico",
@@ -206,7 +208,21 @@
       "whatsapp": "Escríbenos por WhatsApp",
       "whatsappMessage": "Hola, sobre mi reserva {reference} en Riad Berber Towers: ",
       "home": "Volver al inicio"
-    }
+    },
+    "steps": "Pasos de la reserva",
+    "stepOf": "Paso {current} de {total}",
+    "step": {
+      "details": "Tus datos",
+      "arrival": "Tu llegada",
+      "review": "Revisar y confirmar"
+    },
+    "continue": "Continuar",
+    "back": "Atrás",
+    "edit": "Editar",
+    "dates": "Fechas",
+    "guest": "Huésped",
+    "arrivalHint": "Así tendremos lista tu habitación y un té a la menta.",
+    "reviewNote": "Revisa tus datos. Al confirmar, enviamos tu solicitud al riad y un resumen a tu correo."
   },
   "email": {
     "guest": {

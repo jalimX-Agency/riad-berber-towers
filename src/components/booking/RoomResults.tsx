@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
+import { CardCarousel } from "@/components/rooms/CardCarousel";
 import { useLocale, useTranslations } from "next-intl";
 import { SlidersHorizontal, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -163,11 +163,14 @@ export function RoomResults({
             return (
               <li key={room.slug}>
                 <article className={cn("grid overflow-hidden rounded-[10px] border border-rule bg-snow md:grid-cols-[240px_minmax(0,1fr)_220px]", off && "opacity-60")}>
-                  <Link href={`/rooms/${room.slug}${qs}`} className="group relative block aspect-[3/2] bg-walnut md:aspect-auto md:min-h-[200px]">
-                    {room.cover && (
-                      <Image src={room.cover} alt={room.name} fill sizes="(min-width: 768px) 240px, 100vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" priority={i < 2} />
-                    )}
-                  </Link>
+                  <CardCarousel
+                    images={room.cover ? [room.cover, ...room.images.filter((src) => src !== room.cover)] : room.images}
+                    alt={room.name}
+                    href={`/rooms/${room.slug}${qs}`}
+                    sizes="(min-width: 768px) 240px, 100vw"
+                    priority={i < 2}
+                    className="aspect-[3/2] md:aspect-auto md:min-h-[200px]"
+                  />
 
                   <div className="grid content-start gap-2 p-4 md:p-5">
                     <p className="label">
