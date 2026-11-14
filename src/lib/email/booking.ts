@@ -125,4 +125,56 @@ ${b.specialRequests ? `<p style="margin-top:16px"><b>Special requests</b><br>${e
   }
 }
 
-export const confirmationPath = (locale: string, id: string) => localePath(locale, `/book/confirmed/${id}`);
+/**
+ * Tell the guest the riad confirmed or cancelled their booking (in the guest's language).
+ * Returns what happened so the admin can show it. Never throws.
+ */
+export async function sendStatusEmail(bookingId: string, kind: "confirmed" | "cancelled"): Promise<"sent" | "skipped" | "no_email" | "failed"> {
+  const key = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+  if (!key || !from) return "skipped";
+  try {
+    const b = await db.booking.findUnique({ where: { id: bookingId }, include: { guest: true, room: { include: { translations: true } } } });
+    if (!b) return "failed";
+    if (!b.guest.email) return "no_email";
+    const locale = b.locale;
+    const t = await getTranslations({ locale, namespace: "email" });
+    const tb = await getTranslations({ locale, namespace: "book" });
+    const ts = await getTranslations({ locale, namespace: "search" });
+    const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
+    const html = layout(
+      `<h1 style="font-family:Georgia,serif;font-weight:normal;font-size:26px;margin:16px 0 8px">${esc(t(`${kind}.title`, { name: b.guest.firstName }))}</h1>
+<p>${esc(t(`${kind}.intro`))}</p>
+<p style="font-family:'Courier New',monospace;font-size:20px;letter-spacing:2px;color:#955738">${b.reference}</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+${row(tb("room"), roomName)}
+${row(ts("checkIn"), formatStayDate(b.checkIn, locale))}
+${row(ts("checkOut"), formatStayDate(b.checkOut, locale))}
+${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`)}
+${kind === "confirmed" ? row(tb("total"), formatPrice(Number(b.total), b.currency, locale)) + row(tb("payment"), tb("payOnArrival")) : ""}
+</table>
+<p style="margin-top:20px">${esc(t(`${kind}.next`))}</p>
+<p><a href="https://wa.me/${site.whatsapp}" style="color:#955738">WhatsApp ${site.phones[0]}</a></p>
+<p style="color:#6C7472;font-size:13px">${esc(t("guest.signoff"))}</p>`,
+      locale === "ar" ? "rtl" : "ltr",
+    );
+    const res = await new Resend(key).emails.send({
+      from,
+      to: b.guest.email,
+      replyTo: site.email,
+      subject: t(`${kind}.subject`, { reference: b.reference }),
+      html,
+    });
+    if (res.error) {
+      console.error(`[email] ${kind} email failed for ${b.reference}`, res.error);
+      return "failed";
+    }
+    console.info(`[email] ${kind} email sent for ${b.reference} (id ${res.data?.id})`);
+    return "sent";
+  } catch (e) {
+    console.error(`[email] ${kind} email failed`, e);
+    return "failed";
+  }
+}
+
+export const confirmationPath =(locale: string, id: string) => localePath(locale, `/book/confirmed/${id}`);

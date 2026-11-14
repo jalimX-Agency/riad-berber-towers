@@ -1,5 +1,5 @@
 import { randomInt } from "node:crypto";
-import { Prisma, type Locale } from "@prisma/client";
+import { Prisma, type BookingSource, type Locale } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { getAvailability, type RoomAvailability, type StayQuery } from "./availability";
@@ -29,6 +29,34 @@ export const guestSchema = z.object({
 });
 export type GuestInput = z.infer<typeof guestSchema>;
 
+/** Same guest, entered by the riad: email optional (many phone guests have none), phone optional too. */
+export const adminGuestSchema = guestSchema.extend({
+  email: z.union([z.literal(""), z.string().trim().toLowerCase().pipe(z.email())]).default(""),
+  phone: z.union([z.literal(""), z.string().trim().max(30).regex(/^[+\d\s().-]+$/)]).default(""),
+});
+
+/**
+ * Re-open a cancelled booking only if its nights are still free (same lock as createBooking).
+ * Returns false when another booking or a block took the room meanwhile.
+ */
+export async function restoreBooking(id: string): Promise<boolean> {
+  return db.$transaction(
+    async (tx) => {
+      const b = await tx.booking.findUniqueOrThrow({ where: { id }, select: { roomId: true, checkIn: true, checkOut: true, adults: true, nights: true } });
+      await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${b.roomId}))::text`;
+      const overlap = { roomId: b.roomId, checkIn: { lt: b.checkOut }, checkOut: { gt: b.checkIn } };
+      const [clash, block] = await Promise.all([
+        tx.booking.count({ where: { ...overlap, id: { not: id }, status: { not: "CANCELLED" } } }),
+        tx.roomBlock.count({ where: { roomId: b.roomId, startDate: { lt: b.checkOut }, endDate: { gt: b.checkIn } } }),
+      ]);
+      if (clash || block) return false;
+      await tx.booking.update({ where: { id }, data: { status: "CONFIRMED", cancelledAt: null } });
+      return true;
+    },
+    { maxWait: 10_000, timeout: 15_000 },
+  );
+}
+
 export type CreateResult =
   | { ok: true; id: string; reference: string }
   | { ok: false; error: "unavailable"; reason: RoomAvailability["reason"] }
@@ -45,15 +73,25 @@ export async function createBooking(input: {
   query: StayQuery;
   guest: GuestInput;
   locale: Locale;
+  /** Admin-entered bookings (phone, WhatsApp, agencies…). Website bookings use the defaults. */
+  admin?: {
+    source: BookingSource;
+    status: "PENDING" | "CONFIRMED";
+    /** price agreed with the guest; replaces the computed room total */
+    total?: number;
+    internalNotes?: string;
+  };
 }): Promise<CreateResult> {
-  const { query, guest } = input;
+  const { query, guest, admin } = input;
   const room = await db.room.findFirst({ where: { slug: input.roomSlug, active: true }, select: { id: true, currency: true } });
   if (!room) return { ok: false, error: "unavailable", reason: null };
 
-  const recent = await db.booking.count({
-    where: { status: "PENDING", guest: { email: guest.email }, createdAt: { gt: new Date(Date.now() - 86_400_000) } },
-  });
-  if (recent >= MAX_PENDING_PER_EMAIL) return { ok: false, error: "too_many" };
+  if (!admin) {
+    const recent = await db.booking.count({
+      where: { status: "PENDING", guest: { email: guest.email }, createdAt: { gt: new Date(Date.now() - 86_400_000) } },
+    });
+    if (recent >= MAX_PENDING_PER_EMAIL) return { ok: false, error: "too_many" };
+  }
 
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
@@ -62,9 +100,13 @@ export async function createBooking(input: {
           await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${room.id}))::text`;
 
           const a = (await getAvailability(query, { roomId: room.id, client: tx })).get(room.id);
-          if (!a || !a.available) return { ok: false as const, error: "unavailable" as const, reason: a?.reason ?? null };
+          // the riad may waive its own minimum stay and capacity rules; a booked or blocked night is never sold twice
+          const blocking = a?.reason === "booked" || a?.reason === "blocked" || (!admin && a?.reason);
+          if (!a || blocking) return { ok: false as const, error: "unavailable" as const, reason: a?.reason ?? null };
 
-          const existing = await tx.guest.findFirst({ where: { email: guest.email }, orderBy: { createdAt: "desc" }, select: { id: true } });
+          const existing = guest.email
+            ? await tx.guest.findFirst({ where: { email: guest.email }, orderBy: { createdAt: "desc" }, select: { id: true } })
+            : null;
           const guestData = {
             firstName: guest.firstName,
             lastName: guest.lastName,
@@ -87,15 +129,16 @@ export async function createBooking(input: {
               nights: query.nights,
               adults: query.adults,
               children: 0,
-              status: "PENDING",
-              source: "WEBSITE",
-              roomTotal: a.total,
-              total: a.total,
+              status: admin?.status ?? "PENDING",
+              source: admin?.source ?? "WEBSITE",
+              roomTotal: admin?.total ?? a.total,
+              total: admin?.total ?? a.total,
               currency: room.currency,
               nightlyRates: a.nightly,
               paymentMethod: "on_arrival",
               arrivalTime: guest.arrivalTime === "unknown" ? "" : guest.arrivalTime,
               specialRequests: guest.specialRequests,
+              internalNotes: admin?.internalNotes ?? "",
               locale: input.locale,
             },
             select: { id: true, reference: true },

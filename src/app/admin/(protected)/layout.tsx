@@ -1,8 +1,16 @@
-import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { requireUser } from "@/lib/admin/guard";
+import { AdminNav } from "@/components/admin/AdminNav";
+
+export const dynamic = "force-dynamic";
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const session = await getSession();
-  if (!session) redirect("/admin/login");
-  return <div className="min-h-dvh">{children}</div>;
+  const user = await requireUser();
+  const pending = await db.booking.count({ where: { status: "PENDING" } });
+  return (
+    <div className="min-h-dvh bg-paper lg:flex">
+      <AdminNav user={user.email} pending={pending} />
+      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">{children}</main>
+    </div>
+  );
 }

@@ -231,6 +231,18 @@
       "intro": "Nous avons bien reçu votre demande de réservation. Voici le récapitulatif :",
       "next": "Nous vous confirmerons la réservation par e-mail. Aucun paiement maintenant : vous réglez au riad à votre arrivée. Une question ? Répondez à cet e-mail ou écrivez-nous sur WhatsApp.",
       "signoff": "À très bientôt à Imlil. L’équipe du Riad Berber Towers"
+    },
+    "confirmed": {
+      "subject": "Réservation confirmée {reference} · Riad Berber Towers",
+      "title": "Votre séjour est confirmé, {name}",
+      "intro": "Bonne nouvelle : le riad a confirmé votre réservation.",
+      "next": "Aucun paiement avant votre arrivée : vous réglez au riad. Indiquez-nous votre heure d’arrivée sur WhatsApp et nous serons prêts à vous accueillir."
+    },
+    "cancelled": {
+      "subject": "Réservation annulée {reference} · Riad Berber Towers",
+      "title": "Votre réservation est annulée, {name}",
+      "intro": "Cette réservation a été annulée :",
+      "next": "S’il s’agit d’une erreur ou si vous souhaitez d’autres dates, répondez à cet e-mail ou écrivez-nous sur WhatsApp."
     }
   }
 }
