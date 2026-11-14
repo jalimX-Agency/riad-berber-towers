@@ -2,136 +2,436 @@
  "rooms": {
   "targa": [
    {
-    "key": "rooms/targa/01.webp",
+    "key": "photos/rooms/targa/dsc00002.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/targa/02.webp",
+    "key": "photos/rooms/targa/dsc00008.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/targa/03.webp",
+    "key": "photos/rooms/targa/dsc00013.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00036-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00021-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00034-modifier.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00061.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00067-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00073-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00075.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00039-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/targa/dsc00055.webp",
     "w": 1920,
     "h": 1280
    }
   ],
   "tarzoute": [
    {
-    "key": "rooms/tarzoute/01.webp",
+    "key": "photos/rooms/tarzoute/dsc00086.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/tarzoute/02.webp",
+    "key": "photos/rooms/tarzoute/dsc00093.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/tarzoute/03.webp",
+    "key": "photos/rooms/tarzoute/dsc00094.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/tarzoute/04.webp",
+    "key": "photos/rooms/tarzoute/dsc00109.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00091.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00126.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00124.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00112.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00026.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00060.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00120.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/tarzoute/dsc00132.webp",
     "w": 1920,
     "h": 1280
    }
   ],
   "imlil": [
    {
-    "key": "rooms/imlil/01.webp",
+    "key": "photos/rooms/imlil/dsc00004.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/imlil/02.webp",
+    "key": "photos/rooms/imlil/dsc00001.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/imlil/03.webp",
+    "key": "photos/rooms/imlil/dsc00007-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00005.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00021-3.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00032-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00017-modifier.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00040.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00042-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00033.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/imlil/dsc00012.webp",
     "w": 1920,
     "h": 1280
    }
   ],
   "toubkal": [
    {
-    "key": "rooms/toubkal/01.webp",
+    "key": "photos/rooms/toubkal/dsc00075-2.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/toubkal/02.webp",
+    "key": "photos/rooms/toubkal/dsc00090.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/toubkal/03.webp",
+    "key": "photos/rooms/toubkal/dsc00077.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/toubkal/04.webp",
-    "w": 960,
-    "h": 1440
+    "key": "photos/rooms/toubkal/dsc00091-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00117-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00109-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00111.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00099.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00104.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00140-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00135.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/toubkal/dsc00085.webp",
+    "w": 1920,
+    "h": 1280
    }
   ],
   "atlas": [
    {
-    "key": "rooms/atlas/01.webp",
+    "key": "photos/rooms/atlas/dsc00147-2.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/atlas/02.webp",
+    "key": "photos/rooms/atlas/dsc00150-2.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/atlas/03.webp",
+    "key": "photos/rooms/atlas/dsc00154-2.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/atlas/04.webp",
+    "key": "photos/rooms/atlas/dsc00169.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00174.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00173.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00170.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00165.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00186.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00200.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00206.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/atlas/dsc00159.webp",
     "w": 1920,
     "h": 1280
    }
   ],
   "taddart": [
    {
-    "key": "rooms/taddart/01.webp",
+    "key": "photos/rooms/taddart/dsc00217.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/taddart/02.webp",
+    "key": "photos/rooms/taddart/dsc00219-2.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/taddart/03.webp",
+    "key": "photos/rooms/taddart/dsc00222.webp",
     "w": 1920,
     "h": 1280
    },
    {
-    "key": "rooms/taddart/04.webp",
+    "key": "photos/rooms/taddart/dsc00154.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00246.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00225.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00258.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00240.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00242.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00277.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00283.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/taddart/dsc00226.webp",
     "w": 1920,
     "h": 1280
    }
   ],
   "adrar": [
    {
-    "key": "rooms/adrar/01.webp",
-    "w": 1280,
-    "h": 853
+    "key": "photos/rooms/adrar/dsc00286.webp",
+    "w": 1920,
+    "h": 1280
    },
    {
-    "key": "rooms/adrar/02.webp",
-    "w": 1024,
-    "h": 682
+    "key": "photos/rooms/adrar/dsc00342-2.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00287.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00289.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00297.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00303.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00308.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00316.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00319.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00344.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00325.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00315.webp",
+    "w": 1920,
+    "h": 1280
+   },
+   {
+    "key": "photos/rooms/adrar/dsc00361.webp",
+    "w": 1280,
+    "h": 1920
    }
   ]
  },
@@ -176,5 +476,1682 @@
    "w": 1600,
    "h": 900
   }
- }
+ },
+ "library": [
+  {
+   "key": "photos/bathroom/dsc00348.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00350.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00351.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00352.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00354.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00355.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00356.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00358.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/bathroom/dsc00360.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/inside/dsc00364.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00366-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00366.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00368.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00371.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00375.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00377.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/inside/dsc00380.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00382.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00383.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00386.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/inside/dsc00391.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/inside/dsc00393.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00394.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00395.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/inside/dsc00396.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00399.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00400.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/inside/dsc00401.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00402.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00403.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00405.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00406.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00428.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00430.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00431.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00432.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/living-room/dsc00434.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00436.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/living-room/dsc00439.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/outside-day/dji_20250428172016_0304_d copy.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-day/dji_20250428172016_0304_d.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-day/dji_20250428172039_0306_d.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-day/dji_20250428172115_0307_d.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-day/dji_20250428172157_0310_d.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-day/dji_20250428172208_0311_d.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-day/dji_20250428172232_0312_d.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-day/dsc00472-modifier.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/outside-day/dsc00473-modifier.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/outside-day/dsc00476-modifier.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/outside-night/dji_20250429201732_0445_d-enhanced-nr-modifier.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-night/dji_20250429201732_0445_d-enhanced-nr.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/outside-night/dji_20250429201942_0453_d-enhanced-nr-modifier.webp",
+   "w": 1920,
+   "h": 1080
+  },
+  {
+   "key": "photos/reception/dsc00407.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/reception/dsc00413.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/reception/dsc00415.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/reception/dsc00416.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/reception/dsc00418.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/reception/dsc00421.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/reception/dsc00422.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00286.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00287.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00288.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00289.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00292.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00295.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00297.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00299.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00300.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00303.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00305.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00306.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00307.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00308.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00312.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00313-2.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00313-3.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00313.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00315.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00316.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00319.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00320.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00322.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00324.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00325.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00326.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00329.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00331-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00331.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00333.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00334.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00335.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00337.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00340.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00342-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00342.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00343.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00344.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/adrar/dsc00361.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00147-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00150-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00152-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00152.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00154-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00155.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00156-3.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00157.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00158.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00159.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00162.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00163.webp",
+   "w": 1920,
+   "h": 1284
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00164.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00165.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00166.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00169.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00170.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00171.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00172.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00173.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00174.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00175.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00176.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00177.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00178.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00180.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00182.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00183.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00186.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00188.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00189.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00191.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00193.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00194.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00196.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00197.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00198.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00200.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00202.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00204.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00206.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00207.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00210.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00213.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00263.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00264.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00265.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00268.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/atlas/dsc00275.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00001.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00004.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00005.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00007-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00010-enhanced-nr.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00012.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00015.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00016.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00017-modifier.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00019.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00021-3.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00022.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00023-2.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00032-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00032.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00033.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00034.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00035-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00036-3.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00038-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00040.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00042-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00042.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00044.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00046.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00049-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00051.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/imlil/dsc00052.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00150.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00153.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00154.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00156-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00156.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00217.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00219-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00219.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00222.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00223.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00224.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00225.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00226.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00228.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00229.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00231.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00235.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00237.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00238.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00240.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00242.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00243.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00246.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00249.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00252.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00254.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00255.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00258.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00259.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00261.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00262.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00272.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00273.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00277.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00279.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00280.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/taddart/dsc00283.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00002.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00007.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00008.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00010.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00011.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00013.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00014.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00017.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00021-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00023.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/targa/dsc00027.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00028.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/targa/dsc00034-modifier.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00035.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00036-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00038.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/targa/dsc00039-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00039.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/targa/dsc00049.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00050.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00053.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00055.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00059.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00061.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00062.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/targa/dsc00065.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00067-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00067.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00069.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00072.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/targa/dsc00073-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00073.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00074.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00075.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/targa/dsc00080.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00026.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00027-2.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00031.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00060.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00061-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00064.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00065-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00066.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00067-3.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00068.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00071.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00086.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00091.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00093.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00094.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00098.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00101.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00109.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00112.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00114.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00117.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00119.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00120.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00122.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00123.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00124.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00125.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00126.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00127.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00132.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00136.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00138.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00139.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00140.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00143.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00147.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/tarzoute/dsc00149.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00075-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00076.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00077.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00080-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00082-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00082.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00083.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00085.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00087.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00090.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00091-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00093-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00094-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00095.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00097.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00099.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00101-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00103.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00104.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00106.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00107.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00108.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00109-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00111.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00113.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00116.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00117-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00119-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00121.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00123-2.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00124-2.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00125-2.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00126-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00130.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00135.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00136-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00137.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00139-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00140-2.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/rooms/toubkal/dsc00145.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/tea-man/dsc00448.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00450.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00452.webp",
+   "w": 1920,
+   "h": 1280
+  },
+  {
+   "key": "photos/tea-man/dsc00453.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00458.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00460.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00462.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00466.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00467.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00468.webp",
+   "w": 1280,
+   "h": 1920
+  },
+  {
+   "key": "photos/tea-man/dsc00470.webp",
+   "w": 1920,
+   "h": 1280
+  }
+ ]
 }

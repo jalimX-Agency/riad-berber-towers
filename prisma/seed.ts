@@ -9,10 +9,12 @@ import { roomCopy } from "./data/rooms-content";
 
 const db = new PrismaClient();
 
-// Photo keys from the current site, converted to WebP (served from R2, or public/media in dev)
+// Photo keys (WebP on R2, or public/media in dev). rooms = chosen photos per room, cover first;
+// library = every photo from the Nov 2026 shoot (made by scripts/process-photos.ts).
 type Media = { key: string; w: number; h: number };
 const manifest = JSON.parse(readFileSync(path.join(__dirname, "media-manifest.json"), "utf8")) as {
   rooms: Record<string, Media[]>;
+  library?: Media[];
 };
 
 // Prices and floors from the owner (Nov 2026). Order = the owner's room numbers 1-7.
@@ -51,8 +53,10 @@ async function main() {
       },
     });
 
-    // photos: only when the room has none yet
-    if (room.images.length === 0 && photos.length) {
+    // photos: set when the room has none, or still has the old site's photos ("rooms/..." keys,
+    // replaced by the Nov 2026 photo shoot under "photos/..."); never touch a selection made later
+    const legacy = room.images.length > 0 && room.images.every((k) => k.startsWith("rooms/"));
+    if ((room.images.length === 0 || legacy) && photos.length) {
       await db.room.update({ where: { id: room.id }, data: { images: photos, coverImage: photos[0] } });
     }
     // amenities: keep the list in sync with this file until the admin manages them

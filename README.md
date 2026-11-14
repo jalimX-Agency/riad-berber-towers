@@ -64,10 +64,12 @@ Fonts: Cormorant Garamond (display), Jost (text), Aref Ruqaa (Arabic headings), 
 
 ## Photos and R2
 
-- The database stores image **keys** (`rooms/toubkal/01.webp`). `src/lib/media.ts` turns a key into a URL:
+- The database stores image **keys** (`photos/rooms/toubkal/dsc00075-2.webp`). `src/lib/media.ts` turns a key into a URL:
   `NEXT_PUBLIC_R2_URL/<key>` when R2 is configured, otherwise `/media/<key>` from the local, uncommitted `public/media` folder.
-- Source photos (from the old site, converted to WebP) live in the client folder `media/site-photos/web`, with `manifest.json` (also copied to `prisma/media-manifest.json` for the seed).
-- To go live on R2: fill the `R2_*` variables, run `npx tsx --env-file=.env scripts/r2-upload.ts "<client folder>/media/site-photos/web"`, then set `NEXT_PUBLIC_R2_URL`.
+- Photo shoot (Nov 2026): the photographer's web JPGs are in the client folder `media/photos-2026-11` (room folders `room 1`–`room 7` follow the owner's order: Targa, Tarzoute, Imlil, Toubkal, Atlas, Taddart, Adrar).
+  `scripts/process-photos.ts` converts them to 1920 px WebP in `media/photos-2026-11-web` with a `manifest.json`; upload that folder with `scripts/r2-upload.ts`.
+- `prisma/media-manifest.json`: `rooms` = the chosen photos per room (cover first), `library` = every photo. The seed applies `rooms` to rooms that have no photos or still have the old site's (`rooms/...`) photos.
+- Keys are never reused for different content (R2 objects are cached as immutable), so a new shoot gets new keys.
 
 ## Notes
 
