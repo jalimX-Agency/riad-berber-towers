@@ -6,6 +6,8 @@ import { CalendarDays, Loader2, Users } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/rooms";
 import { cn } from "@/lib/utils";
+import { EXTRA_GUEST_PERCENT } from "@/lib/booking/policy";
+import { StayPolicies } from "@/components/booking/StayPolicies";
 
 type Props = { slug: string; basePrice: number; currency: string; maxAdults: number; today: string };
 
@@ -16,6 +18,7 @@ type Quote = {
   total: number;
   perNight: number;
   nightly: { date: string; price: number }[];
+  extraGuest?: boolean;
 };
 
 const plusDays = (iso: string, n: number) => {
@@ -52,9 +55,9 @@ export function BookingBox({ slug, basePrice, currency, maxAdults, today }: Prop
       setIn(i);
       if (ISO.test(o) && o > i) setOut(o);
     }
-    setAdults(Math.min(6, Math.max(1, Number(sp.get("adults")) || 2)));
+    setAdults(Math.min(maxAdults, Math.max(1, Number(sp.get("adults")) || 2)));
     setSynced(true);
-  }, [today]);
+  }, [today, maxAdults]);
 
   useEffect(() => {
     if (!synced) return;
@@ -134,7 +137,7 @@ export function BookingBox({ slug, basePrice, currency, maxAdults, today }: Prop
             {t("guests")}
           </span>
           <select value={adults} onChange={(e) => setAdults(Number(e.target.value))} className={inputCls}>
-            {[1, 2, 3, 4, 5, 6].map((n) => (
+            {Array.from({ length: maxAdults }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
                 {t("adults", { count: n })}
               </option>
@@ -174,6 +177,7 @@ export function BookingBox({ slug, basePrice, currency, maxAdults, today }: Prop
                   {fmt(quote.total)}
                 </span>
               </div>
+              {quote.extraGuest && <p className="text-xs text-muted">{tres("extraGuest", { percent: EXTRA_GUEST_PERCENT })}</p>}
               <Link href={`/book?room=${slug}&${qs}`} className="btn-primary justify-center py-4">
                 {tres("reserve")}
               </Link>
@@ -191,6 +195,8 @@ export function BookingBox({ slug, basePrice, currency, maxAdults, today }: Prop
           )}
         </div>
       )}
+
+      <StayPolicies className="border-t border-rule pt-4" />
     </div>
   );
 }

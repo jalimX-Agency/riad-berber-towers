@@ -43,7 +43,7 @@ export default async function RoomsPage({ params, searchParams }: Props) {
   let stay: Stay | null = null;
   if (query) {
     const map = await getAvailability(query);
-    availability = Object.fromEntries([...map].map(([id, a]) => [id, { available: a.available, reason: a.reason, minNights: a.minNights, total: a.total, perNight: a.perNight }]));
+    availability = Object.fromEntries([...map].map(([id, a]) => [id, { available: a.available, reason: a.reason, minNights: a.minNights, total: a.total, perNight: a.perNight, extraGuest: a.extraGuest }]));
     stay = { checkIn: toISO(query.checkIn), checkOut: toISO(query.checkOut), nights: query.nights, adults: query.adults };
   }
 

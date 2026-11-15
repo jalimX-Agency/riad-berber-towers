@@ -4,6 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getAvailability, type RoomAvailability, type StayQuery } from "./availability";
 import { ARRIVAL_TIMES } from "./arrival";
+import { splitPayment } from "./policy";
 
 /** Unambiguous alphabet (no 0/O, 1/I/L) so guests can read the reference over the phone. */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -63,7 +64,7 @@ export type CreateResult =
   | { ok: false; error: "too_many" };
 
 /**
- * Create a booking request (status PENDING, pay at the riad).
+ * Create a booking request (status PENDING; 40% advance to confirm, balance in cash at the riad).
  * Price and availability are recomputed inside the transaction; nothing from the browser is trusted.
  * A per-room advisory lock serialises concurrent requests for the same room, so two guests
  * can't both get the last nights.
@@ -135,7 +136,8 @@ export async function createBooking(input: {
               total: admin?.total ?? a.total,
               currency: room.currency,
               nightlyRates: a.nightly,
-              paymentMethod: "on_arrival",
+              // owner policy: 40% non-refundable advance to confirm, balance in cash on arrival
+              depositAmount: splitPayment(admin?.total ?? a.total).deposit,
               arrivalTime: guest.arrivalTime === "unknown" ? "" : guest.arrivalTime,
               specialRequests: guest.specialRequests,
               internalNotes: admin?.internalNotes ?? "",

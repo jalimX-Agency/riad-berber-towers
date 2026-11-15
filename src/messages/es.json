@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Riad Berber Towers · Casa de huéspedes hecha a mano en Imlil, Alto Atlas",
-    "description": "Siete habitaciones hechas a mano en el corazón de Imlil, a pocos pasos del sendero del Toubkal. Tadelakt, zellige de Fez y cedro tallado del Atlas. Desayuno incluido."
+    "description": "Siete habitaciones hechas a mano en el corazón de Imlil, a pocos pasos del sendero del Toubkal. Tadelakt, zellige de Fez y madera tallada. Desayuno incluido."
   },
   "nav": {
     "home": "Inicio",
@@ -31,7 +31,7 @@
       "line1": "Siete habitaciones.",
       "line2": "Un valle.",
       "line3": "Hechas a mano.",
-      "lead": "Una casa de huéspedes familiar de cedro tallado, tadelakt y zellige de Fez en el centro de Imlil, al pie del Toubkal. El desayuno en la azotea está incluido.",
+      "lead": "Una casa de huéspedes familiar de madera tallada, tadelakt y zellige de Fez en el centro de Imlil, al pie del Toubkal. El desayuno en la azotea está incluido.",
       "alt": "Riad Berber Towers, una casa torre ocre entre los nogales de Imlil",
       "caption": "Imlil · Al Haouz",
       "searchLabel": "Ver disponibilidad",
@@ -39,7 +39,7 @@
     },
     "intro": {
       "label": "La casa",
-      "text": "Riad Berber Towers se alza tres plantas sobre el pueblo, construida con el oficio del Alto Atlas: paredes de tadelakt, suelos de zellige y techos de cedro tallados a mano. El sendero del Toubkal empieza en nuestra puerta.",
+      "text": "Riad Berber Towers se alza tres plantas sobre el pueblo, construida con el oficio del Alto Atlas: paredes de tadelakt, suelos de zellige y techos de madera tallados a mano. El sendero del Toubkal empieza en nuestra puerta.",
       "facts": {
         "altitude": {
           "value": "1.740 m",
@@ -72,8 +72,8 @@
         },
         "first": {
           "label": "Primera planta",
-          "title": "La galería de cedro",
-          "text": "Cuatro suites alrededor del patio abierto, bajo vigas de cedro tallado. Tres de ellas miran a las montañas."
+          "title": "La galería de madera",
+          "text": "Cuatro suites alrededor del patio abierto, bajo vigas de madera tallada. Tres de ellas miran a las montañas."
         },
         "second": {
           "label": "Segunda planta",
@@ -102,16 +102,16 @@
     },
     "strip": {
       "label": "Dentro",
-      "title": "Cedro, zellige y luz",
+      "title": "Madera, zellige y luz",
       "text": "Todo en la casa lo hicieron artesanos de la región, desde las puertas talladas hasta los vidrios de colores.",
       "items": {
         "salon": {
           "title": "El salón",
-          "text": "Bancos bajos, cojines bereberes y mesas de pino del Atlas."
+          "text": "Bancos bajos, cojines bereberes y mesas de madera."
         },
         "gallery": {
           "title": "La galería",
-          "text": "Barandillas de hierro forjado y puertas de cedro alrededor del patio."
+          "text": "Barandillas de hierro forjado y puertas de madera alrededor del patio."
         },
         "skylight": {
           "title": "La claraboya",
@@ -119,7 +119,7 @@
         },
         "stairs": {
           "title": "La escalera",
-          "text": "Cedro torneado y alfombra bereber, desde la entrada hasta arriba."
+          "text": "Madera torneada y alfombra bereber, desde la entrada hasta arriba."
         },
         "fountain": {
           "title": "Desde arriba",
@@ -162,7 +162,7 @@
     "book": {
       "label": "Reserva directa",
       "title": "Elige tus fechas",
-      "text": "Mira qué habitaciones están libres y el precio de tu estancia. Pagas a la llegada; confirmamos cada solicitud en pocas horas."
+      "text": "Mira qué habitaciones están libres y el precio de tu estancia. Un anticipo del 40 % confirma tu reserva; el resto se paga en efectivo en el riad."
     }
   },
   "footer": {
@@ -193,7 +193,7 @@
   "rooms": {
     "eyebrow": "Siete habitaciones · desayuno incluido",
     "title": "Habitaciones y suites",
-    "intro": "Siete habitaciones en tres plantas, todas hechas a mano con tadelakt, zellige y cedro tallado. Cada noche incluye el desayuno en la terraza, suelo radiante y Wi-Fi.",
+    "intro": "Siete habitaciones en tres plantas, todas hechas a mano con tadelakt, zellige y madera tallada. Cada noche incluye el desayuno en la terraza, suelo radiante y Wi-Fi.",
     "all": "Todas",
     "floor": {
       "0": "Planta baja",
@@ -290,11 +290,12 @@
       "capacity": "Máximo {max} huéspedes",
       "min_nights": "Estancia mínima de {count} noches en estas fechas"
     },
-    "reserveMessage": "Hola, me gustaría reservar la {room} del {checkIn} al {checkOut} ({nights}, {adults}). Total indicado: {total}."
+    "reserveMessage": "Hola, me gustaría reservar la {room} del {checkIn} al {checkOut} ({nights}, {adults}). Total indicado: {total}.",
+    "extraGuest": "Incluye +{percent} % por la tercera persona"
   },
   "book": {
     "title": "Completa tu reserva",
-    "intro": "Dinos quién viene. No se cobra nada ahora: pagas en el riad al llegar.",
+    "intro": "Dinos quién viene. En esta web no se paga nada: al recibir tu solicitud, te enviamos los datos para pagar el anticipo del 40 % que confirma tu estancia.",
     "firstName": "Nombre",
     "lastName": "Apellidos",
     "email": "Correo electrónico",
@@ -317,11 +318,11 @@
     "submit": "Solicitar la reserva",
     "sending": "Enviando…",
     "noPayment": "Sin pago ahora. Esta web no te cobrará nada.",
-    "payOnArrival": "Pago en el riad a la llegada",
-    "noCard": "No hace falta tarjeta",
     "priceDetails": "Precio por noche",
     "show": "Ver",
     "total": "Total",
+    "deposit": "Anticipo para confirmar ({percent} %, no reembolsable)",
+    "balance": "Resto, en efectivo a la llegada",
     "reference": "Referencia de la reserva",
     "room": "Habitación",
     "stay": "Estancia",
@@ -341,7 +342,7 @@
     "confirmed": {
       "title": "Solicitud recibida",
       "body": "Gracias, {name}. Hemos enviado los detalles a {email}.",
-      "next": "El riad te confirmará la reserva por correo. No hay que pagar nada hasta tu llegada.",
+      "next": "El riad revisa la disponibilidad. Si tu habitación está libre, recibirás un correo con un enlace para pagar el anticipo del 40 % por PayPal.",
       "whatsapp": "Escríbenos por WhatsApp",
       "whatsappMessage": "Hola, sobre mi reserva {reference} en Riad Berber Towers: ",
       "home": "Volver al inicio"
@@ -366,20 +367,103 @@
       "subject": "Tu solicitud de reserva {reference} · Riad Berber Towers",
       "title": "Gracias, {name}",
       "intro": "Hemos recibido tu solicitud de reserva. Estos son los detalles:",
-      "next": "Te confirmaremos la reserva por correo. No pagas nada ahora: pagas en el riad al llegar. ¿Dudas? Responde a este correo o escríbenos por WhatsApp.",
+      "next": "Revisamos la disponibilidad y te respondemos por correo. Si tu habitación está libre, recibirás un enlace para pagar el anticipo del 40 % (no reembolsable), que confirma tu reserva. ¿Dudas? Responde a este correo o escríbenos por WhatsApp.",
       "signoff": "Hasta pronto en Imlil. El equipo de Riad Berber Towers"
     },
     "confirmed": {
       "subject": "Reserva confirmada {reference} · Riad Berber Towers",
       "title": "Tu estancia está confirmada, {name}",
       "intro": "Buenas noticias: el riad ha confirmado tu reserva.",
-      "next": "No hay que pagar nada antes de llegar: pagas en el riad. Dinos tu hora de llegada por WhatsApp y te estaremos esperando."
+      "next": "Hemos recibido tu anticipo. La ficha de reserva va adjunta a este correo. El resto se paga en efectivo a la llegada. Dinos tu hora de llegada por WhatsApp y te estaremos esperando."
     },
     "cancelled": {
       "subject": "Reserva cancelada {reference} · Riad Berber Towers",
       "title": "Tu reserva está cancelada, {name}",
       "intro": "Esta reserva ha sido cancelada:",
       "next": "Si es un error o quieres otras fechas, responde a este correo o escríbenos por WhatsApp."
+    },
+    "payButton": "Pagar el anticipo ({amount})",
+    "accepted": {
+      "subject": "Tu habitación está disponible · paga el anticipo {reference}",
+      "title": "Buenas noticias, {name}: tu habitación está disponible",
+      "intro": "Hemos aceptado tu solicitud de reserva. Para confirmarla, paga el anticipo del 40 % y envíanos el comprobante en tu página de pago.",
+      "next": "Tu reserva queda confirmada en cuanto revisemos el pago. El anticipo no es reembolsable."
+    },
+    "declined": {
+      "subject": "Tu solicitud de reserva {reference} · Riad Berber Towers",
+      "title": "Lo sentimos, {name}",
+      "intro": "Por desgracia ahora mismo no nos queda ninguna habitación libre para estas fechas, así que no podemos aceptar tu solicitud:",
+      "next": "Nos encantaría recibirte en otras fechas. Responde a este correo o escríbenos por WhatsApp."
+    },
+    "proofRejected": {
+      "subject": "Comprobante de pago no aceptado {reference} · Riad Berber Towers",
+      "title": "No hemos podido verificar tu pago, {name}",
+      "intro": "El comprobante enviado no corresponde a ningún pago del anticipo. Revisa el pago y vuelve a enviar el comprobante desde tu página de pago.",
+      "next": "Si tienes alguna duda, responde a este correo o escríbenos por WhatsApp."
     }
+  },
+  "policy": {
+    "title": "Bueno saberlo",
+    "adultsOnly": "Solo adultos: no se aceptan niños en el riad.",
+    "guests": "Máximo {max} personas por habitación. La Suite Toubkal admite una tercera persona, con un {percent} % más en el precio.",
+    "deposit": "Un anticipo del {percent} % confirma tu reserva. No es reembolsable.",
+    "balance": "El resto se paga en efectivo a la llegada: {currencies}."
+  },
+  "pay": {
+    "metaTitle": "Paga tu anticipo",
+    "title": "Buenas noticias, {name}: tu habitación está disponible",
+    "intro": "Paga el anticipo del {percent} % y envíanos el comprobante. En cuanto lo revisemos, tu reserva queda confirmada por correo.",
+    "step1": "Paso 1",
+    "payTitle": "Pagar el anticipo: {amount}",
+    "payText": "Paga con PayPal. Escribe tu referencia de reserva {reference} en la nota.",
+    "payButton": "Pagar {amount} con PayPal",
+    "payContact": "Escríbenos por WhatsApp y te enviaremos los datos de pago.",
+    "step2": "Paso 2",
+    "proofTitle": "Enviar el comprobante de pago",
+    "proofText": "Basta con una captura de pantalla o el recibo de PayPal. Lo revisamos y confirmamos tu reserva por correo.",
+    "proofsSent": "{count, plural, one {# comprobante recibido} other {# comprobantes recibidos}}. Puedes enviar otro si hace falta.",
+    "choose": "Elige una captura de pantalla o un PDF",
+    "formats": "JPG, PNG, WebP, HEIC o PDF, hasta {mb} MB",
+    "send": "Enviar el comprobante",
+    "sending": "Enviando…",
+    "reviewTitle": "Estamos revisando tu pago",
+    "reviewText": "Gracias, hemos recibido tu comprobante de pago. Lo revisamos lo antes posible y confirmamos tu reserva por correo.",
+    "confirmedTitle": "Tu reserva está confirmada",
+    "confirmedText": "Hemos recibido tu anticipo. Te enviamos la ficha de reserva por correo; también puedes descargarla aquí.",
+    "cancelledTitle": "Esta reserva está cancelada",
+    "cancelledText": "Si crees que es un error, escríbenos por WhatsApp.",
+    "downloadVoucher": "Descargar la ficha de reserva (PDF)",
+    "questions": "¿Dudas? WhatsApp",
+    "whatsappMessage": "Hola, sobre mi reserva {reference} en Riad Berber Towers: ",
+    "errors": {
+      "missing": "Elige primero un archivo.",
+      "too_big": "El archivo es demasiado grande. Envía una captura más pequeña (máximo 4 MB).",
+      "type": "Este tipo de archivo no se acepta. Envía un JPG, PNG, WebP, HEIC o PDF.",
+      "too_many": "Ya has enviado varios comprobantes. Escríbenos por WhatsApp.",
+      "closed": "Esta reserva ya no puede recibir comprobantes. Escríbenos por WhatsApp.",
+      "server": "No se pudo enviar el archivo. Inténtalo de nuevo o envíalo por WhatsApp."
+    }
+  },
+  "voucher": {
+    "title": "Ficha de reserva",
+    "confirmed": "Reserva confirmada",
+    "issued": "Emitida el",
+    "stay": "Tu estancia",
+    "guest": "Cliente",
+    "room": "Habitación",
+    "guests": "Noches y personas",
+    "included": "Incluido",
+    "breakfast": "Desayuno cada mañana",
+    "name": "Nombre",
+    "email": "Correo",
+    "phone": "Teléfono",
+    "arrival": "Llegada prevista",
+    "payment": "Pago",
+    "total": "Total de la estancia",
+    "depositPaid": "Anticipo recibido ({percent} %)",
+    "balanceDue": "Resto a pagar a la llegada",
+    "rules": "Normas de la casa",
+    "address": "Imlil Centre, Asni · Al Haouz, Marruecos",
+    "thanks": "Hasta pronto en Imlil"
   }
 }

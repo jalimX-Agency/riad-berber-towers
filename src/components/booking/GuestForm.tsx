@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, Loader2, Lock, Pencil } from "lucide-reac
 import { requestBooking, type BookState } from "@/app/[locale]/book/actions";
 import { ARRIVAL_TIMES } from "@/lib/booking/arrival";
 import { cn } from "@/lib/utils";
+import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
 
 type Props = {
   room: string;
@@ -13,7 +14,7 @@ type Props = {
   checkOut: string;
   adults: number;
   /** pre-formatted on the server for the review step */
-  summary: { room: string; dates: string; stay: string; total: string };
+  summary: { room: string; dates: string; stay: string; total: string; deposit: string; balance: string };
 };
 
 type Values = Record<"firstName" | "lastName" | "email" | "phone" | "country" | "arrivalTime" | "specialRequests", string>;
@@ -242,6 +243,16 @@ export function GuestForm({ room, checkIn, checkOut, adults, summary }: Props) {
               {summary.total}
             </span>
           </div>
+          <dl className="grid gap-1.5 px-4 text-sm">
+            <div className="flex justify-between gap-3">
+              <dt>{t("deposit", { percent: DEPOSIT_PERCENT })}</dt>
+              <dd className="font-medium" dir="ltr">{summary.deposit}</dd>
+            </div>
+            <div className="flex justify-between gap-3 text-muted">
+              <dt>{t("balance")}</dt>
+              <dd dir="ltr">{summary.balance}</dd>
+            </div>
+          </dl>
           <p className="text-sm text-muted">{t("reviewNote")}</p>
         </fieldset>
       </div>

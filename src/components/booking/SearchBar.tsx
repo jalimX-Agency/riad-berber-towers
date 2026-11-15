@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { CalendarDays, Users, Search } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { MAX_GUESTS } from "@/lib/booking/policy";
 
 type Props = {
   checkIn?: string;
@@ -98,7 +99,7 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
             {t("guests")}
           </span>
           <select id={`${idPrefix}adults`} value={guests} onChange={(e) => setGuests(Number(e.target.value))} className={inputCls}>
-            {[1, 2, 3, 4, 5, 6].map((n) => (
+            {Array.from({ length: MAX_GUESTS }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
                 {t("adults", { count: n })}
               </option>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { BookingStatus } from "@prisma/client";
 import { ArrowRight, LogIn, LogOut, Moon, Hourglass } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/admin/guard";
@@ -9,7 +10,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Tableau de bord" };
 
-const live = { status: { in: ["PENDING", "CONFIRMED", "CHECKED_IN"] as ("PENDING" | "CONFIRMED" | "CHECKED_IN")[] } };
+const live = { status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN"] as BookingStatus[] } };
 const include = { guest: { select: { firstName: true, lastName: true, phone: true } }, room: { select: { name: true } } } as const;
 
 export default async function AdminDashboard() {
@@ -21,7 +22,7 @@ export default async function AdminDashboard() {
     db.booking.findMany({ where: { ...live, checkIn: today }, include, orderBy: { room: { order: "asc" } } }),
     db.booking.findMany({ where: { status: { in: ["CONFIRMED", "CHECKED_IN"] }, checkOut: today }, include, orderBy: { room: { order: "asc" } } }),
     db.booking.count({ where: { ...live, checkIn: { lte: today }, checkOut: { gt: today } } }),
-    db.booking.findMany({ where: { status: "PENDING" }, include, orderBy: { createdAt: "asc" } }),
+    db.booking.findMany({ where: { status: { in: ["PENDING", "PAYMENT_REVIEW"] } }, include, orderBy: { createdAt: "asc" } }),
     db.booking.findMany({ where: { ...live, checkIn: { gt: today, lte: in7 } }, include, orderBy: { checkIn: "asc" } }),
     db.room.count({ where: { active: true } }),
   ]);
@@ -30,7 +31,7 @@ export default async function AdminDashboard() {
     { label: "Arrivées aujourd’hui", value: arrivals.length, icon: LogIn },
     { label: "Départs aujourd’hui", value: departures.length, icon: LogOut },
     { label: "Chambres occupées ce soir", value: `${inHouse} / ${roomCount}`, icon: Moon },
-    { label: "Demandes en attente", value: pending.length, icon: Hourglass, alert: pending.length > 0 },
+    { label: "À traiter (demandes, paiements)", value: pending.length, icon: Hourglass, alert: pending.length > 0 },
   ];
 
   type Row = (typeof arrivals)[number];

@@ -2,8 +2,12 @@ import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
+import { getSettings } from "@/lib/settings";
 import { formatPrice } from "@/lib/rooms";
 import { localePath } from "@/i18n/routing";
+import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "@/lib/booking/policy";
+import { bookingPayment } from "@/lib/booking/payment";
+import { buildVoucher } from "@/lib/booking/voucher";
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
@@ -37,7 +41,6 @@ const row = (k: string, v: string) =>
 export async function sendBookingEmails(bookingId: string) {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
-  const admin = process.env.EMAIL_ADMIN || site.email;
   if (!key || !from) {
     console.info(`[email] Resend not configured, skipped emails for booking ${bookingId}`);
     return;
@@ -55,7 +58,10 @@ export async function sendBookingEmails(bookingId: string) {
     const ts = await getTranslations({ locale, namespace: "search" });
     const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
     const total = formatPrice(Number(b.total), b.currency, locale);
+    const pay = bookingPayment(b);
+    const tp = await getTranslations({ locale, namespace: "policy" });
     const resend = new Resend(key);
+    const { adminEmail: admin } = await getSettings();
 
     const guestHtml = layout(
       `<h1 style="font-family:Georgia,serif;font-weight:normal;font-size:26px;margin:16px 0 8px">${esc(t("guest.title", { name: b.guest.firstName }))}</h1>
@@ -68,9 +74,11 @@ ${row(ts("checkIn"), formatStayDate(b.checkIn, locale))}
 ${row(ts("checkOut"), formatStayDate(b.checkOut, locale))}
 ${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`)}
 ${row(tb("total"), total)}
-${row(tb("payment"), tb("payOnArrival"))}
+${row(tb("deposit", { percent: DEPOSIT_PERCENT }), formatPrice(pay.deposit, b.currency, locale))}
+${row(tb("balance"), formatPrice(pay.balance, b.currency, locale))}
 </table>
 <p style="margin-top:20px">${esc(t("guest.next"))}</p>
+<p style="font-size:13px;color:#6C7472">${esc(tp("adultsOnly"))} ${esc(tp("balance", { currencies: CASH_CURRENCIES.join(", ") }))}</p>
 <p><a href="https://wa.me/${site.whatsapp}" style="color:#955738">WhatsApp ${site.phones[0]}</a></p>
 <p style="color:#6C7472;font-size:13px">${esc(t("guest.signoff"))}</p>`,
       locale === "ar" ? "rtl" : "ltr",
@@ -79,13 +87,15 @@ ${row(tb("payment"), tb("payOnArrival"))}
     const adminUrl = `${site.url}/admin`;
     const ownerHtml = layout(
       `<h1 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:16px 0 8px">New booking request · ${b.reference}</h1>
-<p>Status: <b>PENDING</b>. Please confirm with the guest (reply to this email goes to them).</p>
+<p>Status: <b>PENDING</b>. Open the admin to accept the request (the guest then receives the link to pay the ${DEPOSIT_PERCENT}% deposit) or decline it (reply to this email goes to the guest).</p>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 ${row("Room", b.room.name)}
 ${row("Check-in", formatStayDate(b.checkIn, "en"))}
 ${row("Check-out", formatStayDate(b.checkOut, "en"))}
 ${row("Stay", `${b.nights} night(s), ${b.adults} adult(s)`)}
-${row("Total (pay on arrival)", formatPrice(Number(b.total), b.currency, "en"))}
+${row("Total", formatPrice(Number(b.total), b.currency, "en"))}
+${row(`Deposit to collect (${DEPOSIT_PERCENT}%, non-refundable)`, formatPrice(pay.deposit, b.currency, "en"))}
+${row("Balance, cash on arrival", formatPrice(pay.balance, b.currency, "en"))}
 ${row("Guest", `${b.guest.firstName} ${b.guest.lastName}`)}
 ${row("Email", b.guest.email)}
 ${row("Phone", b.guest.phone)}
@@ -125,11 +135,22 @@ ${b.specialRequests ? `<p style="margin-top:16px"><b>Special requests</b><br>${e
   }
 }
 
+export type StatusEmail = "accepted" | "declined" | "proofRejected" | "confirmed" | "cancelled";
+export type EmailResult = "sent" | "skipped" | "no_email" | "failed";
+
+/** Absolute link to the guest's payment page (deposit + proof upload). */
+export const payUrl = (locale: string, token: string) => `${site.url}${localePath(locale, `/book/pay/${token}`)}`;
+
+const button = (href: string, label: string) =>
+  `<p style="margin:24px 0"><a href="${href}" style="display:inline-block;background:#955738;color:#F7F3EA;text-decoration:none;padding:14px 26px;border-radius:999px;font-weight:bold">${esc(label)}</a></p>`;
+
 /**
- * Tell the guest the riad confirmed or cancelled their booking (in the guest's language).
+ * Emails of the booking flow, in the guest's language:
+ * accepted (pay the deposit, link to the payment page) · declined (no room free) ·
+ * proofRejected (upload the proof again) · confirmed (voucher PDF attached) · cancelled.
  * Returns what happened so the admin can show it. Never throws.
  */
-export async function sendStatusEmail(bookingId: string, kind: "confirmed" | "cancelled"): Promise<"sent" | "skipped" | "no_email" | "failed"> {
+export async function sendStatusEmail(bookingId: string, kind: StatusEmail): Promise<EmailResult> {
   const key = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
   if (!key || !from) return "skipped";
@@ -141,7 +162,15 @@ export async function sendStatusEmail(bookingId: string, kind: "confirmed" | "ca
     const t = await getTranslations({ locale, namespace: "email" });
     const tb = await getTranslations({ locale, namespace: "book" });
     const ts = await getTranslations({ locale, namespace: "search" });
+    const tp = await getTranslations({ locale, namespace: "policy" });
     const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
+    const pay = bookingPayment(b);
+    const money = (n: number) => formatPrice(n, b.currency, locale);
+    const cash = tp("balance", { currencies: CASH_CURRENCIES.join(", ") });
+
+    const showMoney = kind === "accepted" || kind === "proofRejected" || kind === "confirmed";
+    const link = b.payToken && (kind === "accepted" || kind === "proofRejected") ? button(payUrl(locale, b.payToken), t("payButton", { amount: money(pay.deposit) })) : "";
+
     const html = layout(
       `<h1 style="font-family:Georgia,serif;font-weight:normal;font-size:26px;margin:16px 0 8px">${esc(t(`${kind}.title`, { name: b.guest.firstName }))}</h1>
 <p>${esc(t(`${kind}.intro`))}</p>
@@ -151,19 +180,24 @@ ${row(tb("room"), roomName)}
 ${row(ts("checkIn"), formatStayDate(b.checkIn, locale))}
 ${row(ts("checkOut"), formatStayDate(b.checkOut, locale))}
 ${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`)}
-${kind === "confirmed" ? row(tb("total"), formatPrice(Number(b.total), b.currency, locale)) + row(tb("payment"), tb("payOnArrival")) : ""}
+${showMoney ? row(tb("total"), money(pay.total)) + row(tb("deposit", { percent: DEPOSIT_PERCENT }), money(pay.deposit)) + row(tb("balance"), money(pay.balance)) : ""}
 </table>
+${link}
 <p style="margin-top:20px">${esc(t(`${kind}.next`))}</p>
+${showMoney ? `<p style="font-size:13px;color:#6C7472">${esc(cash)}</p>` : ""}
 <p><a href="https://wa.me/${site.whatsapp}" style="color:#955738">WhatsApp ${site.phones[0]}</a></p>
 <p style="color:#6C7472;font-size:13px">${esc(t("guest.signoff"))}</p>`,
       locale === "ar" ? "rtl" : "ltr",
     );
+
+    const voucher = kind === "confirmed" ? await buildVoucher(b.id) : null;
     const res = await new Resend(key).emails.send({
       from,
       to: b.guest.email,
       replyTo: site.email,
       subject: t(`${kind}.subject`, { reference: b.reference }),
       html,
+      ...(voucher ? { attachments: [{ filename: voucher.filename, content: Buffer.from(voucher.bytes) }] } : {}),
     });
     if (res.error) {
       console.error(`[email] ${kind} email failed for ${b.reference}`, res.error);
@@ -174,6 +208,35 @@ ${kind === "confirmed" ? row(tb("total"), formatPrice(Number(b.total), b.currenc
   } catch (e) {
     console.error(`[email] ${kind} email failed`, e);
     return "failed";
+  }
+}
+
+/** Tell the riad a guest uploaded a payment proof. Never throws. */
+export async function sendProofToOwner(bookingId: string) {
+  const key = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+  if (!key || !from) return;
+  try {
+    const b = await db.booking.findUnique({ where: { id: bookingId }, include: { guest: true, room: true } });
+    if (!b) return;
+    const pay = bookingPayment(b);
+    const { adminEmail: admin } = await getSettings();
+    const html = layout(
+      `<h1 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:16px 0 8px">Preuve de paiement reçue · ${b.reference}</h1>
+<p>${esc(`${b.guest.firstName} ${b.guest.lastName}`)} a envoyé une preuve de paiement de l’acompte. Vérifiez-la, puis validez ou refusez le paiement dans l’admin.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+${row("Chambre", b.room.name)}
+${row("Arrivée", formatStayDate(b.checkIn, "fr"))}
+${row("Départ", formatStayDate(b.checkOut, "fr"))}
+${row(`Acompte attendu (${DEPOSIT_PERCENT} %)`, formatPrice(pay.deposit, b.currency, "fr"))}
+</table>
+${button(`${site.url}/admin/bookings/${b.id}`, "Vérifier la preuve")}`,
+      "ltr",
+    );
+    const res = await new Resend(key).emails.send({ from, to: admin, replyTo: b.guest.email, subject: `Preuve de paiement ${b.reference} · ${b.room.name}`, html });
+    if (res.error) console.error(`[email] proof notice failed for ${b.reference}`, res.error);
+  } catch (e) {
+    console.error("[email] proof notice failed", e);
   }
 }
 

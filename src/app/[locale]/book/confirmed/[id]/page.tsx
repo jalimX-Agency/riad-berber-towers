@@ -8,6 +8,8 @@ import { site } from "@/lib/site";
 import { formatPrice } from "@/lib/rooms";
 import { formatStayDate } from "@/lib/email/booking";
 import { WhatsAppIcon } from "@/components/site/icons";
+import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
+import { bookingPayment } from "@/lib/booking/payment";
 
 type Props = { params: Promise<{ locale: string; id: string }> };
 
@@ -29,6 +31,7 @@ export default async function ConfirmedPage({ params }: Props) {
     include: { guest: { select: { firstName: true, email: true } }, room: { include: { translations: true } } },
   });
   if (!b) notFound();
+  const pay = bookingPayment(b);
   const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
   const whatsapp = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(t("confirmed.whatsappMessage", { reference: b.reference }))}`;
 
@@ -54,7 +57,8 @@ export default async function ConfirmedPage({ params }: Props) {
             [ts("checkOut"), formatStayDate(b.checkOut, locale)],
             [t("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
             [t("total"), formatPrice(Number(b.total), b.currency, locale)],
-            [t("payment"), t("payOnArrival")],
+            [t("deposit", { percent: DEPOSIT_PERCENT }), formatPrice(pay.deposit, b.currency, locale)],
+            [t("balance"), formatPrice(pay.balance, b.currency, locale)],
             [t("status"), t("pending")],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between gap-4 border-b border-rule py-2.5">

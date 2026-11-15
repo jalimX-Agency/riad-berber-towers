@@ -1,0 +1,469 @@
+{
+  "meta": {
+    "title": "Riad Berber Towers · Handgebautes Gästehaus in Imlil, Hoher Atlas",
+    "description": "Sieben handgebaute Zimmer im Herzen von Imlil, nur wenige Schritte vom Toubkal-Weg. Tadelakt, Zellige aus Fès und geschnitztes Holz. Frühstück inklusive."
+  },
+  "nav": {
+    "home": "Startseite",
+    "rooms": "Zimmer",
+    "activities": "Aktivitäten",
+    "imlil": "Imlil-Guide",
+    "gallery": "Galerie",
+    "story": "Unsere Geschichte",
+    "contact": "Kontakt",
+    "book": "Zimmer buchen",
+    "menu": "Menü",
+    "close": "Schließen",
+    "language": "Sprache",
+    "skip": "Zum Inhalt springen",
+    "primary": "Hauptmenü"
+  },
+  "brand": {
+    "tagline": "breathe the atlas",
+    "descriptor": "Von Hand gebaut im Herzen von Imlil."
+  },
+  "home": {
+    "eyebrow": "Imlil · Hoher Atlas · 1.740 m",
+    "title": "Sieben Zimmer. Ein Tal. Handgemacht.",
+    "cta": "Verfügbarkeit prüfen",
+    "comingSoon": "Unsere neue Website entsteht gerade.",
+    "hero": {
+      "line1": "Sieben Zimmer.",
+      "line2": "Ein Tal.",
+      "line3": "Handgemacht.",
+      "lead": "Ein familiengeführtes Gästehaus aus geschnitztem Holz, Tadelakt und Zellige aus Fès, mitten in Imlil am Fuß des Toubkal. Frühstück auf der Dachterrasse inklusive.",
+      "alt": "Riad Berber Towers, ein ockerfarbenes Turmhaus zwischen den Walnussbäumen von Imlil",
+      "caption": "Imlil · Al Haouz",
+      "searchLabel": "Verfügbarkeit prüfen",
+      "fromPrice": "Zimmer ab {price} pro Nacht, inklusive Frühstück"
+    },
+    "intro": {
+      "label": "Das Haus",
+      "text": "Riad Berber Towers erhebt sich drei Stockwerke über dem Dorf, gebaut mit dem Handwerk des Hohen Atlas: Wände aus Tadelakt, Böden aus Zellige, von Hand geschnitzte Holzdecken. Der Weg zum Toubkal beginnt direkt vor unserer Tür.",
+      "facts": {
+        "altitude": {
+          "value": "1.740 m",
+          "label": "Höhe von Imlil"
+        },
+        "marrakech": {
+          "value": "64 km",
+          "label": "Von Marrakesch"
+        },
+        "toubkal": {
+          "value": "4.167 m",
+          "label": "Toubkal, der höchste Gipfel Nordafrikas"
+        },
+        "rooms": {
+          "value": "7",
+          "label": "Zimmer und Suiten"
+        }
+      }
+    },
+    "climb": {
+      "label": "Steigen Sie durchs Haus",
+      "title": "Drei Stockwerke und ein Dach",
+      "text": "Vom Brunnen bis zur Terrasse hat jedes Stockwerk seine eigenen Zimmer und seine eigene Aussicht.",
+      "all": "Alle Zimmer und Preise ansehen",
+      "stages": {
+        "ground": {
+          "label": "Erdgeschoss",
+          "title": "Das Brunnengeschoss",
+          "text": "Die Rezeption, der Salon rund um den Zellige-Brunnen und zwei Zimmer mit Blick auf den Garten und das Dorf."
+        },
+        "first": {
+          "label": "Erster Stock",
+          "title": "Die Holzgalerie",
+          "text": "Vier Suiten rund um den offenen Innenhof, unter geschnitzten Holzbalken. Drei davon blicken auf die Berge."
+        },
+        "second": {
+          "label": "Zweiter Stock",
+          "title": "Unter der Lichtkuppel",
+          "text": "Eine einzelne Suite, ganz nah an der bunten Glaskuppel, mit einem Balkon zu den Bergen."
+        },
+        "roof": {
+          "label": "Dachterrasse",
+          "title": "Die Terrasse",
+          "text": "Frühstück in der Morgensonne, die Grate des Toubkal vor Augen. Abends die Lichter des Dorfes und die Sterne."
+        }
+      }
+    },
+    "tea": {
+      "label": "Der Empfang",
+      "title": "Es beginnt mit Minztee",
+      "text1": "Jede Ankunft beginnt im Salon am Brunnen, mit Minztee, der aus der Höhe eingeschenkt wird, so wie in jedem Berberhaus im Tal.",
+      "text2": "Danach gehört das Haus Ihnen: warme Böden nach einem Tag auf dem Wanderweg, ein ruhiges Zimmer und am nächsten Morgen Frühstück auf dem Dach.",
+      "alt1": "Minztee wird im Salon von Riad Berber Towers eingeschenkt",
+      "alt2": "Eine silberne Teekanne und Gläser mit frischer Minze auf einem Tablett",
+      "included": {
+        "breakfast": "Frühstück inklusive",
+        "heating": "Fußbodenheizung in jedem Zimmer",
+        "wifi": "WLAN im ganzen Haus"
+      }
+    },
+    "strip": {
+      "label": "Im Haus",
+      "title": "Holz, Zellige und Licht",
+      "text": "Alles im Haus wurde von Handwerkern aus der Region gefertigt, von den geschnitzten Türen bis zum farbigen Glas.",
+      "items": {
+        "salon": {
+          "title": "Der Salon",
+          "text": "Niedrige Bänke, Berberkissen und Holztische."
+        },
+        "gallery": {
+          "title": "Die Galerie",
+          "text": "Geländer aus Schmiedeeisen und Holztüren rund um den Innenhof."
+        },
+        "skylight": {
+          "title": "Die Lichtkuppel",
+          "text": "Farbiges Glas, das Licht durch drei Stockwerke nach unten schickt."
+        },
+        "stairs": {
+          "title": "Die Treppe",
+          "text": "Gedrechseltes Holz und Berberteppich, vom Eingang bis nach oben."
+        },
+        "fountain": {
+          "title": "Von oben",
+          "text": "Der Zellige-Brunnen, von der Spitze des Innenhofs aus gesehen."
+        }
+      }
+    },
+    "imlil": {
+      "label": "Imlil",
+      "title": "Ein Dorf am Fuß des Toubkal",
+      "text": "Walnussbäume, Terrassenfelder und Maultierpfade. Von hier wandern Sie zu den Wasserfällen, in die Dörfer Aroumd und Tamatert oder in zwei Tagen auf den Gipfel des Toubkal.",
+      "alt": "Das Dorf Imlil mit Riad Berber Towers vor den Graten des Hohen Atlas",
+      "caption": "Imlil und das Toubkal-Massiv",
+      "activities": "Aktivitäten",
+      "guide": "Imlil-Guide"
+    },
+    "arrive": {
+      "label": "Anreise",
+      "title": "64 km von Marrakesch",
+      "steps": {
+        "marrakech": {
+          "meta": "0 km",
+          "name": "Marrakesch",
+          "text": "Verlassen Sie die Stadt in Richtung Süden auf der Straße nach Asni."
+        },
+        "asni": {
+          "meta": "47 km",
+          "name": "Asni",
+          "text": "Der Ort mit dem Wochenmarkt. Ab hier steigt die Straße ins Tal hinauf."
+        },
+        "imlil": {
+          "meta": "64 km · etwa 1 Std. 30",
+          "name": "Imlil",
+          "text": "Wir sind im Dorfzentrum. Schreiben Sie uns, und wir führen Sie bis zur Tür."
+        }
+      },
+      "whatsapp": "Fragen Sie uns nach dem Weg",
+      "whatsappMessage": "Hallo, ich hätte gern eine Wegbeschreibung zu Riad Berber Towers in Imlil."
+    },
+    "book": {
+      "label": "Direkt buchen",
+      "title": "Wählen Sie Ihre Daten",
+      "text": "Sehen Sie, welche Zimmer frei sind und was Ihr Aufenthalt kostet. Eine Anzahlung von 40 % bestätigt Ihre Buchung; der Rest wird im Riad in bar bezahlt."
+    }
+  },
+  "footer": {
+    "address": "Imlil Zentrum, Asni · Al Haouz, Marokko",
+    "rights": "Alle Rechte vorbehalten.",
+    "explore": "Entdecken",
+    "contact": "Kontakt",
+    "gettingHere": "Anreise",
+    "fromMarrakech": "64 km von Marrakesch, etwa 90 Minuten mit dem Auto",
+    "altitude": "Höhe 1.740 m",
+    "trail": "Der Toubkal-Weg beginnt vor der Tür",
+    "gallery": "Galerie",
+    "blog": "Journal",
+    "privacy": "Datenschutz",
+    "terms": "Buchungsbedingungen"
+  },
+  "whatsapp": {
+    "label": "Auf WhatsApp schreiben",
+    "message": "Hallo, ich möchte ein Zimmer im Riad Berber Towers buchen."
+  },
+  "wip": {
+    "badge": "Im Aufbau",
+    "title": "Diese Seite entsteht gerade",
+    "body": "Wir gestalten diese Seite von Hand, wie das Haus selbst. In der Zwischenzeit beantwortet unser Team jede Frage auf WhatsApp und per E-Mail.",
+    "whatsapp": "Fragen Sie uns auf WhatsApp",
+    "home": "Zurück zur Startseite"
+  },
+  "rooms": {
+    "eyebrow": "Sieben Zimmer · Frühstück inklusive",
+    "title": "Zimmer & Suiten",
+    "intro": "Sieben Zimmer auf drei Stockwerken, alle von Hand gebaut mit Tadelakt, Zellige und geschnitztem Holz. Jede Nacht beinhaltet Frühstück auf der Dachterrasse, Fußbodenheizung und WLAN.",
+    "all": "Alle",
+    "floor": {
+      "0": "Erdgeschoss",
+      "1": "Erster Stock",
+      "2": "Zweiter Stock"
+    },
+    "floorShort": {
+      "0": "EG",
+      "1": "1. OG",
+      "2": "2. OG"
+    },
+    "category": {
+      "standard": "Zimmer",
+      "suite": "Suite"
+    },
+    "view": {
+      "mountain": "Bergblick",
+      "village": "Dorfblick",
+      "garden": "Gartenblick"
+    },
+    "perNight": "pro Nacht",
+    "from": "ab",
+    "breakfast": "Frühstück inklusive",
+    "guests": "{count} Gäste",
+    "details": "Zimmer ansehen",
+    "book": "Dieses Zimmer anfragen",
+    "bookWhatsapp": "Auf WhatsApp buchen",
+    "bookEmail": "Oder schreiben Sie uns",
+    "onlineSoon": "Die Online-Buchung startet bald. Bis dahin bestätigen wir jede Anfrage innerhalb weniger Stunden.",
+    "whatsappMessage": "Hallo, ich möchte das Zimmer {room} im Riad Berber Towers buchen. Meine Daten: ",
+    "facts": "Auf einen Blick",
+    "amenitiesTitle": "Im Zimmer",
+    "others": "Weitere Zimmer",
+    "photos": "{count} Fotos",
+    "filter": "Zimmer filtern",
+    "showing": "{count} Zimmer",
+    "amenities": {
+      "heated_floor": "Fußbodenheizung",
+      "tadelakt_walls": "Wände aus Tadelakt",
+      "zellij_shower": "Dusche aus Zellige aus Fès",
+      "private_bathroom": "Eigenes Bad mit warmer Dusche",
+      "wifi": "WLAN",
+      "private_terrace": "Private Terrasse",
+      "balcony": "Privater Balkon",
+      "coffee_maker": "Kaffeemaschine und Wasserkocher"
+    },
+    "photoOf": "Foto {current} von {total}",
+    "prevPhoto": "Vorheriges Foto",
+    "nextPhoto": "Nächstes Foto"
+  },
+  "search": {
+    "checkIn": "Anreise",
+    "checkOut": "Abreise",
+    "guests": "Gäste",
+    "adults": "{count, plural, one {# Erwachsener} other {# Erwachsene}}",
+    "search": "Suchen",
+    "update": "Aktualisieren",
+    "nights": "{count, plural, one {# Nacht} other {# Nächte}}",
+    "chooseDates": "Wählen Sie Ihre Daten, um den Preis Ihres Aufenthalts und die freien Zimmer zu sehen.",
+    "errors": {
+      "missing": "Wählen Sie ein Anreise- und ein Abreisedatum.",
+      "invalid": "Diese Daten sind ungültig.",
+      "past": "Die Anreise kann nicht in der Vergangenheit liegen.",
+      "order": "Die Abreise muss nach der Anreise liegen.",
+      "too_long": "Für Aufenthalte über 30 Nächte schreiben Sie uns bitte auf WhatsApp."
+    }
+  },
+  "results": {
+    "available": "{available} von {total} Zimmern verfügbar",
+    "allRooms": "{total} Zimmer",
+    "filters": "Filter",
+    "showFilters": "Filter anzeigen",
+    "clear": "Filter zurücksetzen",
+    "floor": "Stockwerk",
+    "view": "Aussicht",
+    "inRoom": "Im Zimmer",
+    "sort": "Sortieren nach",
+    "sortOptions": {
+      "recommended": "Unsere Reihenfolge",
+      "priceAsc": "Preis aufsteigend",
+      "priceDesc": "Preis absteigend"
+    },
+    "onlyAvailable": "Nur verfügbare Zimmer",
+    "noResults": "Kein Zimmer entspricht diesen Filtern.",
+    "stayFor": "{nights}, {adults}",
+    "perNightAvg": "{price} pro Nacht",
+    "fromPerNight": "Ab {price} pro Nacht",
+    "reserve": "Reservieren",
+    "seeRoom": "Zimmer ansehen",
+    "changeDates": "Daten ändern",
+    "reason": {
+      "booked": "Für diese Daten ausgebucht",
+      "blocked": "Für diese Daten nicht verfügbar",
+      "capacity": "Für maximal {max} Gäste",
+      "min_nights": "Mindestaufenthalt {count} Nächte zu diesen Daten"
+    },
+    "reserveMessage": "Hallo, ich möchte das Zimmer {room} vom {checkIn} bis {checkOut} reservieren ({nights}, {adults}). Angezeigter Gesamtpreis: {total}.",
+    "extraGuest": "Inklusive +{percent} % für den dritten Gast"
+  },
+  "book": {
+    "title": "Buchung abschließen",
+    "intro": "Sagen Sie uns, wer kommt. Auf dieser Website wird nichts bezahlt: Nach Eingang Ihrer Anfrage senden wir Ihnen die Angaben für die Anzahlung von 40 %, die Ihren Aufenthalt bestätigt.",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "emailHint": "Ihre Bestätigung wird an diese Adresse geschickt.",
+    "phone": "Telefon (wenn möglich WhatsApp)",
+    "phoneHint": "Mit Ländervorwahl, damit wir Sie am Anreisetag erreichen.",
+    "country": "Land",
+    "arrivalTime": "Voraussichtliche Ankunft",
+    "arrival": {
+      "unknown": "Weiß ich noch nicht",
+      "12-14": "12:00 – 14:00",
+      "14-16": "14:00 – 16:00",
+      "16-18": "16:00 – 18:00",
+      "18-20": "18:00 – 20:00",
+      "20-22": "20:00 – 22:00",
+      "22+": "Nach 22:00"
+    },
+    "requests": "Besondere Wünsche",
+    "requestsHint": "Transfer ab Marrakesch, Ernährungswünsche, ein besonderer Anlass … Wir lesen jede Nachricht.",
+    "submit": "Buchung anfragen",
+    "sending": "Wird gesendet …",
+    "noPayment": "Jetzt keine Zahlung. Diese Website belastet Sie nicht.",
+    "priceDetails": "Preis pro Nacht",
+    "show": "Anzeigen",
+    "total": "Gesamt",
+    "deposit": "Anzahlung zur Bestätigung ({percent} %, nicht erstattbar)",
+    "balance": "Restbetrag, bar bei Ankunft",
+    "reference": "Buchungsnummer",
+    "room": "Zimmer",
+    "stay": "Aufenthalt",
+    "payment": "Zahlung",
+    "status": "Status",
+    "pending": "Anfrage erhalten, Bestätigung ausstehend",
+    "checking": "Verfügbarkeit wird geprüft …",
+    "seeOtherRooms": "Andere Zimmer ansehen",
+    "errors": {
+      "invalid": "Bitte prüfen Sie die markierten Felder.",
+      "unavailable": "Leider wurde dieses Zimmer gerade für diese Daten gebucht. Bitte wählen Sie andere Daten oder ein anderes Zimmer.",
+      "too_many": "Mit dieser E-Mail gibt es bereits offene Anfragen. Wir antworten bald; schreiben Sie uns auf WhatsApp, wenn es dringend ist.",
+      "server": "Bei uns ist etwas schiefgelaufen. Bitte versuchen Sie es erneut oder buchen Sie über WhatsApp.",
+      "dates": "Diese Daten sind nicht mehr gültig. Bitte wählen Sie sie erneut.",
+      "noRoom": "Dieses Zimmer wurde nicht gefunden."
+    },
+    "confirmed": {
+      "title": "Anfrage erhalten",
+      "body": "Vielen Dank, {name}. Wir haben die Details an {email} geschickt.",
+      "next": "Das Riad prüft die Verfügbarkeit. Ist Ihr Zimmer frei, erhalten Sie eine E-Mail mit einem Link, um die Anzahlung von 40 % per PayPal zu leisten.",
+      "whatsapp": "Auf WhatsApp schreiben",
+      "whatsappMessage": "Hallo, zu meiner Buchung {reference} im Riad Berber Towers: ",
+      "home": "Zurück zur Startseite"
+    },
+    "steps": "Buchungsschritte",
+    "stepOf": "Schritt {current} von {total}",
+    "step": {
+      "details": "Ihre Angaben",
+      "arrival": "Ihre Ankunft",
+      "review": "Prüfen und bestätigen"
+    },
+    "continue": "Weiter",
+    "back": "Zurück",
+    "edit": "Ändern",
+    "dates": "Daten",
+    "guest": "Gast",
+    "arrivalHint": "So haben wir Ihr Zimmer und einen Minztee bereit.",
+    "reviewNote": "Bitte prüfen Sie Ihre Angaben. Wenn Sie bestätigen, senden wir Ihre Anfrage an das Riad und eine Zusammenfassung an Ihre E-Mail."
+  },
+  "email": {
+    "guest": {
+      "subject": "Ihre Buchungsanfrage {reference} · Riad Berber Towers",
+      "title": "Vielen Dank, {name}",
+      "intro": "Wir haben Ihre Buchungsanfrage erhalten. Hier sind die Details:",
+      "next": "Wir prüfen die Verfügbarkeit und antworten per E-Mail. Ist Ihr Zimmer frei, erhalten Sie einen Link für die Anzahlung von 40 % (nicht erstattbar), die Ihre Buchung bestätigt. Fragen? Antworten Sie auf diese E-Mail oder schreiben Sie uns auf WhatsApp.",
+      "signoff": "Bis bald in Imlil. Ihr Team von Riad Berber Towers"
+    },
+    "confirmed": {
+      "subject": "Buchung bestätigt {reference} · Riad Berber Towers",
+      "title": "Ihr Aufenthalt ist bestätigt, {name}",
+      "intro": "Gute Nachrichten: Das Riad hat Ihre Buchung bestätigt.",
+      "next": "Wir haben Ihre Anzahlung erhalten. Ihre Buchungsbestätigung finden Sie im Anhang. Der Restbetrag wird bei der Ankunft in bar bezahlt. Teilen Sie uns Ihre Ankunftszeit auf WhatsApp mit, dann sind wir für Sie bereit."
+    },
+    "cancelled": {
+      "subject": "Buchung storniert {reference} · Riad Berber Towers",
+      "title": "Ihre Buchung ist storniert, {name}",
+      "intro": "Diese Buchung wurde storniert:",
+      "next": "Falls es sich um einen Irrtum handelt oder Sie andere Daten möchten, antworten Sie auf diese E-Mail oder schreiben Sie uns auf WhatsApp."
+    },
+    "payButton": "Anzahlung leisten ({amount})",
+    "accepted": {
+      "subject": "Ihr Zimmer ist verfügbar · Anzahlung {reference}",
+      "title": "Gute Nachrichten, {name}: Ihr Zimmer ist verfügbar",
+      "intro": "Wir haben Ihre Buchungsanfrage angenommen. Zur Bestätigung leisten Sie bitte die Anzahlung von 40 % und senden Sie uns den Nachweis auf Ihrer Zahlungsseite.",
+      "next": "Ihre Buchung ist bestätigt, sobald wir die Zahlung geprüft haben. Die Anzahlung wird nicht erstattet."
+    },
+    "declined": {
+      "subject": "Ihre Buchungsanfrage {reference} · Riad Berber Towers",
+      "title": "Es tut uns leid, {name}",
+      "intro": "Leider haben wir für diese Daten derzeit kein Zimmer mehr frei und können Ihre Anfrage daher nicht annehmen:",
+      "next": "Wir würden Sie gern an anderen Daten begrüßen. Antworten Sie auf diese E-Mail oder schreiben Sie uns auf WhatsApp."
+    },
+    "proofRejected": {
+      "subject": "Zahlungsnachweis nicht akzeptiert {reference} · Riad Berber Towers",
+      "title": "Wir konnten Ihre Zahlung nicht prüfen, {name}",
+      "intro": "Der gesendete Nachweis passt zu keiner Zahlung der Anzahlung. Bitte prüfen Sie die Zahlung und senden Sie den Nachweis erneut über Ihre Zahlungsseite.",
+      "next": "Bei Fragen antworten Sie auf diese E-Mail oder schreiben Sie uns auf WhatsApp."
+    }
+  },
+  "policy": {
+    "title": "Gut zu wissen",
+    "adultsOnly": "Nur für Erwachsene: Kinder werden im Riad nicht aufgenommen.",
+    "guests": "Höchstens {max} Gäste pro Zimmer. Die Suite Toubkal nimmt einen dritten Gast auf, mit einem Aufpreis von {percent} %.",
+    "deposit": "Eine Anzahlung von {percent} % bestätigt Ihre Buchung. Sie wird nicht erstattet.",
+    "balance": "Der Rest wird bei der Ankunft in bar bezahlt: {currencies}."
+  },
+  "pay": {
+    "metaTitle": "Anzahlung leisten",
+    "title": "Gute Nachrichten, {name}: Ihr Zimmer ist verfügbar",
+    "intro": "Leisten Sie die Anzahlung von {percent} % und senden Sie uns den Nachweis. Sobald wir ihn geprüft haben, wird Ihre Buchung per E-Mail bestätigt.",
+    "step1": "Schritt 1",
+    "payTitle": "Anzahlung leisten: {amount}",
+    "payText": "Bezahlen Sie mit PayPal. Bitte geben Sie Ihre Buchungsnummer {reference} im Verwendungszweck an.",
+    "payButton": "{amount} mit PayPal bezahlen",
+    "payContact": "Schreiben Sie uns auf WhatsApp, dann senden wir Ihnen die Zahlungsangaben.",
+    "step2": "Schritt 2",
+    "proofTitle": "Zahlungsnachweis senden",
+    "proofText": "Ein Screenshot oder der PayPal-Beleg genügt. Wir prüfen ihn und bestätigen Ihre Buchung per E-Mail.",
+    "proofsSent": "{count, plural, one {# Nachweis erhalten} other {# Nachweise erhalten}}. Bei Bedarf können Sie einen weiteren senden.",
+    "choose": "Screenshot oder PDF auswählen",
+    "formats": "JPG, PNG, WebP, HEIC oder PDF, bis {mb} MB",
+    "send": "Nachweis senden",
+    "sending": "Wird gesendet …",
+    "reviewTitle": "Wir prüfen Ihre Zahlung",
+    "reviewText": "Vielen Dank, wir haben Ihren Zahlungsnachweis erhalten. Wir prüfen ihn so schnell wie möglich und bestätigen Ihre Buchung per E-Mail.",
+    "confirmedTitle": "Ihre Buchung ist bestätigt",
+    "confirmedText": "Wir haben Ihre Anzahlung erhalten. Ihre Buchungsbestätigung wurde Ihnen per E-Mail geschickt; Sie können sie auch hier herunterladen.",
+    "cancelledTitle": "Diese Buchung ist storniert",
+    "cancelledText": "Falls Sie einen Irrtum vermuten, schreiben Sie uns auf WhatsApp.",
+    "downloadVoucher": "Buchungsbestätigung herunterladen (PDF)",
+    "questions": "Fragen? WhatsApp",
+    "whatsappMessage": "Hallo, zu meiner Buchung {reference} im Riad Berber Towers: ",
+    "errors": {
+      "missing": "Wählen Sie zuerst eine Datei.",
+      "too_big": "Die Datei ist zu groß. Senden Sie einen kleineren Screenshot (höchstens 4 MB).",
+      "type": "Dieser Dateityp wird nicht akzeptiert. Senden Sie ein JPG, PNG, WebP, HEIC oder PDF.",
+      "too_many": "Sie haben bereits mehrere Nachweise gesendet. Schreiben Sie uns auf WhatsApp.",
+      "closed": "Für diese Buchung kann kein Nachweis mehr gesendet werden. Schreiben Sie uns auf WhatsApp.",
+      "server": "Die Datei konnte nicht gesendet werden. Versuchen Sie es erneut oder senden Sie sie per WhatsApp."
+    }
+  },
+  "voucher": {
+    "title": "Buchungsbestätigung",
+    "confirmed": "Buchung bestätigt",
+    "issued": "Ausgestellt am",
+    "stay": "Ihr Aufenthalt",
+    "guest": "Gast",
+    "room": "Zimmer",
+    "guests": "Nächte und Gäste",
+    "included": "Inklusive",
+    "breakfast": "Frühstück jeden Morgen",
+    "name": "Name",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "arrival": "Voraussichtliche Ankunft",
+    "payment": "Zahlung",
+    "total": "Gesamtpreis des Aufenthalts",
+    "depositPaid": "Anzahlung erhalten ({percent} %)",
+    "balanceDue": "Restbetrag bei Ankunft",
+    "rules": "Hausregeln",
+    "address": "Imlil Zentrum, Asni · Al Haouz, Marokko",
+    "thanks": "Bis bald in Imlil"
+  }
+}

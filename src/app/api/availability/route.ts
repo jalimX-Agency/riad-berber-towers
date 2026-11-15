@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       adults: query.adults,
       rooms: rooms.map((r) => {
         const a = availability.get(r.id)!;
-        return { slug: r.slug, currency: r.currency, available: a.available, reason: a.reason, minNights: a.minNights, total: a.total, perNight: a.perNight, nightly: a.nightly };
+        return { slug: r.slug, currency: r.currency, available: a.available, reason: a.reason, minNights: a.minNights, total: a.total, perNight: a.perNight, nightly: a.nightly, extraGuest: a.extraGuest };
       }),
     },
     { headers: { "Cache-Control": "no-store" } },

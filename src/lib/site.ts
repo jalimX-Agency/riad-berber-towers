@@ -4,6 +4,11 @@ export const site = {
   email: "riadberbertowers@gmail.com",
   phones: ["+212 661 283 086", "+212 670 414 623", "+212 524 484 691"],
   whatsapp: "212661283086",
+  /** PayPal.me name for the deposit (env PAYPAL_ME, e.g. "riadberbertowers"). Empty: the payment page asks the guest to contact us. */
+  paypalMe: (process.env.PAYPAL_ME ?? "")
+    .trim()
+    .replace(/^https?:\/\/(www\.)?paypal\.me\//i, "")
+    .replace(/\/.*$/, ""),
   address: {
     street: "Imlil Centre",
     locality: "Imlil, Asni",

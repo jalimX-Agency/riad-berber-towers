@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { eachNight, nightsBetween, parseDay, todayInImlil, toISO } from "./dates";
+import { MAX_GUESTS, STANDARD_OCCUPANCY, withExtraGuest } from "./policy";
 
 export const MAX_NIGHTS = 30;
-export const MAX_ADULTS = 6;
 
 export type StayQuery = { checkIn: Date; checkOut: Date; adults: number; children: number; nights: number };
 
@@ -24,8 +24,9 @@ export function parseStayQuery(raw: {
   const nights = nightsBetween(checkIn, checkOut);
   if (nights < 1) return { query: null, error: "order" };
   if (nights > MAX_NIGHTS) return { query: null, error: "too_long" };
-  const adults = Math.min(MAX_ADULTS, Math.max(1, Number.parseInt(raw.adults ?? "2", 10) || 2));
-  const children = Math.min(6, Math.max(0, Number.parseInt(raw.children ?? "0", 10) || 0));
+  const adults = Math.min(MAX_GUESTS, Math.max(1, Number.parseInt(raw.adults ?? "2", 10) || 2));
+  // adults only (owner policy): children are never part of a stay
+  const children = 0;
   return { query: { checkIn, checkOut, adults, children, nights }, error: null };
 }
 
@@ -39,6 +40,8 @@ export type RoomAvailability = {
   total: number;
   /** average nightly price for the stay */
   perNight: number;
+  /** the nightly prices include the third-guest surcharge */
+  extraGuest: boolean;
 };
 
 /**
@@ -90,14 +93,13 @@ export async function getAvailability(
       let price = base;
       if (rate?.price != null) price = Number(rate.price);
       else if (rate?.percent != null) price = Math.round(base * (1 + rate.percent / 100));
-      return { date: toISO(night), price };
+      return { date: toISO(night), price: withExtraGuest(price, q.adults) };
     });
     const total = nightly.reduce((s, n) => s + n.price, 0);
 
     let reason: RoomAvailability["reason"] = null;
     if (booked.has(room.id)) reason = "booked";
     else if (blocked.has(room.id)) reason = "blocked";
-    // children don't block a room until the owner's child policy is known
     else if (q.adults > room.maxAdults) reason = "capacity";
     else if (q.nights < minNights) reason = "min_nights";
 
@@ -109,6 +111,7 @@ export async function getAvailability(
       nightly,
       total,
       perNight: Math.round(total / Math.max(1, q.nights)),
+      extraGuest: q.adults > STANDARD_OCCUPANCY,
     });
   }
   return result;

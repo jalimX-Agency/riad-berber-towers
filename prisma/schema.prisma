@@ -16,6 +16,7 @@ enum Locale {
   en
   fr
   es
+  de
   ar
 }
 
@@ -161,6 +162,10 @@ model Booking {
   specialRequests String         @default("")
   internalNotes   String         @default("")
   locale          Locale         @default(en)
+  /// secret for the guest payment page (/book/pay/<token>), set when the riad accepts the request
+  payToken        String?
+  acceptedAt      DateTime?
+  proofs          PaymentProof[]
   extras          BookingExtra[]
   cancelledAt     DateTime?
   createdAt       DateTime       @default(now())
@@ -168,10 +173,13 @@ model Booking {
 
   @@index([roomId, checkIn, checkOut])
   @@index([status])
+  @@index([payToken])
 }
 
 enum BookingStatus {
-  PENDING
+  PENDING // request received, the riad checks it
+  AWAITING_PAYMENT // accepted by the riad: the guest pays the deposit and uploads a proof
+  PAYMENT_REVIEW // proof uploaded, the riad checks it
   CONFIRMED
   CHECKED_IN
   CHECKED_OUT
@@ -353,4 +361,19 @@ model Setting {
   key       String   @id
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+/// Proof of the deposit payment uploaded by the guest (screenshot or PDF).
+/// Kept in the database, not on the public CDN: it holds personal data.
+model PaymentProof {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  filename  String
+  mimeType  String
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
 }

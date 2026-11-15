@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { BookingStatus } from "@prisma/client";
-import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowLeft, FileDown, FileText, Mail, MessageCircle, Phone } from "lucide-react";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/admin/guard";
 import { actionLabel, eur, frDate, nextStatuses, paymentLabel, sourceLabel, statusLabel } from "@/lib/admin/labels";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { SubmitButton } from "@/components/admin/SubmitButton";
-import { changeStatus, restore, saveNotes, savePayment } from "../actions";
+import { acceptBooking, approvePayment, changeStatus, declineBooking, rejectProof, resendPaymentLink, restore, saveNotes, savePayment } from "../actions";
+import { CopyField } from "@/components/admin/CopyField";
+import { payUrl } from "@/lib/email/booking";
+import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "@/lib/booking/policy";
+import { bookingPayment } from "@/lib/booking/payment";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +19,10 @@ type Props = { params: Promise<{ id: string }>; searchParams: Promise<Record<str
 
 const doneText: Record<string, string> = {
   created: "Réservation créée.",
+  accepted: "Demande acceptée. Le client doit maintenant payer l’acompte et envoyer la preuve.",
+  declined: "Demande refusée. Les nuits sont de nouveau disponibles.",
+  proofRejected: "Preuve refusée. Le client peut en envoyer une nouvelle.",
+  resent: "Lien de paiement renvoyé.",
   CONFIRMED: "Réservation confirmée.",
   CANCELLED: "Réservation annulée. Les nuits sont de nouveau disponibles.",
   CHECKED_IN: "Arrivée enregistrée.",
@@ -34,7 +42,7 @@ const errorText: Record<string, string> = {
   restore: "Impossible de rétablir : la chambre est déjà prise ou fermée sur ces dates.",
   payment: "Montant invalide.",
 };
-const localeName: Record<string, string> = { en: "Anglais", fr: "Français", es: "Espagnol", ar: "Arabe" };
+const localeName: Record<string, string> = { en: "Anglais", fr: "Français", es: "Espagnol", de: "Allemand", ar: "Arabe" };
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
@@ -46,11 +54,20 @@ export default async function BookingPage({ params, searchParams }: Props) {
   await requireUser();
   const { id } = await params;
   const sp = await searchParams;
-  const b = await db.booking.findUnique({ where: { id }, include: { guest: true, room: { select: { name: true, slug: true } } } });
+  const b = await db.booking.findUnique({
+    where: { id },
+    include: {
+      guest: true,
+      room: { select: { name: true, slug: true } },
+      // never load the file bytes here
+      proofs: { select: { id: true, filename: true, mimeType: true, size: true, createdAt: true }, orderBy: { createdAt: "desc" } },
+    },
+  });
   if (!b) notFound();
 
   const nightly = (Array.isArray(b.nightlyRates) ? b.nightlyRates : []) as { date: string; price: number }[];
   const computed = nightly.reduce((s, n) => s + n.price, 0);
+  const pay = bookingPayment(b);
   const phoneDigits = b.guest.phone.replace(/\D/g, "");
   const actions = nextStatuses[b.status];
   const field = "w-full rounded-[8px] border border-rule bg-snow px-3 py-2 text-sm";
@@ -97,6 +114,114 @@ export default async function BookingPage({ params, searchParams }: Props) {
         </div>
         <StatusBadge status={b.status} className="px-3 py-1 text-sm" />
       </header>
+
+      {/* Payment flow: accept / decline a request, then check the proof */}
+      {b.status === "PENDING" && (
+        <section className="grid gap-3 rounded-[10px] border border-amber-300 bg-amber-50 p-4">
+          <p className="text-sm">
+            <b>Nouvelle demande.</b> Acceptez-la si la chambre est libre : le client reçoit un lien pour payer l’acompte de {DEPOSIT_PERCENT} % ({eur(pay.deposit, b.currency)}) par PayPal et envoyer la preuve.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <form action={acceptBooking.bind(null, b.id)} className="flex items-center gap-3">
+              <SubmitButton>Accepter et demander l’acompte</SubmitButton>
+              {b.guest.email && (
+                <label className="flex items-center gap-1.5 text-xs text-muted">
+                  <input type="checkbox" name="notify" defaultChecked className="accent-[var(--earth)]" />
+                  envoyer l’email au client
+                </label>
+              )}
+            </form>
+            <form action={declineBooking.bind(null, b.id)} className="flex items-center gap-3">
+              <SubmitButton variant="danger" confirm="Refuser cette demande ? Le client sera prévenu qu’aucune chambre n’est disponible.">
+                Refuser (pas de disponibilité)
+              </SubmitButton>
+              {b.guest.email && (
+                <label className="flex items-center gap-1.5 text-xs text-muted">
+                  <input type="checkbox" name="notify" defaultChecked className="accent-[var(--earth)]" />
+                  prévenir par email
+                </label>
+              )}
+            </form>
+          </div>
+        </section>
+      )}
+
+      {(b.status === "AWAITING_PAYMENT" || b.status === "PAYMENT_REVIEW") && b.payToken && (
+        <section className="grid gap-3 rounded-[10px] border border-rule bg-snow p-4">
+          <p className="text-sm">
+            {b.status === "AWAITING_PAYMENT" ? (
+              <>
+                <b>Paiement attendu.</b> Le client doit payer {eur(pay.deposit, b.currency)} et envoyer la preuve depuis sa page de paiement.
+              </>
+            ) : (
+              <>
+                <b>Preuve reçue.</b> Vérifiez que vous avez bien reçu {eur(pay.deposit, b.currency)}, puis validez le paiement.
+              </>
+            )}
+          </p>
+          <CopyField label="Page de paiement du client" value={payUrl(b.locale, b.payToken)} />
+          {b.status === "AWAITING_PAYMENT" && b.guest.email && (
+            <form action={resendPaymentLink.bind(null, b.id)}>
+              <SubmitButton variant="outline">Renvoyer le lien par email</SubmitButton>
+            </form>
+          )}
+        </section>
+      )}
+
+      {b.proofs.length > 0 && (
+        <section className="grid gap-3 rounded-[10px] border border-violet-300 bg-violet-50 p-4">
+          <h2 className="text-xl">Preuves de paiement</h2>
+          <ul className="grid gap-3">
+            {b.proofs.map((p) => (
+              <li key={p.id} className="grid gap-2 rounded-[8px] border border-rule bg-snow p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                  <span className="inline-flex items-center gap-1.5">
+                    <FileText className="h-4 w-4 text-earth" aria-hidden="true" />
+                    {p.filename} · {Math.round(p.size / 1024)} Ko · {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Africa/Casablanca" }).format(p.createdAt)}
+                  </span>
+                  <a href={`/admin/proofs/${p.id}`} target="_blank" rel="noopener noreferrer" className="text-earth underline underline-offset-4">
+                    Ouvrir
+                  </a>
+                </div>
+                {p.mimeType.startsWith("image/") && (
+                  // eslint-disable-next-line @next/next/no-img-element -- private file served by an authenticated admin route
+                  <img src={`/admin/proofs/${p.id}`} alt={`Preuve de paiement ${p.filename}`} className="max-h-[420px] w-auto rounded-[6px] border border-rule" />
+                )}
+              </li>
+            ))}
+          </ul>
+          {b.status === "PAYMENT_REVIEW" && (
+            <div className="flex flex-wrap items-center gap-3">
+              <form action={approvePayment.bind(null, b.id)} className="flex items-center gap-3">
+                <SubmitButton>Valider le paiement et confirmer</SubmitButton>
+                {b.guest.email && (
+                  <label className="flex items-center gap-1.5 text-xs text-muted">
+                    <input type="checkbox" name="notify" defaultChecked className="accent-[var(--earth)]" />
+                    envoyer la confirmation + fiche PDF
+                  </label>
+                )}
+              </form>
+              <form action={rejectProof.bind(null, b.id)} className="flex items-center gap-3">
+                <SubmitButton variant="outline" confirm="Refuser cette preuve ? Le client devra en envoyer une nouvelle.">
+                  Refuser la preuve
+                </SubmitButton>
+                {b.guest.email && (
+                  <label className="flex items-center gap-1.5 text-xs text-muted">
+                    <input type="checkbox" name="notify" defaultChecked className="accent-[var(--earth)]" />
+                    prévenir par email
+                  </label>
+                )}
+              </form>
+            </div>
+          )}
+        </section>
+      )}
+
+      {["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"].includes(b.status) && (
+        <a href={`/admin/bookings/${b.id}/voucher`} className="inline-flex w-fit items-center gap-1.5 rounded-full border border-rule bg-snow px-4 py-2 text-sm hover:border-earth">
+          <FileDown className="h-4 w-4" aria-hidden="true" /> Fiche de réservation (PDF)
+        </a>
+      )}
 
       {/* Status actions */}
       {(actions.length > 0 || b.status === "CANCELLED") && (
@@ -217,7 +342,12 @@ export default async function BookingPage({ params, searchParams }: Props) {
           </Card>
 
           <Card title="Paiement">
-            <form action={savePayment.bind(null, b.id)} className="grid gap-3">
+            <dl>
+              <Row k={`Acompte pour confirmer (${DEPOSIT_PERCENT} %, non remboursable)`} v={eur(pay.deposit, b.currency)} />
+              <Row k="Reste en espèces à l’arrivée" v={eur(pay.balance, b.currency)} />
+              <Row k="Devises acceptées" v={CASH_CURRENCIES.join(", ")} />
+            </dl>
+            <form key={`${b.paymentStatus}-${Number(b.depositAmount)}`} action={savePayment.bind(null, b.id)} className="grid gap-3">
               <label className="grid gap-1 text-sm">
                 Statut
                 <select name="paymentStatus" defaultValue={b.paymentStatus} className={field}>
@@ -229,12 +359,12 @@ export default async function BookingPage({ params, searchParams }: Props) {
                 </select>
               </label>
               <label className="grid gap-1 text-sm">
-                Acompte reçu ({b.currency})
+                Montant de l’acompte ({b.currency})
                 <input name="depositAmount" type="number" min={0} step="1" defaultValue={Number(b.depositAmount)} className={field} />
               </label>
               <label className="grid gap-1 text-sm">
                 Moyen de paiement
-                <input name="paymentMethod" defaultValue={b.paymentMethod ?? ""} placeholder="espèces, carte, virement…" maxLength={40} className={field} />
+                <input name="paymentMethod" defaultValue={b.paymentMethod ?? ""} placeholder="virement, espèces…" maxLength={40} className={field} />
               </label>
               <SubmitButton variant="outline" className="w-fit">
                 Enregistrer

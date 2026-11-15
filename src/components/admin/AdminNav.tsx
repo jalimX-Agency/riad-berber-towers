@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { BedDouble, CalendarDays, ExternalLink, LayoutDashboard, LogOut, Menu, Plus, RefreshCw, Tags, X } from "lucide-react";
+import { BedDouble, CalendarDays, ExternalLink, LayoutDashboard, LogOut, Menu, Plus, RefreshCw, Settings, Tags, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -14,6 +14,7 @@ const items = [
   { href: "/admin/calendar", label: "Calendrier", icon: CalendarDays },
   { href: "/admin/rates", label: "Tarifs et fermetures", icon: Tags },
   { href: "/admin/channels", label: "Booking.com / Airbnb", icon: RefreshCw },
+  { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ] as { href: string; label: string; icon: typeof BedDouble; exact?: boolean; soon?: boolean }[];
 
 export function AdminNav({ user, pending }: { user: string; pending: number }) {

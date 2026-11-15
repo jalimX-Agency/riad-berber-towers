@@ -22,13 +22,13 @@ const rooms = [
   { slug: "targa", code: "TRG", name: "Targa Room", category: "standard", floor: 0, price: 72, view: "garden", order: 1, amenities: ["heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
   { slug: "tarzoute", code: "TRZ", name: "Suite Tarzoute", category: "suite", floor: 0, price: 82, view: "village", order: 2, amenities: ["private_terrace", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
   { slug: "imlil", code: "IML", name: "Suite Imlil", category: "suite", floor: 1, price: 82, view: "mountain", order: 3, amenities: ["heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi", "coffee_maker"] },
-  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"], featured: true },
+  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, maxAdults: 3, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"], featured: true },
   { slug: "atlas", code: "ATL", name: "Suite Atlas", category: "suite", floor: 1, price: 82, view: "garden", order: 5, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
   { slug: "taddart", code: "TDR", name: "Suite Taddart", category: "suite", floor: 1, price: 92, view: "mountain", order: 6, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
   { slug: "adrar", code: "ADR", name: "Suite Adrar", category: "suite", floor: 2, price: 92, view: "mountain", order: 7, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
 ];
 
-const locales: Locale[] = ["en", "fr", "es", "ar"];
+const locales: Locale[] = ["en", "fr", "es", "de", "ar"];
 
 async function main() {
   // The old slug "tarzout" was renamed to "tarzoute" (owner's spelling)
@@ -36,7 +36,8 @@ async function main() {
 
   for (const r of rooms) {
     // basePrice is only set when a room is created: after that the owner manages prices in /admin/rates
-    const facts = { code: r.code, name: r.name, category: r.category, floor: r.floor, order: r.order };
+    // maxAdults (owner, Nov 2026): 2 per room, Suite Toubkal 3 with a surcharge (src/lib/booking/policy.ts)
+    const facts = { code: r.code, name: r.name, category: r.category, floor: r.floor, order: r.order, maxAdults: r.maxAdults ?? 2 };
     const photos = (manifest.rooms[r.slug] ?? []).map((m) => m.key);
 
     const room = await db.room.upsert({
@@ -47,7 +48,6 @@ async function main() {
         ...facts,
         basePrice: r.price,
         view: r.view,
-        maxAdults: 2,
         featured: r.featured ?? false,
         amenities: r.amenities,
         coverImage: photos[0] ?? "",

@@ -9,6 +9,8 @@ import type { RoomView } from "@/lib/rooms";
 import { formatPrice } from "@/lib/rooms";
 import { AmenityIcon } from "@/components/rooms/AmenityIcon";
 import { cn } from "@/lib/utils";
+import { EXTRA_GUEST_PERCENT } from "@/lib/booking/policy";
+import { StayPolicies } from "@/components/booking/StayPolicies";
 
 export type Availability = {
   available: boolean;
@@ -16,6 +18,7 @@ export type Availability = {
   minNights: number;
   total: number;
   perNight: number;
+  extraGuest?: boolean;
 };
 export type Stay = { checkIn: string; checkOut: string; nights: number; adults: number };
 
@@ -207,6 +210,7 @@ export function RoomResults({
                           {total}
                         </span>
                         <span className="text-xs text-muted">{t("perNightAvg", { price: formatPrice(a.perNight, room.currency, locale) })}</span>
+                        {a.extraGuest && a.available && <span className="text-xs text-muted">{t("extraGuest", { percent: EXTRA_GUEST_PERCENT })}</span>}
                         <span className="text-xs text-granite">{tr("breakfast")}</span>
                       </div>
                     ) : (
@@ -238,6 +242,8 @@ export function RoomResults({
             );
           })}
         </ul>
+
+        <StayPolicies className="rounded-[10px] border border-rule bg-snow p-4 md:p-5" />
       </div>
     </div>
   );

@@ -17,4 +17,4 @@ export const footerNav = [
   { key: "contact", href: "/contact", ns: "nav" },
 ] as const;
 
-export const localeNames: Record<string, string> = { en: "English", fr: "Français", es: "Español", ar: "العربية" };
+export const localeNames: Record<string, string> = { en: "English", fr: "Français", es: "Español", de: "Deutsch", ar: "العربية" };

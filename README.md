@@ -75,6 +75,10 @@ Fonts: Cormorant Garamond (display), Jost (text), Aref Ruqaa (Arabic headings), 
 
 - `/admin` (French): dashboard, bookings (confirm / cancel / arrival / departure, payment, notes, guest emails), manual bookings, calendar, prices and seasonal rates, room closures, Booking.com / Airbnb sync.
 - Prices are managed in `/admin/rates`; the seed sets a room's base price only when it creates the room.
+- Booking flow: request (Nouvelle demande) → the riad accepts (the guest gets a link to /book/pay/<token>: PayPal deposit of 40% + upload of the payment proof) or declines ("no room available" email) → proof uploaded (Paiement en vérification, the riad is notified) → the riad approves (confirmation email with the PDF voucher) or rejects the proof (the guest uploads again).
+- House rules live in `src/lib/booking/policy.ts`: 2 guests per room, Suite Toubkal 3 with +10%, adults only, 40% non-refundable deposit, balance in cash (MAD, USD, EUR, GBP).
+- `/admin/settings` (owner and admins): the PayPal.me name used on the payment page and the email that receives new requests and payment proofs. `PAYPAL_ME` / `EMAIL_ADMIN` in .env are only fallbacks.
+- Payment proofs are stored in the database (PaymentProof), not on the public CDN, and served only to signed-in users.
 - iCal: each room has a signed export link (`/api/ical/<slug>-<token>.ics`) to paste in Booking.com and Airbnb, and the platforms' own iCal links are imported as closures. Copy the export links from the **production** admin: they depend on `NEXT_PUBLIC_SITE_URL` and `ICAL_SECRET`.
 - Scheduled import: `GET /api/cron/ical` with `Authorization: Bearer $CRON_SECRET`. On Vercel add a cron in `vercel.json` (every 30–60 min needs the Pro plan; Hobby allows once a day) or use an external scheduler such as cron-job.org. The admin also has a "Synchroniser maintenant" button.
 

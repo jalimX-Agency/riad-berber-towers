@@ -171,6 +171,7 @@ export function NewBookingForm({ rooms, today }: { rooms: Room[]; today: string 
               <option value="fr">Français</option>
               <option value="en">Anglais</option>
               <option value="es">Espagnol</option>
+              <option value="de">Allemand</option>
               <option value="ar">Arabe</option>
             </select>
           </label>

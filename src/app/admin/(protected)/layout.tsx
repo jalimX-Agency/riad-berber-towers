@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const pending = await db.booking.count({ where: { status: "PENDING" } });
+  const pending = await db.booking.count({ where: { status: { in: ["PENDING", "PAYMENT_REVIEW"] } } });
   return (
     <div className="min-h-dvh bg-paper lg:flex">
       <AdminNav user={user.email} pending={pending} />

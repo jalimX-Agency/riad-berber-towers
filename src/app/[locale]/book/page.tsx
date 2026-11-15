@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { BedDouble, CalendarDays, Check, Coffee, Users } from "lucide-react";
+import { BedDouble, CalendarDays, Coffee, Users } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getRoom, formatPrice } from "@/lib/rooms";
 import { getAvailability, parseStayQuery } from "@/lib/booking/availability";
 import { toISO } from "@/lib/booking/dates";
 import { formatStayDate } from "@/lib/email/booking";
 import { GuestForm } from "@/components/booking/GuestForm";
+import { StayPolicies } from "@/components/booking/StayPolicies";
+import { DEPOSIT_PERCENT, EXTRA_GUEST_PERCENT, splitPayment } from "@/lib/booking/policy";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -99,6 +101,8 @@ export default async function BookPage({ params, searchParams }: Props) {
                 dates: `${formatStayDate(query.checkIn, locale)} → ${formatStayDate(query.checkOut, locale)}`,
                 stay: `${ts("nights", { count: query.nights })}, ${ts("adults", { count: query.adults })}`,
                 total: fmt(a.total),
+                deposit: fmt(splitPayment(a.total).deposit),
+                balance: fmt(splitPayment(a.total).balance),
               }}
             />
           </div>
@@ -158,16 +162,18 @@ export default async function BookPage({ params, searchParams }: Props) {
                 {fmt(a.total)}
               </span>
             </div>
-            <ul className="grid gap-1.5 text-sm text-granite">
-              <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-earth" aria-hidden="true" />
-                {t("payOnArrival")}
-              </li>
-              <li className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-earth" aria-hidden="true" />
-                {t("noCard")}
-              </li>
-            </ul>
+            {a.extraGuest && <p className="-mt-2 text-xs text-muted">{tres("extraGuest", { percent: EXTRA_GUEST_PERCENT })}</p>}
+            <dl className="grid gap-1.5 text-sm">
+              <div className="flex justify-between gap-3">
+                <dt>{t("deposit", { percent: DEPOSIT_PERCENT })}</dt>
+                <dd className="font-medium" dir="ltr">{fmt(splitPayment(a.total).deposit)}</dd>
+              </div>
+              <div className="flex justify-between gap-3 text-muted">
+                <dt>{t("balance")}</dt>
+                <dd dir="ltr">{fmt(splitPayment(a.total).balance)}</dd>
+              </div>
+            </dl>
+            <StayPolicies className="border-t border-rule pt-4" />
           </div>
         </aside>
       </div>

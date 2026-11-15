@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Riad Berber Towers · Maison d'hôtes faite main à Imlil, Haut Atlas",
-    "description": "Sept chambres faites main au cœur d'Imlil, à quelques pas du sentier du Toubkal. Tadelakt, zellige de Fès et cèdre sculpté de l'Atlas. Petit-déjeuner inclus."
+    "description": "Sept chambres faites main au cœur d'Imlil, à quelques pas du sentier du Toubkal. Tadelakt, zellige de Fès et bois sculpté. Petit-déjeuner inclus."
   },
   "nav": {
     "home": "Accueil",
@@ -31,7 +31,7 @@
       "line1": "Sept chambres.",
       "line2": "Une vallée.",
       "line3": "Faites main.",
-      "lead": "Une maison d’hôtes familiale en cèdre sculpté, tadelakt et zellige de Fès, au cœur d’Imlil, au pied du Toubkal. Le petit-déjeuner sur le toit est inclus.",
+      "lead": "Une maison d’hôtes familiale en bois sculpté, tadelakt et zellige de Fès, au cœur d’Imlil, au pied du Toubkal. Le petit-déjeuner sur le toit est inclus.",
       "alt": "Riad Berber Towers, une maison-tour ocre parmi les noyers d’Imlil",
       "caption": "Imlil · Al Haouz",
       "searchLabel": "Voir les disponibilités",
@@ -39,7 +39,7 @@
     },
     "intro": {
       "label": "La maison",
-      "text": "Riad Berber Towers s’élève sur trois étages au-dessus du village, bâti avec le savoir-faire du Haut Atlas : murs en tadelakt, sols en zellige, plafonds de cèdre sculptés à la main. Le sentier du Toubkal part de notre porte.",
+      "text": "Riad Berber Towers s’élève sur trois étages au-dessus du village, bâti avec le savoir-faire du Haut Atlas : murs en tadelakt, sols en zellige, plafonds en bois sculptés à la main. Le sentier du Toubkal part de notre porte.",
       "facts": {
         "altitude": {
           "value": "1 740 m",
@@ -72,8 +72,8 @@
         },
         "first": {
           "label": "Premier étage",
-          "title": "La galerie de cèdre",
-          "text": "Quatre suites autour du patio ouvert, sous les poutres de cèdre sculpté. Trois d’entre elles donnent sur les montagnes."
+          "title": "La galerie de bois",
+          "text": "Quatre suites autour du patio ouvert, sous les poutres de bois sculpté. Trois d’entre elles donnent sur les montagnes."
         },
         "second": {
           "label": "Deuxième étage",
@@ -102,16 +102,16 @@
     },
     "strip": {
       "label": "À l’intérieur",
-      "title": "Cèdre, zellige et lumière",
+      "title": "Bois, zellige et lumière",
       "text": "Tout dans la maison a été fait par des artisans de la région, des portes sculptées aux vitraux.",
       "items": {
         "salon": {
           "title": "Le salon",
-          "text": "Banquettes basses, coussins berbères et tables en pin de l’Atlas."
+          "text": "Banquettes basses, coussins berbères et tables en bois."
         },
         "gallery": {
           "title": "La galerie",
-          "text": "Balustrades en fer forgé et portes en cèdre autour du patio."
+          "text": "Balustrades en fer forgé et portes en bois autour du patio."
         },
         "skylight": {
           "title": "La verrière",
@@ -119,7 +119,7 @@
         },
         "stairs": {
           "title": "L’escalier",
-          "text": "Cèdre tourné et tapis berbère, de l’entrée jusqu’en haut."
+          "text": "Bois tourné et tapis berbère, de l’entrée jusqu’en haut."
         },
         "fountain": {
           "title": "Vue d’en haut",
@@ -162,7 +162,7 @@
     "book": {
       "label": "Réservez en direct",
       "title": "Choisissez vos dates",
-      "text": "Voyez les chambres libres et le prix de votre séjour. Vous payez à l’arrivée ; nous confirmons chaque demande en quelques heures."
+      "text": "Voyez quelles chambres sont libres et le prix de votre séjour. Un acompte de 40 % confirme votre réservation ; le solde se règle en espèces au riad."
     }
   },
   "footer": {
@@ -193,7 +193,7 @@
   "rooms": {
     "eyebrow": "Sept chambres · petit-déjeuner inclus",
     "title": "Chambres & suites",
-    "intro": "Sept chambres sur trois étages, toutes faites main avec tadelakt, zellige et cèdre sculpté. Chaque nuit comprend le petit-déjeuner sur la terrasse, le sol chauffant et le Wi-Fi.",
+    "intro": "Sept chambres sur trois étages, toutes faites main avec tadelakt, zellige et bois sculpté. Chaque nuit comprend le petit-déjeuner sur la terrasse, le sol chauffant et le Wi-Fi.",
     "all": "Toutes",
     "floor": {
       "0": "Rez-de-chaussée",
@@ -290,11 +290,12 @@
       "capacity": "{max} personnes maximum",
       "min_nights": "Séjour minimum de {count} nuits à ces dates"
     },
-    "reserveMessage": "Bonjour, je souhaite réserver la {room} du {checkIn} au {checkOut} ({nights}, {adults}). Total affiché : {total}."
+    "reserveMessage": "Bonjour, je souhaite réserver la {room} du {checkIn} au {checkOut} ({nights}, {adults}). Total affiché : {total}.",
+    "extraGuest": "Inclut +{percent} % pour la troisième personne"
   },
   "book": {
     "title": "Finaliser votre réservation",
-    "intro": "Dites-nous qui vient. Aucun paiement maintenant : vous réglez au riad à votre arrivée.",
+    "intro": "Dites-nous qui vient. Rien n’est payé sur ce site : dès réception de votre demande, nous vous envoyons les coordonnées pour régler l’acompte de 40 % qui confirme votre séjour.",
     "firstName": "Prénom",
     "lastName": "Nom",
     "email": "E-mail",
@@ -317,11 +318,11 @@
     "submit": "Demander la réservation",
     "sending": "Envoi…",
     "noPayment": "Aucun paiement maintenant. Ce site ne vous débitera rien.",
-    "payOnArrival": "Paiement au riad à l’arrivée",
-    "noCard": "Aucune carte bancaire requise",
     "priceDetails": "Prix par nuit",
     "show": "Afficher",
     "total": "Total",
+    "deposit": "Acompte pour confirmer ({percent} %, non remboursable)",
+    "balance": "Solde, en espèces à l’arrivée",
     "reference": "Référence de réservation",
     "room": "Chambre",
     "stay": "Séjour",
@@ -341,7 +342,7 @@
     "confirmed": {
       "title": "Demande reçue",
       "body": "Merci, {name}. Nous avons envoyé le récapitulatif à {email}.",
-      "next": "Le riad vous confirmera la réservation par e-mail. Aucun paiement avant votre arrivée.",
+      "next": "Le riad vérifie la disponibilité. Si votre chambre est libre, vous recevrez un email avec un lien pour régler l’acompte de 40 % par PayPal.",
       "whatsapp": "Nous écrire sur WhatsApp",
       "whatsappMessage": "Bonjour, au sujet de ma réservation {reference} au Riad Berber Towers : ",
       "home": "Retour à l’accueil"
@@ -366,20 +367,103 @@
       "subject": "Votre demande de réservation {reference} · Riad Berber Towers",
       "title": "Merci, {name}",
       "intro": "Nous avons bien reçu votre demande de réservation. Voici le récapitulatif :",
-      "next": "Nous vous confirmerons la réservation par e-mail. Aucun paiement maintenant : vous réglez au riad à votre arrivée. Une question ? Répondez à cet e-mail ou écrivez-nous sur WhatsApp.",
+      "next": "Nous vérifions la disponibilité et vous répondons par email. Si votre chambre est libre, vous recevrez un lien pour régler l’acompte de 40 % (non remboursable), qui confirme votre réservation. Une question ? Répondez à cet email ou écrivez-nous sur WhatsApp.",
       "signoff": "À très bientôt à Imlil. L’équipe du Riad Berber Towers"
     },
     "confirmed": {
       "subject": "Réservation confirmée {reference} · Riad Berber Towers",
       "title": "Votre séjour est confirmé, {name}",
       "intro": "Bonne nouvelle : le riad a confirmé votre réservation.",
-      "next": "Aucun paiement avant votre arrivée : vous réglez au riad. Indiquez-nous votre heure d’arrivée sur WhatsApp et nous serons prêts à vous accueillir."
+      "next": "Nous avons bien reçu votre acompte. Votre fiche de réservation est jointe à cet email. Le solde se règle en espèces à l’arrivée. Indiquez-nous votre heure d’arrivée sur WhatsApp et nous serons prêts à vous accueillir."
     },
     "cancelled": {
       "subject": "Réservation annulée {reference} · Riad Berber Towers",
       "title": "Votre réservation est annulée, {name}",
       "intro": "Cette réservation a été annulée :",
       "next": "S’il s’agit d’une erreur ou si vous souhaitez d’autres dates, répondez à cet e-mail ou écrivez-nous sur WhatsApp."
+    },
+    "payButton": "Payer l’acompte ({amount})",
+    "accepted": {
+      "subject": "Votre chambre est disponible · acompte à régler {reference}",
+      "title": "Bonne nouvelle, {name} : votre chambre est disponible",
+      "intro": "Nous avons accepté votre demande de réservation. Pour la confirmer, réglez l’acompte de 40 % et envoyez-nous la preuve sur votre page de paiement.",
+      "next": "Votre réservation est confirmée dès que nous avons vérifié le paiement. L’acompte n’est pas remboursable."
+    },
+    "declined": {
+      "subject": "Votre demande de réservation {reference} · Riad Berber Towers",
+      "title": "Nous sommes désolés, {name}",
+      "intro": "Nous n’avons malheureusement plus de chambre disponible pour ces dates en ce moment, et ne pouvons donc pas accepter votre demande :",
+      "next": "Nous serions heureux de vous accueillir à d’autres dates. Répondez à cet email ou écrivez-nous sur WhatsApp."
+    },
+    "proofRejected": {
+      "subject": "Preuve de paiement non acceptée {reference} · Riad Berber Towers",
+      "title": "Nous n’avons pas pu vérifier votre paiement, {name}",
+      "intro": "La preuve envoyée ne correspond à aucun paiement de l’acompte. Vérifiez le paiement et renvoyez la preuve depuis votre page de paiement.",
+      "next": "Pour toute question, répondez à cet email ou écrivez-nous sur WhatsApp."
     }
+  },
+  "policy": {
+    "title": "Bon à savoir",
+    "adultsOnly": "Réservé aux adultes : les enfants ne sont pas acceptés au riad.",
+    "guests": "{max} personnes maximum par chambre. La Suite Toubkal accueille une troisième personne, avec {percent} % de plus sur le prix.",
+    "deposit": "Un acompte de {percent} % confirme votre réservation. Il n’est pas remboursable.",
+    "balance": "Le solde se règle en espèces à l’arrivée : {currencies}."
+  },
+  "pay": {
+    "metaTitle": "Payer votre acompte",
+    "title": "Bonne nouvelle, {name} : votre chambre est disponible",
+    "intro": "Réglez l’acompte de {percent} % et envoyez-nous la preuve. Dès que nous l’avons vérifiée, votre réservation est confirmée par email.",
+    "step1": "Étape 1",
+    "payTitle": "Payer l’acompte : {amount}",
+    "payText": "Payez avec PayPal. Indiquez votre référence de réservation {reference} dans la note.",
+    "payButton": "Payer {amount} avec PayPal",
+    "payContact": "Écrivez-nous sur WhatsApp et nous vous enverrons les coordonnées de paiement.",
+    "step2": "Étape 2",
+    "proofTitle": "Envoyer la preuve de paiement",
+    "proofText": "Une capture d’écran ou le reçu PayPal suffit. Nous la vérifions et confirmons votre réservation par email.",
+    "proofsSent": "{count, plural, one {# preuve reçue} other {# preuves reçues}}. Vous pouvez en envoyer une autre si besoin.",
+    "choose": "Choisir une capture d’écran ou un PDF",
+    "formats": "JPG, PNG, WebP, HEIC ou PDF, jusqu’à {mb} Mo",
+    "send": "Envoyer la preuve",
+    "sending": "Envoi…",
+    "reviewTitle": "Nous vérifions votre paiement",
+    "reviewText": "Merci, nous avons bien reçu votre preuve de paiement. Nous la vérifions au plus vite et confirmons votre réservation par email.",
+    "confirmedTitle": "Votre réservation est confirmée",
+    "confirmedText": "Nous avons bien reçu votre acompte. Votre fiche de réservation vous a été envoyée par email ; vous pouvez aussi la télécharger ici.",
+    "cancelledTitle": "Cette réservation est annulée",
+    "cancelledText": "Si vous pensez qu’il s’agit d’une erreur, écrivez-nous sur WhatsApp.",
+    "downloadVoucher": "Télécharger la fiche de réservation (PDF)",
+    "questions": "Une question ? WhatsApp",
+    "whatsappMessage": "Bonjour, au sujet de ma réservation {reference} au Riad Berber Towers : ",
+    "errors": {
+      "missing": "Choisissez d’abord un fichier.",
+      "too_big": "Ce fichier est trop lourd. Envoyez une capture plus petite (4 Mo maximum).",
+      "type": "Ce type de fichier n’est pas accepté. Envoyez un JPG, PNG, WebP, HEIC ou PDF.",
+      "too_many": "Vous avez déjà envoyé plusieurs preuves. Écrivez-nous sur WhatsApp.",
+      "closed": "Cette réservation ne peut plus recevoir de preuve. Écrivez-nous sur WhatsApp.",
+      "server": "Le fichier n’a pas pu être envoyé. Réessayez, ou envoyez-le sur WhatsApp."
+    }
+  },
+  "voucher": {
+    "title": "Fiche de réservation",
+    "confirmed": "Réservation confirmée",
+    "issued": "Émise le",
+    "stay": "Votre séjour",
+    "guest": "Client",
+    "room": "Chambre",
+    "guests": "Nuits et personnes",
+    "included": "Inclus",
+    "breakfast": "Petit-déjeuner chaque matin",
+    "name": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "arrival": "Arrivée prévue",
+    "payment": "Paiement",
+    "total": "Total du séjour",
+    "depositPaid": "Acompte reçu ({percent} %)",
+    "balanceDue": "Solde à régler à l’arrivée",
+    "rules": "Règles de la maison",
+    "address": "Imlil Centre, Asni · Al Haouz, Maroc",
+    "thanks": "À bientôt à Imlil"
   }
 }

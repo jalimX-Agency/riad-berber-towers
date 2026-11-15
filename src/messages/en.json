@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "Riad Berber Towers · Hand-built guesthouse in Imlil, High Atlas",
-    "description": "Seven hand-built rooms in the heart of Imlil, steps from the Toubkal trail. Tadelakt, Fes zellij and carved Atlas cedar. Breakfast included."
+    "description": "Seven hand-built rooms in the heart of Imlil, steps from the Toubkal trail. Tadelakt, Fes zellij and carved wood. Breakfast included."
   },
   "nav": {
     "home": "Home",
@@ -31,7 +31,7 @@
       "line1": "Seven rooms.",
       "line2": "One valley.",
       "line3": "Made by hand.",
-      "lead": "A family guesthouse of carved cedar, tadelakt and Fes zellij in the centre of Imlil, at the foot of Toubkal. Breakfast on the roof is included.",
+      "lead": "A family guesthouse of carved wood, tadelakt and Fes zellij in the centre of Imlil, at the foot of Toubkal. Breakfast on the roof is included.",
       "alt": "Riad Berber Towers, an ochre tower house among the walnut trees of Imlil",
       "caption": "Imlil · Al Haouz",
       "searchLabel": "Check availability",
@@ -39,7 +39,7 @@
     },
     "intro": {
       "label": "The house",
-      "text": "Riad Berber Towers rises three floors above the village, built with the craft of the High Atlas: tadelakt walls, zellij floors, cedar ceilings carved by hand. The trail to Toubkal starts at our door.",
+      "text": "Riad Berber Towers rises three floors above the village, built with the craft of the High Atlas: tadelakt walls, zellij floors, wooden ceilings carved by hand. The trail to Toubkal starts at our door.",
       "facts": {
         "altitude": {
           "value": "1,740 m",
@@ -72,8 +72,8 @@
         },
         "first": {
           "label": "First floor",
-          "title": "The cedar gallery",
-          "text": "Four suites around the open atrium, under carved cedar beams. Three of them look out to the mountains."
+          "title": "The wooden gallery",
+          "text": "Four suites around the open atrium, under carved wooden beams. Three of them look out to the mountains."
         },
         "second": {
           "label": "Second floor",
@@ -102,16 +102,16 @@
     },
     "strip": {
       "label": "Inside",
-      "title": "Cedar, zellij and light",
+      "title": "Wood, zellij and light",
       "text": "Everything in the house was made by craftsmen from the region, from the carved doors to the coloured glass.",
       "items": {
         "salon": {
           "title": "The salon",
-          "text": "Low benches, Berber cushions and tables of Atlas pine."
+          "text": "Low benches, Berber cushions and wooden tables."
         },
         "gallery": {
           "title": "The gallery",
-          "text": "Wrought-iron balustrades and cedar doors around the atrium."
+          "text": "Wrought-iron balustrades and wooden doors around the atrium."
         },
         "skylight": {
           "title": "The skylight",
@@ -119,7 +119,7 @@
         },
         "stairs": {
           "title": "The staircase",
-          "text": "Turned cedar and Berber carpet, from the entrance up."
+          "text": "Turned wood and Berber carpet, from the entrance up."
         },
         "fountain": {
           "title": "From above",
@@ -162,7 +162,7 @@
     "book": {
       "label": "Book direct",
       "title": "Choose your dates",
-      "text": "See which rooms are free and the price of your stay. You pay on arrival; we confirm every request within a few hours."
+      "text": "See which rooms are free and the price of your stay. A 40% advance confirms your booking; the rest is paid in cash at the riad."
     }
   },
   "footer": {
@@ -193,7 +193,7 @@
   "rooms": {
     "eyebrow": "Seven rooms · breakfast included",
     "title": "Rooms & suites",
-    "intro": "Seven rooms on three floors, each built by hand with tadelakt, zellij and carved cedar. Every night includes breakfast on the roof terrace, heated floors and Wi-Fi.",
+    "intro": "Seven rooms on three floors, each built by hand with tadelakt, zellij and carved wood. Every night includes breakfast on the roof terrace, heated floors and Wi-Fi.",
     "all": "All",
     "floor": {
       "0": "Ground floor",
@@ -290,11 +290,12 @@
       "capacity": "Sleeps {max} guests maximum",
       "min_nights": "Minimum stay {count} nights on these dates"
     },
-    "reserveMessage": "Hello, I would like to reserve the {room} from {checkIn} to {checkOut} ({nights}, {adults}). Total shown: {total}."
+    "reserveMessage": "Hello, I would like to reserve the {room} from {checkIn} to {checkOut} ({nights}, {adults}). Total shown: {total}.",
+    "extraGuest": "Includes +{percent}% for the third guest"
   },
   "book": {
     "title": "Complete your booking",
-    "intro": "Tell us who is coming. No payment is taken now: you pay at the riad when you arrive.",
+    "intro": "Tell us who is coming. Nothing is paid on this website: once we receive your request, we send you the details to pay the 40% advance that confirms your stay.",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
@@ -317,11 +318,11 @@
     "submit": "Request booking",
     "sending": "Sending…",
     "noPayment": "No payment now. You won’t be charged by this website.",
-    "payOnArrival": "Pay at the riad on arrival",
-    "noCard": "No credit card needed",
     "priceDetails": "Price per night",
     "show": "Show",
     "total": "Total",
+    "deposit": "Advance to confirm ({percent}%, non-refundable)",
+    "balance": "Balance, in cash on arrival",
     "reference": "Booking reference",
     "room": "Room",
     "stay": "Stay",
@@ -341,7 +342,7 @@
     "confirmed": {
       "title": "Request received",
       "body": "Thank you, {name}. We have sent the details to {email}.",
-      "next": "The riad will confirm your booking by email. No payment is needed until you arrive.",
+      "next": "The riad checks availability. If your room is free, you will receive an email with a link to pay the 40% deposit by PayPal.",
       "whatsapp": "Message us on WhatsApp",
       "whatsappMessage": "Hello, about my booking {reference} at Riad Berber Towers: ",
       "home": "Back to home"
@@ -366,20 +367,103 @@
       "subject": "Your booking request {reference} · Riad Berber Towers",
       "title": "Thank you, {name}",
       "intro": "We have received your booking request. Here are the details:",
-      "next": "We will confirm your booking by email. No payment is needed now: you pay at the riad on arrival. Questions? Reply to this email or write to us on WhatsApp.",
+      "next": "We check availability and reply by email. If your room is free, you will receive a link to pay the 40% deposit (non-refundable), which confirms your booking. Questions? Reply to this email or write to us on WhatsApp.",
       "signoff": "See you soon in Imlil. The Riad Berber Towers team"
     },
     "confirmed": {
       "subject": "Booking confirmed {reference} · Riad Berber Towers",
       "title": "Your stay is confirmed, {name}",
       "intro": "Good news: the riad has confirmed your booking.",
-      "next": "No payment is needed before you arrive: you pay at the riad. Tell us your arrival time on WhatsApp and we will be ready for you."
+      "next": "We have received your deposit. Your reservation voucher is attached to this email. The balance is paid in cash on arrival. Tell us your arrival time on WhatsApp and we will be ready for you."
     },
     "cancelled": {
       "subject": "Booking cancelled {reference} · Riad Berber Towers",
       "title": "Your booking is cancelled, {name}",
       "intro": "This booking has been cancelled:",
       "next": "If this is a mistake or you would like other dates, reply to this email or write to us on WhatsApp."
+    },
+    "payButton": "Pay the deposit ({amount})",
+    "accepted": {
+      "subject": "Your room is available · pay the deposit {reference}",
+      "title": "Good news, {name}: your room is available",
+      "intro": "We have accepted your booking request. To confirm it, please pay the 40% deposit and send us the proof on your payment page.",
+      "next": "Your booking is confirmed once we have checked the payment. The deposit is not refundable."
+    },
+    "declined": {
+      "subject": "Your booking request {reference} · Riad Berber Towers",
+      "title": "We are sorry, {name}",
+      "intro": "Unfortunately we have no room available for these dates right now, so we cannot accept your request:",
+      "next": "We would be happy to welcome you on other dates. Reply to this email or write to us on WhatsApp."
+    },
+    "proofRejected": {
+      "subject": "Payment proof not accepted {reference} · Riad Berber Towers",
+      "title": "We could not verify your payment, {name}",
+      "intro": "We could not match the proof you sent with a payment of the deposit. Please check the payment and send the proof again from your payment page.",
+      "next": "If you have any question, reply to this email or write to us on WhatsApp."
     }
+  },
+  "policy": {
+    "title": "Good to know",
+    "adultsOnly": "Adults only: children are not accepted at the riad.",
+    "guests": "Up to {max} guests per room. Suite Toubkal takes a third guest, with {percent}% added to the price.",
+    "deposit": "A {percent}% advance confirms your booking. It is not refundable.",
+    "balance": "The rest is paid in cash on arrival: {currencies}."
+  },
+  "pay": {
+    "metaTitle": "Pay your deposit",
+    "title": "Good news, {name}: your room is available",
+    "intro": "Pay the {percent}% deposit and send us the proof. As soon as we have checked it, your booking is confirmed by email.",
+    "step1": "Step 1",
+    "payTitle": "Pay the deposit: {amount}",
+    "payText": "Pay with PayPal. Please write your booking reference {reference} in the note.",
+    "payButton": "Pay {amount} with PayPal",
+    "payContact": "Write to us on WhatsApp and we will send you the payment details.",
+    "step2": "Step 2",
+    "proofTitle": "Send the proof of payment",
+    "proofText": "A screenshot or the PayPal receipt is enough. We check it and confirm your booking by email.",
+    "proofsSent": "{count, plural, one {# proof received} other {# proofs received}}. You can send another one if needed.",
+    "choose": "Choose a screenshot or a PDF",
+    "formats": "JPG, PNG, WebP, HEIC or PDF, up to {mb} MB",
+    "send": "Send the proof",
+    "sending": "Sending…",
+    "reviewTitle": "We are checking your payment",
+    "reviewText": "Thank you, we received your proof of payment. We check it as soon as possible and confirm your booking by email.",
+    "confirmedTitle": "Your booking is confirmed",
+    "confirmedText": "We have received your deposit. Your reservation voucher was sent by email; you can also download it here.",
+    "cancelledTitle": "This booking is cancelled",
+    "cancelledText": "If you think this is a mistake, write to us on WhatsApp.",
+    "downloadVoucher": "Download the reservation voucher (PDF)",
+    "questions": "A question? WhatsApp",
+    "whatsappMessage": "Hello, about my booking {reference} at Riad Berber Towers: ",
+    "errors": {
+      "missing": "Choose a file first.",
+      "too_big": "This file is too large. Send a smaller screenshot (up to 4 MB).",
+      "type": "This file type is not accepted. Send a JPG, PNG, WebP, HEIC or PDF.",
+      "too_many": "You have already sent several proofs. Write to us on WhatsApp.",
+      "closed": "This booking can no longer receive a proof. Write to us on WhatsApp.",
+      "server": "The file could not be sent. Please try again, or send it on WhatsApp."
+    }
+  },
+  "voucher": {
+    "title": "Reservation voucher",
+    "confirmed": "Booking confirmed",
+    "issued": "Issued on",
+    "stay": "Your stay",
+    "guest": "Guest",
+    "room": "Room",
+    "guests": "Nights and guests",
+    "included": "Included",
+    "breakfast": "Breakfast every morning",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "arrival": "Estimated arrival",
+    "payment": "Payment",
+    "total": "Total of the stay",
+    "depositPaid": "Deposit received ({percent}%)",
+    "balanceDue": "Balance to pay on arrival",
+    "rules": "House rules",
+    "address": "Imlil Centre, Asni · Al Haouz, Morocco",
+    "thanks": "See you soon in Imlil"
   }
 }

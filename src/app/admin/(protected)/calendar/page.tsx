@@ -14,6 +14,8 @@ type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
 const bar: Record<BookingStatus, string> = {
   PENDING: "bg-amber-300 text-amber-950",
+  AWAITING_PAYMENT: "bg-orange-300 text-orange-950",
+  PAYMENT_REVIEW: "bg-violet-400 text-white",
   CONFIRMED: "bg-emerald-600 text-white",
   CHECKED_IN: "bg-sky-600 text-white",
   CHECKED_OUT: "bg-stone-400 text-white",
@@ -163,7 +165,7 @@ export default async function CalendarPage({ searchParams }: Props) {
       </div>
 
       <ul className="flex flex-wrap gap-4 text-xs text-muted">
-        {(["PENDING", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT"] as BookingStatus[]).map((s) => (
+        {(["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT"] as BookingStatus[]).map((s) => (
           <li key={s} className="flex items-center gap-1.5">
             <span className={cn("h-3 w-5 rounded-sm", bar[s])} />
             {statusLabel[s]}

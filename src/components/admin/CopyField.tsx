@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 
-export function CopyField({ value }: { value: string }) {
+export function CopyField({ value, label = "Lien d’export" }: { value: string; label?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="flex items-center gap-2">
-      <input readOnly value={value} onFocus={(e) => e.target.select()} dir="ltr" className="min-w-0 flex-1 rounded-[8px] border border-rule bg-paper px-3 py-2 font-mono text-xs" aria-label="Lien d’export" />
+      <input readOnly value={value} onFocus={(e) => e.target.select()} dir="ltr" className="min-w-0 flex-1 rounded-[8px] border border-rule bg-paper px-3 py-2 font-mono text-xs" aria-label={label} />
       <button
         type="button"
         onClick={async () => {
