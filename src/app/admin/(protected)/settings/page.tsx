@@ -1,5 +1,5 @@
 import { ExternalLink } from "lucide-react";
-import { requireUser } from "@/lib/admin/guard";
+import { canManage, requireUser } from "@/lib/admin/guard";
 import { getSettings } from "@/lib/settings";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
@@ -20,7 +20,7 @@ export default async function SettingsPage({ searchParams }: Props) {
   const user = await requireUser();
   const sp = await searchParams;
   const s = await getSettings();
-  const canEdit = user.role !== "STAFF";
+  const canEdit = canManage(user.role);
   const field = "w-full rounded-[8px] border border-rule bg-snow px-3 py-2 text-sm disabled:opacity-60";
 
   return (

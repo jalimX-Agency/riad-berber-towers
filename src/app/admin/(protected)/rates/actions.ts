@@ -1,16 +1,15 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { ROOMS_TAG } from "@/lib/admin/rooms";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/admin/guard";
+import { requireManager, requireUser } from "@/lib/admin/guard";
 import { addDays, parseDay } from "@/lib/booking/dates";
 
 const done = (params: Record<string, string>, hash = ""): never => {
   revalidatePath("/admin", "layout");
-  // prices show on the public site too
-  revalidatePath("/", "layout");
   redirect(`/admin/rates?${new URLSearchParams(params)}${hash}`);
 };
 
@@ -23,7 +22,7 @@ function nights(from: unknown, to: unknown) {
 }
 
 export async function saveBasePrices(form: FormData) {
-  await requireUser();
+  await requireManager();
   const updates: { id: string; price: number }[] = [];
   for (const [k, v] of form.entries()) {
     if (!k.startsWith("price_")) continue;
@@ -32,6 +31,10 @@ export async function saveBasePrices(form: FormData) {
     updates.push({ id: k.slice(6), price: Math.round(price) });
   }
   await db.$transaction(updates.map((u) => db.room.update({ where: { id: u.id }, data: { basePrice: u.price } })));
+  // base prices are the only rate data printed in the static public pages ("from 72 €");
+  // seasonal rates and closures are read live by the availability engine, so they need no purge
+  revalidatePath("/", "layout");
+  revalidateTag(ROOMS_TAG);
   done({ done: "prices" }, "#prices");
 }
 
@@ -44,7 +47,7 @@ const rateSchema = z.object({
 });
 
 export async function createRate(form: FormData) {
-  await requireUser();
+  await requireManager();
   const p = rateSchema.safeParse(Object.fromEntries(form));
   const range = nights(form.get("from"), form.get("to"));
   if (!p.success || !range) return done({ error: "rate" }, "#seasons");
@@ -69,8 +72,8 @@ export async function createRate(form: FormData) {
 }
 
 export async function deleteRate(id: string) {
-  await requireUser();
-  await db.rateOverride.delete({ where: { id } });
+  await requireManager();
+  await db.rateOverride.deleteMany({ where: { id } }); // deleteMany: a second click (or another tab) is a no-op, not a crash
   done({ done: "rate_deleted" }, "#seasons");
 }
 

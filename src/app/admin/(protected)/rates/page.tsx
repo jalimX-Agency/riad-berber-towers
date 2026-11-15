@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/admin/guard";
+import { getActiveRooms } from "@/lib/admin/rooms";
+import { canManage, requireUser } from "@/lib/admin/guard";
 import { addDays, parseDay, todayInImlil, toISO } from "@/lib/booking/dates";
 import { eur, frDate } from "@/lib/admin/labels";
 import { SubmitButton } from "@/components/admin/SubmitButton";
@@ -28,11 +29,12 @@ const range = (start: Date, end: Date) =>
   `${frDate(start, { day: "numeric", month: "short", year: "numeric" })} → ${frDate(addDays(end, -1), { day: "numeric", month: "short", year: "numeric" })}`;
 
 export default async function RatesPage({ searchParams }: Props) {
-  await requireUser();
+  const user = await requireUser();
+  const manager = canManage(user.role);
   const sp = await searchParams;
   const today = todayInImlil();
   const [rooms, rates, blocks] = await Promise.all([
-    db.room.findMany({ where: { active: true }, orderBy: { order: "asc" }, select: { id: true, slug: true, name: true, basePrice: true, currency: true } }),
+    getActiveRooms(),
     db.rateOverride.findMany({ where: { endDate: { gt: today } }, orderBy: { startDate: "asc" }, include: { room: { select: { name: true } } } }),
     db.roomBlock.findMany({ where: { endDate: { gt: today } }, orderBy: { startDate: "asc" }, include: { room: { select: { name: true } }, feed: { select: { channel: true } } } }),
   ]);
@@ -67,6 +69,7 @@ export default async function RatesPage({ searchParams }: Props) {
           <p className="text-sm text-muted">Petit-déjeuner inclus. Utilisé quand aucun tarif saisonnier ne s’applique.</p>
         </div>
         <form action={saveBasePrices} className="grid gap-4">
+          <fieldset disabled={!manager} className="grid gap-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {rooms.map((r) => (
               <label key={r.id} className={label}>
@@ -78,7 +81,8 @@ export default async function RatesPage({ searchParams }: Props) {
               </label>
             ))}
           </div>
-          <SubmitButton className="w-fit">Enregistrer les prix</SubmitButton>
+          {manager ? <SubmitButton className="w-fit">Enregistrer les prix</SubmitButton> : <p className="text-xs text-muted">Seuls le propriétaire et les administrateurs peuvent modifier les prix.</p>}
+          </fieldset>
         </form>
       </section>
 
@@ -99,18 +103,18 @@ export default async function RatesPage({ searchParams }: Props) {
                 <span>{range(r.startDate, r.endDate)}</span>
                 <span className="font-medium">{r.price != null ? `${eur(Number(r.price))} / nuit` : `${r.percent! > 0 ? "+" : ""}${r.percent} %`}</span>
                 {r.minNights > 1 && <span className="text-muted">min. {r.minNights} nuits</span>}
-                <form action={deleteRate.bind(null, r.id)} className="ms-auto">
+                {manager && <form action={deleteRate.bind(null, r.id)} className="ms-auto">
                   <SubmitButton variant="danger" confirm={`Supprimer « ${r.name} » ?`} className="px-3 py-1.5">
                     <Trash2 className="h-4 w-4" aria-label="Supprimer" />
                   </SubmitButton>
-                </form>
+                </form>}
               </li>
             ))}
           </ul>
         ) : (
           <p className="text-sm text-muted">Aucun tarif saisonnier à venir.</p>
         )}
-        <details className="rounded-[8px] border border-dashed border-rule p-4" open={sp.error === "rate"}>
+        {manager && <details className="rounded-[8px] border border-dashed border-rule p-4" open={sp.error === "rate"}>
           <summary className="cursor-pointer text-sm font-medium text-earth">Ajouter un tarif saisonnier</summary>
           <form action={createRate} className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <label className={label}>
@@ -155,7 +159,7 @@ export default async function RatesPage({ searchParams }: Props) {
             </div>
             <SubmitButton className="w-fit sm:col-span-2 lg:col-span-3">Ajouter</SubmitButton>
           </form>
-        </details>
+        </details>}
       </section>
 
       {/* Closures */}

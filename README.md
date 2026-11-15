@@ -79,6 +79,9 @@ Fonts: Cormorant Garamond (display), Jost (text), Aref Ruqaa (Arabic headings), 
 - House rules live in `src/lib/booking/policy.ts`: 2 guests per room, Suite Toubkal 3 with +10%, adults only, 40% non-refundable deposit, balance in cash (MAD, USD, EUR, GBP).
 - `/admin/settings` (owner and admins): the PayPal.me name used on the payment page and the email that receives new requests and payment proofs. `PAYPAL_ME` / `EMAIL_ADMIN` in .env are only fallbacks.
 - Payment proofs are stored in the database (PaymentProof), not on the public CDN, and served only to signed-in users.
+- Roles: OWNER and ADMIN manage prices, seasonal rates, channel feeds and settings; STAFF handle bookings, closures and syncs. Roles are read from the database on every request.
+- Sign-in: 5 failed attempts for one email lock it for 15 minutes (LoginAttempt).
+- `vercel.json`: functions run in fra1 (Frankfurt, next to the Neon database) and the iCal import runs daily (Vercel Hobby allows one run a day; use an external scheduler for more).
 - iCal: each room has a signed export link (`/api/ical/<slug>-<token>.ics`) to paste in Booking.com and Airbnb, and the platforms' own iCal links are imported as closures. Copy the export links from the **production** admin: they depend on `NEXT_PUBLIC_SITE_URL` and `ICAL_SECRET`.
 - Scheduled import: `GET /api/cron/ical` with `Authorization: Bearer $CRON_SECRET`. On Vercel add a cron in `vercel.json` (every 30–60 min needs the Pro plan; Hobby allows once a day) or use an external scheduler such as cron-job.org. The admin also has a "Synchroniser maintenant" button.
 

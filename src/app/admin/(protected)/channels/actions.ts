@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/admin/guard";
+import { requireManager, requireUser } from "@/lib/admin/guard";
 import { isSafeFeedUrl } from "@/lib/ical/ical";
 import { syncAllFeeds, syncFeed } from "@/lib/ical/sync";
 
@@ -15,7 +15,7 @@ const back = (params: Record<string, string>): never => {
 const CHANNELS = ["booking.com", "airbnb", "other"];
 
 export async function addFeed(form: FormData) {
-  await requireUser();
+  await requireManager();
   const slug = String(form.get("room") ?? "");
   const channel = CHANNELS.includes(String(form.get("channel"))) ? String(form.get("channel")) : "other";
   const url = String(form.get("url") ?? "").trim();
@@ -28,9 +28,9 @@ export async function addFeed(form: FormData) {
 }
 
 export async function removeFeed(id: string) {
-  await requireUser();
+  await requireManager();
   // its imported blocks go with it (onDelete: Cascade)
-  await db.icalFeed.delete({ where: { id } });
+  await db.icalFeed.deleteMany({ where: { id } });
   back({ done: "removed" });
 }
 

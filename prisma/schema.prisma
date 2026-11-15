@@ -174,6 +174,9 @@ model Booking {
   @@index([roomId, checkIn, checkOut])
   @@index([status])
   @@index([payToken])
+  // admin lists and dashboard filter by date without a room
+  @@index([checkIn])
+  @@index([checkOut])
 }
 
 enum BookingStatus {
@@ -376,4 +379,13 @@ model PaymentProof {
   createdAt DateTime @default(now())
 
   @@index([bookingId])
+}
+
+/// Failed admin sign-ins, to slow down password guessing (see src/lib/auth.ts).
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  key       String // normalised email
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
 }

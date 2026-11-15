@@ -13,7 +13,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     headers: {
       "Content-Type": p.mimeType,
       "Content-Disposition": `inline; filename="${p.filename.replace(/[^\w.\-]/g, "_")}"`,
-      "Cache-Control": "private, no-store",
+      // a proof never changes: let the signed-in browser keep it instead of streaming it from the database again
+      "Cache-Control": "private, max-age=31536000, immutable",
       "X-Content-Type-Options": "nosniff",
       "Content-Security-Policy": "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox",
     },

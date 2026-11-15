@@ -1,7 +1,7 @@
 import { RefreshCw, Trash2 } from "lucide-react";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
-import { requireUser } from "@/lib/admin/guard";
+import { canManage, requireUser } from "@/lib/admin/guard";
 import { exportToken } from "@/lib/ical/ical";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { CopyField } from "@/components/admin/CopyField";
@@ -16,7 +16,8 @@ const when = (d: Date | null) =>
   d ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short", timeZone: "Africa/Casablanca" }).format(d) : "jamais";
 
 export default async function ChannelsPage({ searchParams }: Props) {
-  await requireUser();
+  const user = await requireUser();
+  const manager = canManage(user.role);
   const sp = await searchParams;
   const rooms = await db.room.findMany({
     where: { active: true },
@@ -94,16 +95,16 @@ export default async function ChannelsPage({ searchParams }: Props) {
                         {f._count.blocks} séjour(s) · dernière synchro {when(f.lastSyncedAt)}
                       </span>
                       {f.lastError && <span className="w-full text-rose-800">Erreur : {f.lastError}</span>}
-                      <form action={removeFeed.bind(null, f.id)} className="ms-auto">
+                      {manager && <form action={removeFeed.bind(null, f.id)} className="ms-auto">
                         <SubmitButton variant="danger" confirm="Retirer ce calendrier ? Ses séjours importés seront supprimés de ce site." className="px-3 py-1.5">
                           <Trash2 className="h-4 w-4" aria-label="Retirer" />
                         </SubmitButton>
-                      </form>
+                      </form>}
                     </li>
                   ))}
                 </ul>
               )}
-              <form action={addFeed} className="grid gap-2 sm:grid-cols-[150px_minmax(0,1fr)_auto]">
+              {manager && <form action={addFeed} className="grid gap-2 sm:grid-cols-[150px_minmax(0,1fr)_auto]">
                 <input type="hidden" name="room" value={room.slug} />
                 <select name="channel" className={field} aria-label="Plateforme">
                   <option value="booking.com">Booking.com</option>
@@ -112,7 +113,7 @@ export default async function ChannelsPage({ searchParams }: Props) {
                 </select>
                 <input name="url" type="url" required placeholder="https://… lien iCal de la plateforme" className={field} aria-label="Lien iCal" />
                 <SubmitButton variant="outline">Ajouter</SubmitButton>
-              </form>
+              </form>}
             </div>
           </li>
         ))}

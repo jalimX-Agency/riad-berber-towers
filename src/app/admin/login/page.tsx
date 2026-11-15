@@ -22,6 +22,7 @@ export default function AdminLogin() {
     });
     setLoading(false);
     if (res?.ok) router.push("/admin");
+    else if (res?.error === "too_many") setError("Trop de tentatives. Réessayez dans 15 minutes.");
     else setError("Email ou mot de passe incorrect.");
   }
 

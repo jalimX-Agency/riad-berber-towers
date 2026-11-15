@@ -185,7 +185,7 @@ export default async function BookingPage({ params, searchParams }: Props) {
                 </div>
                 {p.mimeType.startsWith("image/") && (
                   // eslint-disable-next-line @next/next/no-img-element -- private file served by an authenticated admin route
-                  <img src={`/admin/proofs/${p.id}`} alt={`Preuve de paiement ${p.filename}`} className="max-h-[420px] w-auto rounded-[6px] border border-rule" />
+                  <img loading="lazy" decoding="async" src={`/admin/proofs/${p.id}`} alt={`Preuve de paiement ${p.filename}`} className="max-h-[420px] w-auto rounded-[6px] border border-rule" />
                 )}
               </li>
             ))}

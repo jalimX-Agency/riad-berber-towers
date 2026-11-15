@@ -44,7 +44,7 @@ export default async function AdminDashboard() {
         <ul className="divide-y divide-rule">
           {rows.map((b) => (
             <li key={b.id}>
-              <Link href={`/admin/bookings/${b.id}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5 text-sm hover:text-earth">
+              <Link href={`/admin/bookings/${b.id}`} prefetch={false} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5 text-sm hover:text-earth">
                 <span className="font-medium">
                   {b.guest.firstName} {b.guest.lastName}
                 </span>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { BookingStatus } from "@prisma/client";
 import { ChevronLeft, ChevronRight, TriangleAlert } from "lucide-react";
 import { db } from "@/lib/db";
+import { getActiveRooms } from "@/lib/admin/rooms";
 import { requireUser } from "@/lib/admin/guard";
 import { addDays, nightsBetween, todayInImlil, toISO } from "@/lib/booking/dates";
 import { statusLabel } from "@/lib/admin/labels";
@@ -38,7 +39,7 @@ export default async function CalendarPage({ searchParams }: Props) {
 
   const overlap = { checkIn: { lt: end }, checkOut: { gt: start } };
   const [rooms, bookings, blocks] = await Promise.all([
-    db.room.findMany({ where: { active: true }, orderBy: { order: "asc" }, select: { id: true, name: true, slug: true } }),
+    getActiveRooms(),
     db.booking.findMany({
       where: { ...overlap, status: { notIn: ["CANCELLED", "NO_SHOW"] } },
       select: { id: true, roomId: true, checkIn: true, checkOut: true, status: true, reference: true, guest: { select: { firstName: true, lastName: true } } },
@@ -116,6 +117,7 @@ export default async function CalendarPage({ searchParams }: Props) {
                 {days.map((d, i) => (
                   <Link
                     key={toISO(d)}
+                    prefetch={false}
                     href={`/admin/rates?room=${room.slug}&from=${toISO(d)}#closures`}
                     style={{ ...row, gridColumn: i + 2 }}
                     className={cn("min-h-12 border-b border-e border-rule/60 hover:bg-earth/10", (d.getUTCDay() === 0 || d.getUTCDay() === 6) && "bg-paper/40")}
@@ -127,6 +129,7 @@ export default async function CalendarPage({ searchParams }: Props) {
                   .map((k) => (
                     <Link
                       key={k.id}
+                      prefetch={false}
                       href="/admin/rates#closures"
                       style={{ ...row, ...col(k.startDate, k.endDate), backgroundImage: "repeating-linear-gradient(45deg, rgba(0,0,0,.08) 0 6px, transparent 6px 12px)" }}
                       className={cn("z-10 my-2 truncate rounded-[6px] bg-stone-200 px-2 py-1 text-stone-800", clashes.has(k.id) && "ring-2 ring-rose-600")}
@@ -140,6 +143,7 @@ export default async function CalendarPage({ searchParams }: Props) {
                   .map((b) => (
                     <Link
                       key={b.id}
+                      prefetch={false}
                       href={`/admin/bookings/${b.id}`}
                       style={{ ...row, ...col(b.checkIn, b.checkOut) }}
                       className={cn("z-10 my-2 truncate rounded-[6px] px-2 py-1 font-medium shadow-sm hover:brightness-95", bar[b.status], clashes.has(b.id) && "ring-2 ring-rose-600")}
