@@ -71,6 +71,13 @@ Fonts: Cormorant Garamond (display), Jost (text), Aref Ruqaa (Arabic headings), 
 - `prisma/media-manifest.json`: `rooms` = the chosen photos per room (cover first), `library` = every photo. The seed applies `rooms` to rooms that have no photos or still have the old site's (`rooms/...`) photos.
 - Keys are never reused for different content (R2 objects are cached as immutable), so a new shoot gets new keys.
 
+## Admin
+
+- `/admin` (French): dashboard, bookings (confirm / cancel / arrival / departure, payment, notes, guest emails), manual bookings, calendar, prices and seasonal rates, room closures, Booking.com / Airbnb sync.
+- Prices are managed in `/admin/rates`; the seed sets a room's base price only when it creates the room.
+- iCal: each room has a signed export link (`/api/ical/<slug>-<token>.ics`) to paste in Booking.com and Airbnb, and the platforms' own iCal links are imported as closures. Copy the export links from the **production** admin: they depend on `NEXT_PUBLIC_SITE_URL` and `ICAL_SECRET`.
+- Scheduled import: `GET /api/cron/ical` with `Authorization: Bearer $CRON_SECRET`. On Vercel add a cron in `vercel.json` (every 30–60 min needs the Pro plan; Hobby allows once a day) or use an external scheduler such as cron-job.org. The admin also has a "Synchroniser maintenant" button.
+
 ## Notes
 
 - Translations in `src/messages/` for FR, ES and AR are first drafts and need a native review.
