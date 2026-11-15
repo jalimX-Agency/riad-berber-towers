@@ -26,7 +26,144 @@
     "eyebrow": "Imlil · High Atlas · 1,740 m",
     "title": "Seven rooms. One valley. Made by hand.",
     "cta": "Check availability",
-    "comingSoon": "Our new website is being built."
+    "comingSoon": "Our new website is being built.",
+    "hero": {
+      "line1": "Seven rooms.",
+      "line2": "One valley.",
+      "line3": "Made by hand.",
+      "lead": "A family guesthouse of carved cedar, tadelakt and Fes zellij in the centre of Imlil, at the foot of Toubkal. Breakfast on the roof is included.",
+      "alt": "Riad Berber Towers, an ochre tower house among the walnut trees of Imlil",
+      "caption": "Imlil · Al Haouz",
+      "searchLabel": "Check availability",
+      "fromPrice": "Rooms from {price} a night, breakfast included"
+    },
+    "intro": {
+      "label": "The house",
+      "text": "Riad Berber Towers rises three floors above the village, built with the craft of the High Atlas: tadelakt walls, zellij floors, cedar ceilings carved by hand. The trail to Toubkal starts at our door.",
+      "facts": {
+        "altitude": {
+          "value": "1,740 m",
+          "label": "Altitude of Imlil"
+        },
+        "marrakech": {
+          "value": "64 km",
+          "label": "From Marrakech"
+        },
+        "toubkal": {
+          "value": "4,167 m",
+          "label": "Toubkal, North Africa’s highest peak"
+        },
+        "rooms": {
+          "value": "7",
+          "label": "Rooms and suites"
+        }
+      }
+    },
+    "climb": {
+      "label": "Climb the house",
+      "title": "Three floors and a roof",
+      "text": "From the fountain to the terrace, every floor has its own rooms and its own view.",
+      "all": "See all rooms and prices",
+      "stages": {
+        "ground": {
+          "label": "Ground floor",
+          "title": "The fountain floor",
+          "text": "Reception, the salon around the zellij fountain, and two rooms that open onto the garden and the village."
+        },
+        "first": {
+          "label": "First floor",
+          "title": "The cedar gallery",
+          "text": "Four suites around the open atrium, under carved cedar beams. Three of them look out to the mountains."
+        },
+        "second": {
+          "label": "Second floor",
+          "title": "Under the skylight",
+          "text": "One suite on its own, closest to the stained-glass skylight, with a balcony facing the mountains."
+        },
+        "roof": {
+          "label": "Roof terrace",
+          "title": "The terrace",
+          "text": "Breakfast in the morning sun with the Toubkal ridges in front of you. At night, the village lights and the stars."
+        }
+      }
+    },
+    "tea": {
+      "label": "The welcome",
+      "title": "It starts with mint tea",
+      "text1": "Every arrival begins in the salon by the fountain, with mint tea poured from high, the way it is done in every Berber house in the valley.",
+      "text2": "After that, the house is yours: warm floors after a day on the trail, a quiet room, and breakfast on the roof the next morning.",
+      "alt1": "Mint tea being poured in the salon of Riad Berber Towers",
+      "alt2": "A silver teapot and glasses with fresh mint on a tray",
+      "included": {
+        "breakfast": "Breakfast included",
+        "heating": "Heated floors in every room",
+        "wifi": "Wi-Fi throughout the house"
+      }
+    },
+    "strip": {
+      "label": "Inside",
+      "title": "Cedar, zellij and light",
+      "text": "Everything in the house was made by craftsmen from the region, from the carved doors to the coloured glass.",
+      "items": {
+        "salon": {
+          "title": "The salon",
+          "text": "Low benches, Berber cushions and tables of Atlas pine."
+        },
+        "gallery": {
+          "title": "The gallery",
+          "text": "Wrought-iron balustrades and cedar doors around the atrium."
+        },
+        "skylight": {
+          "title": "The skylight",
+          "text": "Coloured glass that sends light down through three floors."
+        },
+        "stairs": {
+          "title": "The staircase",
+          "text": "Turned cedar and Berber carpet, from the entrance up."
+        },
+        "fountain": {
+          "title": "From above",
+          "text": "The zellij fountain, seen from the top of the atrium."
+        }
+      }
+    },
+    "imlil": {
+      "label": "Imlil",
+      "title": "A village at the foot of Toubkal",
+      "text": "Walnut trees, terraced fields and mule paths. From here you walk to the waterfalls, to the villages of Aroumd and Tamatert, or up to the Toubkal summit in two days.",
+      "alt": "The village of Imlil with Riad Berber Towers in front of the High Atlas ridges",
+      "caption": "Imlil and the Toubkal massif",
+      "activities": "Activities",
+      "guide": "Imlil guide"
+    },
+    "arrive": {
+      "label": "Getting here",
+      "title": "64 km from Marrakech",
+      "steps": {
+        "marrakech": {
+          "meta": "0 km",
+          "name": "Marrakech",
+          "text": "Leave the city south on the road to Asni."
+        },
+        "asni": {
+          "meta": "47 km",
+          "name": "Asni",
+          "text": "The weekly market town. The road starts to climb into the valley."
+        },
+        "imlil": {
+          "meta": "64 km · about 1 h 30",
+          "name": "Imlil",
+          "text": "We are in the village centre. Send us a message and we’ll guide you to the door."
+        }
+      },
+      "whatsapp": "Ask us for directions",
+      "whatsappMessage": "Hello, I would like directions to Riad Berber Towers in Imlil."
+    },
+    "book": {
+      "label": "Book direct",
+      "title": "Choose your dates",
+      "text": "See which rooms are free and the price of your stay. You pay on arrival; we confirm every request within a few hours."
+    }
   },
   "footer": {
     "address": "Imlil Centre, Asni · Al Haouz, Morocco",
@@ -95,13 +232,13 @@
     "showing": "{count} rooms",
     "amenities": {
       "heated_floor": "Heated floors",
-      "air_conditioning": "Air conditioning",
+      "tadelakt_walls": "Tadelakt walls",
+      "zellij_shower": "Fes zellij shower",
       "private_bathroom": "Private bathroom, hot shower",
       "wifi": "Wi-Fi",
       "private_terrace": "Private terrace",
       "balcony": "Private balcony",
-      "coffee_maker": "Coffee maker and kettle",
-      "tadelakt_shower": "Tadelakt shower"
+      "coffee_maker": "Coffee maker and kettle"
     },
     "photoOf": "photo {current} of {total}",
     "prevPhoto": "Previous photo",

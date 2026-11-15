@@ -14,6 +14,12 @@ type Props = {
   today: string;
   hasQuery?: boolean;
   className?: string;
+  /** open results on another page (e.g. "/rooms" from the home page) instead of the current one */
+  target?: "/rooms";
+  /** prefix for the field ids when the bar appears more than once on a page */
+  idPrefix?: string;
+  /** "row": one line from sm up (rooms page). "stacked": dates side by side, guests and button below (narrow columns, home page). */
+  layout?: "row" | "stacked";
 };
 
 const plusDays = (iso: string, n: number) => {
@@ -23,7 +29,7 @@ const plusDays = (iso: string, n: number) => {
 };
 
 /** Booking-style search bar. Dates live in the URL (?checkIn=&checkOut=&adults=) so results can be shared. */
-export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, className }: Props) {
+export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, className, target, idPrefix = "", layout = "row" }: Props) {
   const t = useTranslations("search");
   const router = useRouter();
   const pathname = usePathname();
@@ -45,10 +51,10 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
     if (outDate <= inDate) return setError(t("errors.order"));
     setError("");
     const qs = new URLSearchParams({ checkIn: inDate, checkOut: outDate, adults: String(guests) });
-    startTransition(() => router.push(`${pathname}?${qs.toString()}`, { scroll: false }));
+    startTransition(() => router.push(`${target ?? pathname}?${qs.toString()}`, { scroll: !!target }));
   }
 
-  const field = "grid gap-0.5 px-4 py-2.5 text-start";
+  const field = "grid min-w-0 gap-0.5 px-4 py-2.5 text-start";
   const labelCls = "text-[10px] font-medium uppercase tracking-[0.16em] text-granite [html[dir=rtl]_&]:text-xs [html[dir=rtl]_&]:tracking-normal";
   const inputCls = "w-full bg-transparent text-[15px] text-ink outline-none [color-scheme:light]";
 
@@ -56,24 +62,25 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
     <form onSubmit={submit} className={cn("grid gap-2", className)} noValidate>
       <div
         className={cn(
-          "grid overflow-hidden rounded-[12px] border border-rule bg-snow sm:grid-cols-[1.2fr_1.2fr_1fr_auto]",
+          "grid overflow-hidden rounded-[12px] border border-rule bg-snow",
+          layout === "row" ? "sm:grid-cols-[1.2fr_1.2fr_1fr_auto]" : "grid-cols-2",
           error && "border-earth",
         )}
       >
-        <label className={cn(field, "border-b border-rule sm:border-b-0 sm:border-e")}>
+        <label className={cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "border-e border-b border-rule")}>
           <span className={labelCls}>
             <CalendarDays className="me-1.5 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
             {t("checkIn")}
           </span>
-          <input id="checkIn" type="date" min={today} value={inDate} onChange={(e) => onCheckIn(e.target.value)} className={inputCls} required />
+          <input id={`${idPrefix}checkIn`} type="date" min={today} value={inDate} onChange={(e) => onCheckIn(e.target.value)} className={inputCls} required />
         </label>
-        <label className={cn(field, "border-b border-rule sm:border-b-0 sm:border-e")}>
+        <label className={cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "border-b border-rule")}>
           <span className={labelCls}>
             <CalendarDays className="me-1.5 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
             {t("checkOut")}
           </span>
           <input
-            id="checkOut"
+            id={`${idPrefix}checkOut`}
             type="date"
             min={inDate ? plusDays(inDate, 1) : plusDays(today, 1)}
             value={outDate}
@@ -85,12 +92,12 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
             required
           />
         </label>
-        <label className={cn(field, "border-b border-rule sm:border-b-0 sm:border-e")}>
+        <label className={cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "col-span-2 border-b border-rule")}>
           <span className={labelCls}>
             <Users className="me-1.5 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
             {t("guests")}
           </span>
-          <select id="adults" value={guests} onChange={(e) => setGuests(Number(e.target.value))} className={inputCls}>
+          <select id={`${idPrefix}adults`} value={guests} onChange={(e) => setGuests(Number(e.target.value))} className={inputCls}>
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <option key={n} value={n}>
                 {t("adults", { count: n })}
@@ -101,7 +108,7 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex items-center justify-center gap-2 bg-earth px-7 py-4 text-xs font-medium uppercase tracking-[0.14em] text-snow transition-colors hover:bg-ink disabled:opacity-70"
+          className={cn("inline-flex items-center justify-center gap-2 bg-earth px-7 py-4 text-xs font-medium uppercase tracking-[0.14em] text-snow transition-colors hover:bg-ink disabled:opacity-70", layout === "stacked" && "col-span-2")}
         >
           <Search className="h-4 w-4" aria-hidden="true" />
           {hasQuery ? t("update") : t("search")}

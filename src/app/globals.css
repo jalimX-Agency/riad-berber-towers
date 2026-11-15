@@ -86,3 +86,17 @@
   from { clip-path: inset(12% 8% 12% 8% round 4px); }
   to { clip-path: inset(0 0 0 0 round 4px); }
 }
+
+/* Home page. The two scroll effects run only on large screens with motion allowed;
+   everyone else gets the stacked climb and the swipe row. */
+.climb-pin, .strip-pin { display: none; }
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .climb-stack, .strip-swipe { display: none; }
+  .climb-pin, .strip-pin { display: block; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .climb-in { animation: climb-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+}
+@keyframes climb-in {
+  from { opacity: 0; transform: translateY(1.5rem); }
+}

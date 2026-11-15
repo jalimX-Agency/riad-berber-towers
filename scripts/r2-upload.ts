@@ -22,7 +22,7 @@ const s3 = new S3Client({
   credentials: { accessKeyId: R2_ACCESS_KEY_ID, secretAccessKey: R2_SECRET_ACCESS_KEY },
 });
 
-const types: Record<string, string> = { ".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".avif": "image/avif" };
+const types: Record<string, string> = { ".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".avif": "image/avif", ".mp4": "video/mp4" };
 
 async function* walk(dir: string): AsyncGenerator<string> {
   for (const name of await readdir(dir)) {

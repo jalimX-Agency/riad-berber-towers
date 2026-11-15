@@ -19,13 +19,13 @@ const manifest = JSON.parse(readFileSync(path.join(__dirname, "media-manifest.js
 
 // Prices and floors from the owner (Nov 2026). Order = the owner's room numbers 1-7.
 const rooms = [
-  { slug: "targa", code: "TRG", name: "Targa Room", category: "standard", floor: 0, price: 72, view: "garden", order: 1, amenities: ["heated_floor", "air_conditioning", "private_bathroom", "wifi"] },
-  { slug: "tarzoute", code: "TRZ", name: "Suite Tarzoute", category: "suite", floor: 0, price: 82, view: "village", order: 2, amenities: ["private_terrace", "heated_floor", "private_bathroom", "wifi"] },
-  { slug: "imlil", code: "IML", name: "Suite Imlil", category: "suite", floor: 1, price: 82, view: "mountain", order: 3, amenities: ["heated_floor", "private_bathroom", "wifi", "coffee_maker"] },
-  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"], featured: true },
-  { slug: "atlas", code: "ATL", name: "Suite Atlas", category: "suite", floor: 1, price: 82, view: "garden", order: 5, amenities: ["balcony", "tadelakt_shower", "heated_floor", "wifi"] },
-  { slug: "taddart", code: "TDR", name: "Suite Taddart", category: "suite", floor: 1, price: 92, view: "mountain", order: 6, amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"] },
-  { slug: "adrar", code: "ADR", name: "Suite Adrar", category: "suite", floor: 2, price: 92, view: "mountain", order: 7, amenities: ["balcony", "heated_floor", "private_bathroom", "wifi"] },
+  { slug: "targa", code: "TRG", name: "Targa Room", category: "standard", floor: 0, price: 72, view: "garden", order: 1, amenities: ["heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "tarzoute", code: "TRZ", name: "Suite Tarzoute", category: "suite", floor: 0, price: 82, view: "village", order: 2, amenities: ["private_terrace", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "imlil", code: "IML", name: "Suite Imlil", category: "suite", floor: 1, price: 82, view: "mountain", order: 3, amenities: ["heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi", "coffee_maker"] },
+  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"], featured: true },
+  { slug: "atlas", code: "ATL", name: "Suite Atlas", category: "suite", floor: 1, price: 82, view: "garden", order: 5, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "taddart", code: "TDR", name: "Suite Taddart", category: "suite", floor: 1, price: 92, view: "mountain", order: 6, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "adrar", code: "ADR", name: "Suite Adrar", category: "suite", floor: 2, price: 92, view: "mountain", order: 7, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
 ];
 
 const locales: Locale[] = ["en", "fr", "es", "ar"];
@@ -35,7 +35,8 @@ async function main() {
   await db.room.updateMany({ where: { slug: "tarzout" }, data: { slug: "tarzoute" } });
 
   for (const r of rooms) {
-    const facts = { code: r.code, name: r.name, category: r.category, floor: r.floor, order: r.order, basePrice: r.price };
+    // basePrice is only set when a room is created: after that the owner manages prices in /admin/rates
+    const facts = { code: r.code, name: r.name, category: r.category, floor: r.floor, order: r.order };
     const photos = (manifest.rooms[r.slug] ?? []).map((m) => m.key);
 
     const room = await db.room.upsert({
@@ -44,6 +45,7 @@ async function main() {
       create: {
         slug: r.slug,
         ...facts,
+        basePrice: r.price,
         view: r.view,
         maxAdults: 2,
         featured: r.featured ?? false,

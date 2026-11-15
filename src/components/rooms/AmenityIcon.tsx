@@ -1,14 +1,14 @@
-import { Bath, Coffee, Fence, Flame, ShowerHead, Snowflake, Sunrise, Wifi, type LucideIcon } from "lucide-react";
+import { Bath, BrickWall, Coffee, Fence, Flame, ShowerHead, Sunrise, Wifi, type LucideIcon } from "lucide-react";
 
 const icons: Record<string, LucideIcon> = {
   heated_floor: Flame,
-  air_conditioning: Snowflake,
+  tadelakt_walls: BrickWall,
+  zellij_shower: ShowerHead,
   private_bathroom: Bath,
   wifi: Wifi,
   private_terrace: Sunrise,
   balcony: Fence,
   coffee_maker: Coffee,
-  tadelakt_shower: ShowerHead,
 };
 
 export function AmenityIcon({ name, className }: { name: string; className?: string }) {

@@ -5,10 +5,10 @@
 type Copy = { name: string; tagline: string; description: string };
 export const roomCopy: Record<string, Record<"en" | "fr" | "es" | "ar", Copy>> = {
   targa: {
-    en: { name: "Targa Room", tagline: "Garden view and traditional charm", description: "Our standard room, on the ground floor and opening onto the garden. A calm, cosy space for two, with heated floors for winter nights, air conditioning for summer and a private bathroom with a hot shower." },
-    fr: { name: "Chambre Targa", tagline: "Vue jardin et charme traditionnel", description: "Notre chambre standard, au rez-de-chaussée, ouverte sur le jardin. Un espace calme et chaleureux pour deux, avec sol chauffant pour les nuits d'hiver, climatisation pour l'été et salle de bain privée avec douche chaude." },
-    es: { name: "Habitación Targa", tagline: "Vista al jardín y encanto tradicional", description: "Nuestra habitación estándar, en la planta baja y abierta al jardín. Un espacio tranquilo y acogedor para dos, con suelo radiante para las noches de invierno, aire acondicionado para el verano y baño privado con ducha caliente." },
-    ar: { name: "غرفة تاركا", tagline: "إطلالة على الحديقة وسحر تقليدي", description: "غرفتنا العادية في الطابق الأرضي، تنفتح على الحديقة. مكان هادئ ودافئ لشخصين، بأرضية مدفأة لليالي الشتاء، ومكيّف للصيف، وحمّام خاص بماء ساخن." },
+    en: { name: "Targa Room", tagline: "Garden view and traditional charm", description: "Our standard room, on the ground floor and opening onto the garden. A calm, cosy space for two, with tadelakt walls, heated floors for winter nights and a private bathroom with a Fes zellij shower." },
+    fr: { name: "Chambre Targa", tagline: "Vue jardin et charme traditionnel", description: "Notre chambre standard, au rez-de-chaussée, ouverte sur le jardin. Un espace calme et chaleureux pour deux, avec murs en tadelakt, sol chauffant pour les nuits d'hiver et salle de bain privée avec douche en zellige de Fès." },
+    es: { name: "Habitación Targa", tagline: "Vista al jardín y encanto tradicional", description: "Nuestra habitación estándar, en la planta baja y abierta al jardín. Un espacio tranquilo y acogedor para dos, con paredes de tadelakt, suelo radiante para las noches de invierno y baño privado con ducha de zellige de Fez." },
+    ar: { name: "غرفة تاركا", tagline: "إطلالة على الحديقة وسحر تقليدي", description: "غرفتنا العادية في الطابق الأرضي، تنفتح على الحديقة. مكان هادئ ودافئ لشخصين، بجدران من التادلاكت، وأرضية مدفأة لليالي الشتاء، وحمّام خاص بدُش من الزليج الفاسي." },
   },
   tarzoute: {
     en: { name: "Suite Tarzoute", tagline: "A private terrace over the village and the mountains", description: "A ground-floor suite with its own terrace looking out over the village and the peaks. Handcrafted Moroccan finishes in the bathroom, heated floors for cool evenings and fast Wi-Fi." },
@@ -29,10 +29,10 @@ export const roomCopy: Record<string, Record<"en" | "fr" | "es" | "ar", Copy>> =
     ar: { name: "جناح توبقال", tagline: "شرفة في مواجهة الجبال", description: "جناحنا المميز في الطابق الأول، يحمل اسم أعلى قمة في شمال إفريقيا. شرفة خاصة تطل على الجبال والحديقة والقرية، وأرضية مدفأة، وحمّام خاص، وإنترنت." },
   },
   atlas: {
-    en: { name: "Suite Atlas", tagline: "A balcony over the village, a tadelakt shower", description: "A warm first-floor suite with a private balcony over the village and the garden. The bathroom has a traditional tadelakt shower, polished by hand, and heated floors keep the room warm in winter." },
-    fr: { name: "Suite Atlas", tagline: "Un balcon sur le village, une douche en tadelakt", description: "Une suite chaleureuse au premier étage avec balcon privé sur le village et le jardin. La salle de bain possède une douche traditionnelle en tadelakt, polie à la main, et le sol chauffant garde la chambre au chaud en hiver." },
-    es: { name: "Suite Atlas", tagline: "Un balcón sobre el pueblo, una ducha de tadelakt", description: "Una suite cálida en la primera planta con balcón privado sobre el pueblo y el jardín. El baño tiene una ducha tradicional de tadelakt pulida a mano, y el suelo radiante mantiene la habitación caliente en invierno." },
-    ar: { name: "جناح الأطلس", tagline: "شرفة على القرية ودُش من التادلاكت", description: "جناح دافئ في الطابق الأول بشرفة خاصة تطل على القرية والحديقة. في الحمّام دُش تقليدي من التادلاكت مصقول باليد، والأرضية المدفأة تحافظ على دفء الغرفة في الشتاء." },
+    en: { name: "Suite Atlas", tagline: "A balcony over the village and the garden", description: "A warm first-floor suite with a private balcony over the village and the garden. Tadelakt walls polished by hand, a shower in Fes zellij, and heated floors that keep the room warm in winter." },
+    fr: { name: "Suite Atlas", tagline: "Un balcon sur le village et le jardin", description: "Une suite chaleureuse au premier étage avec balcon privé sur le village et le jardin. Murs en tadelakt polis à la main, douche en zellige de Fès et sol chauffant qui garde la chambre au chaud en hiver." },
+    es: { name: "Suite Atlas", tagline: "Un balcón sobre el pueblo y el jardín", description: "Una suite cálida en la primera planta con balcón privado sobre el pueblo y el jardín. Paredes de tadelakt pulidas a mano, ducha de zellige de Fez y suelo radiante que mantiene la habitación caliente en invierno." },
+    ar: { name: "جناح الأطلس", tagline: "شرفة على القرية والحديقة", description: "جناح دافئ في الطابق الأول بشرفة خاصة تطل على القرية والحديقة. جدران من التادلاكت مصقولة باليد، ودُش من الزليج الفاسي، وأرضية مدفأة تحافظ على دفء الغرفة في الشتاء." },
   },
   taddart: {
     en: { name: "Suite Taddart", tagline: "The widest view in the house", description: "A first-floor suite with the widest panorama in the riad: mountains, valleys and villages. Its private balcony is made for sunrise and stargazing, with heated floors and handcrafted Moroccan finishes inside." },

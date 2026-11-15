@@ -20,7 +20,7 @@ export type Availability = {
 export type Stay = { checkIn: string; checkOut: string; nights: number; adults: number };
 
 type Sort = "recommended" | "priceAsc" | "priceDesc";
-const filterAmenities = ["balcony", "private_terrace", "tadelakt_shower", "air_conditioning"] as const;
+const filterAmenities = ["balcony", "private_terrace"] as const;
 
 export function RoomResults({
   rooms,

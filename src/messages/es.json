@@ -26,7 +26,144 @@
     "eyebrow": "Imlil · Alto Atlas · 1.740 m",
     "title": "Siete habitaciones. Un valle. Hecho a mano.",
     "cta": "Ver disponibilidad",
-    "comingSoon": "Estamos construyendo nuestra nueva web."
+    "comingSoon": "Estamos construyendo nuestra nueva web.",
+    "hero": {
+      "line1": "Siete habitaciones.",
+      "line2": "Un valle.",
+      "line3": "Hechas a mano.",
+      "lead": "Una casa de huéspedes familiar de cedro tallado, tadelakt y zellige de Fez en el centro de Imlil, al pie del Toubkal. El desayuno en la azotea está incluido.",
+      "alt": "Riad Berber Towers, una casa torre ocre entre los nogales de Imlil",
+      "caption": "Imlil · Al Haouz",
+      "searchLabel": "Ver disponibilidad",
+      "fromPrice": "Habitaciones desde {price} la noche, desayuno incluido"
+    },
+    "intro": {
+      "label": "La casa",
+      "text": "Riad Berber Towers se alza tres plantas sobre el pueblo, construida con el oficio del Alto Atlas: paredes de tadelakt, suelos de zellige y techos de cedro tallados a mano. El sendero del Toubkal empieza en nuestra puerta.",
+      "facts": {
+        "altitude": {
+          "value": "1.740 m",
+          "label": "Altitud de Imlil"
+        },
+        "marrakech": {
+          "value": "64 km",
+          "label": "Desde Marrakech"
+        },
+        "toubkal": {
+          "value": "4.167 m",
+          "label": "El Toubkal, la cumbre más alta del norte de África"
+        },
+        "rooms": {
+          "value": "7",
+          "label": "Habitaciones y suites"
+        }
+      }
+    },
+    "climb": {
+      "label": "Sube por la casa",
+      "title": "Tres plantas y una azotea",
+      "text": "De la fuente a la terraza, cada planta tiene sus habitaciones y su vista.",
+      "all": "Ver todas las habitaciones y precios",
+      "stages": {
+        "ground": {
+          "label": "Planta baja",
+          "title": "La planta de la fuente",
+          "text": "La recepción, el salón alrededor de la fuente de zellige y dos habitaciones abiertas al jardín y al pueblo."
+        },
+        "first": {
+          "label": "Primera planta",
+          "title": "La galería de cedro",
+          "text": "Cuatro suites alrededor del patio abierto, bajo vigas de cedro tallado. Tres de ellas miran a las montañas."
+        },
+        "second": {
+          "label": "Segunda planta",
+          "title": "Bajo la claraboya",
+          "text": "Una suite aparte, junto a la claraboya de vidrio de colores, con balcón frente a las montañas."
+        },
+        "roof": {
+          "label": "Azotea",
+          "title": "La terraza",
+          "text": "El desayuno al sol de la mañana, frente a las crestas del Toubkal. Por la noche, las luces del pueblo y las estrellas."
+        }
+      }
+    },
+    "tea": {
+      "label": "La bienvenida",
+      "title": "Todo empieza con un té a la menta",
+      "text1": "Cada llegada empieza en el salón junto a la fuente, con un té a la menta servido desde lo alto, como en todas las casas bereberes del valle.",
+      "text2": "Después, la casa es tuya: suelos cálidos tras un día de camino, una habitación tranquila y el desayuno en la azotea a la mañana siguiente.",
+      "alt1": "Sirviendo té a la menta en el salón de Riad Berber Towers",
+      "alt2": "Una tetera de plata y vasos con menta fresca en una bandeja",
+      "included": {
+        "breakfast": "Desayuno incluido",
+        "heating": "Suelo radiante en cada habitación",
+        "wifi": "Wi-Fi en toda la casa"
+      }
+    },
+    "strip": {
+      "label": "Dentro",
+      "title": "Cedro, zellige y luz",
+      "text": "Todo en la casa lo hicieron artesanos de la región, desde las puertas talladas hasta los vidrios de colores.",
+      "items": {
+        "salon": {
+          "title": "El salón",
+          "text": "Bancos bajos, cojines bereberes y mesas de pino del Atlas."
+        },
+        "gallery": {
+          "title": "La galería",
+          "text": "Barandillas de hierro forjado y puertas de cedro alrededor del patio."
+        },
+        "skylight": {
+          "title": "La claraboya",
+          "text": "Vidrios de colores que llevan la luz a través de tres plantas."
+        },
+        "stairs": {
+          "title": "La escalera",
+          "text": "Cedro torneado y alfombra bereber, desde la entrada hasta arriba."
+        },
+        "fountain": {
+          "title": "Desde arriba",
+          "text": "La fuente de zellige, vista desde lo alto del patio."
+        }
+      }
+    },
+    "imlil": {
+      "label": "Imlil",
+      "title": "Un pueblo al pie del Toubkal",
+      "text": "Nogales, bancales y caminos de mulas. Desde aquí se camina a las cascadas, a los pueblos de Aroumd y Tamatert, o a la cumbre del Toubkal en dos días.",
+      "alt": "El pueblo de Imlil con Riad Berber Towers delante de las crestas del Alto Atlas",
+      "caption": "Imlil y el macizo del Toubkal",
+      "activities": "Actividades",
+      "guide": "Guía de Imlil"
+    },
+    "arrive": {
+      "label": "Cómo llegar",
+      "title": "A 64 km de Marrakech",
+      "steps": {
+        "marrakech": {
+          "meta": "0 km",
+          "name": "Marrakech",
+          "text": "Sal de la ciudad hacia el sur por la carretera de Asni."
+        },
+        "asni": {
+          "meta": "47 km",
+          "name": "Asni",
+          "text": "El pueblo del mercado semanal. La carretera empieza a subir por el valle."
+        },
+        "imlil": {
+          "meta": "64 km · aprox. 1 h 30",
+          "name": "Imlil",
+          "text": "Estamos en el centro del pueblo. Escríbenos y te guiamos hasta la puerta."
+        }
+      },
+      "whatsapp": "Pídenos indicaciones",
+      "whatsappMessage": "Hola, quisiera indicaciones para llegar a Riad Berber Towers en Imlil."
+    },
+    "book": {
+      "label": "Reserva directa",
+      "title": "Elige tus fechas",
+      "text": "Mira qué habitaciones están libres y el precio de tu estancia. Pagas a la llegada; confirmamos cada solicitud en pocas horas."
+    }
   },
   "footer": {
     "address": "Imlil Centro, Asni · Al Haouz, Marruecos",
@@ -95,13 +232,13 @@
     "showing": "{count} habitaciones",
     "amenities": {
       "heated_floor": "Suelo radiante",
-      "air_conditioning": "Aire acondicionado",
+      "tadelakt_walls": "Paredes de tadelakt",
+      "zellij_shower": "Ducha de zellige de Fez",
       "private_bathroom": "Baño privado, ducha caliente",
       "wifi": "Wi-Fi",
       "private_terrace": "Terraza privada",
       "balcony": "Balcón privado",
-      "coffee_maker": "Cafetera y hervidor",
-      "tadelakt_shower": "Ducha de tadelakt"
+      "coffee_maker": "Cafetera y hervidor"
     },
     "photoOf": "foto {current} de {total}",
     "prevPhoto": "Foto anterior",
