@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { BookingStatus, Prisma } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/admin/guard";
+import { canManage, requireUser } from "@/lib/admin/guard";
 import { getActiveRooms } from "@/lib/admin/rooms";
 import { todayInImlil } from "@/lib/booking/dates";
 import { eur, frDate, sourceLabel, statusLabel, paymentLabel } from "@/lib/admin/labels";
@@ -19,7 +19,7 @@ type Props = { searchParams: Promise<Record<string, string | undefined>> };
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
 export default async function BookingsPage({ searchParams }: Props) {
-  await requireUser();
+  const user = await requireUser();
   const sp = await searchParams;
   const view = sp.view === "past" || sp.view === "all" ? sp.view : "upcoming";
   const status = STATUSES.includes(sp.status as BookingStatus) ? (sp.status as BookingStatus) : "";
@@ -79,6 +79,8 @@ export default async function BookingsPage({ searchParams }: Props) {
       reference: b.reference,
       source: sourceLabel[b.source],
       guest,
+      email: b.guest.email,
+      phone: b.guest.phone,
       room: b.room.name,
       roomSlug: b.room.slug,
       stay: `${frDate(b.checkIn, { day: "numeric", month: "short", year: "numeric" })} → ${frDate(b.checkOut, { day: "numeric", month: "short" })}`,
@@ -113,6 +115,12 @@ export default async function BookingsPage({ searchParams }: Props) {
         </Link>
       </header>
 
+      {sp.deleted && (
+        <p role="status" className="rounded-[10px] border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900">
+          Réservation supprimée définitivement.
+        </p>
+      )}
+
       <div className="flex flex-wrap items-center gap-1">
         {tab("upcoming", "À venir et en cours")}
         {tab("past", "Passées")}
@@ -127,6 +135,7 @@ export default async function BookingsPage({ searchParams }: Props) {
         initial={{ q, status, room }}
         truncated={truncated}
         view={view}
+        canDelete={canManage(user.role)}
       />
     </div>
   );

@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import type { BookingStatus } from "@prisma/client";
 import { ArrowLeft, FileDown, FileText, Mail, MessageCircle, Phone } from "lucide-react";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/admin/guard";
+import { canManage, requireUser } from "@/lib/admin/guard";
 import { actionLabel, eur, frDate, nextStatuses, paymentLabel, sourceLabel, statusLabel } from "@/lib/admin/labels";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { SubmitButton } from "@/components/admin/SubmitButton";
-import { acceptBooking, approvePayment, changeStatus, declineBooking, rejectProof, resendPaymentLink, restore, saveNotes, savePayment } from "../actions";
+import { acceptBooking, approvePayment, changeStatus, declineBooking, deleteBooking, rejectProof, resendPaymentLink, restore, saveNotes, savePayment } from "../actions";
 import { CopyField } from "@/components/admin/CopyField";
 import { payUrl } from "@/lib/email/booking";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "@/lib/booking/policy";
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function BookingPage({ params, searchParams }: Props) {
-  await requireUser();
+  const user = await requireUser();
   const { id } = await params;
   const sp = await searchParams;
   const b = await db.booking.findUnique({
@@ -380,6 +380,20 @@ export default async function BookingPage({ params, searchParams }: Props) {
               <Row k="Statut" v={statusLabel[b.status]} />
             </dl>
           </Card>
+
+          {canManage(user.role) && (
+            <section className="grid gap-3 rounded-[10px] border border-rose-300 bg-rose-50/60 p-5">
+              <h2 className="text-xl text-rose-900">Zone dangereuse</h2>
+              <p className="text-sm text-rose-900/80">
+                Supprimer définitivement cette réservation (test, doublon, spam). Ses preuves de paiement sont effacées, et le client aussi s’il n’a pas d’autre réservation. Pour un vrai séjour annulé, préférez « Annuler » : l’historique est conservé.
+              </p>
+              <form action={deleteBooking.bind(null, b.id)}>
+                <SubmitButton variant="danger" confirm={`Supprimer définitivement ${b.reference} ? C’est irréversible.`}>
+                  Supprimer définitivement
+                </SubmitButton>
+              </form>
+            </section>
+          )}
         </div>
       </div>
     </div>

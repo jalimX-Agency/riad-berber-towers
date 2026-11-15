@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import type { BookingSource, BookingStatus, Locale, PaymentStatus } from "@prisma/client";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { requireUser } from "@/lib/admin/guard";
+import { canManage, requireManager, requireUser } from "@/lib/admin/guard";
 import { nextStatuses } from "@/lib/admin/labels";
 import { parseStayQuery } from "@/lib/booking/availability";
 import { adminGuestSchema, createBooking, restoreBooking } from "@/lib/booking/create";
@@ -156,4 +156,54 @@ export async function createManualBooking(_prev: NewBookingState, form: FormData
 
   revalidatePath("/admin", "layout");
   redirect(`/admin/bookings/${result.id}?done=created`);
+}
+
+// ───────────── Bulk actions (selection in the bookings list) ─────────────
+
+const idsSchema = z.array(z.string().min(10).max(40)).min(1).max(500);
+export type BulkResult = { ok: true; count: number } | { ok: false; error: string };
+
+/** Cancel the selected bookings (no emails: guests are told one by one from their booking page). */
+export async function bulkCancel(ids: string[]): Promise<BulkResult> {
+  await requireUser();
+  const p = idsSchema.safeParse(ids);
+  if (!p.success) return { ok: false, error: "Sélection invalide." };
+  const r = await db.booking.updateMany({
+    where: { id: { in: p.data }, status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED"] } },
+    data: { status: "CANCELLED", cancelledAt: new Date() },
+  });
+  revalidatePath("/admin", "layout");
+  return { ok: true, count: r.count };
+}
+
+/**
+ * Delete bookings for good (test bookings, duplicates, spam). Owner and admins only.
+ * Their payment proofs and extras go with them (cascade); a guest left without any booking is deleted too.
+ */
+async function hardDelete(ids: string[]) {
+  return db.$transaction(async (tx) => {
+    const rows = await tx.booking.findMany({ where: { id: { in: ids } }, select: { guestId: true } });
+    const guestIds = [...new Set(rows.map((r) => r.guestId))];
+    const { count } = await tx.booking.deleteMany({ where: { id: { in: ids } } });
+    await tx.guest.deleteMany({ where: { id: { in: guestIds }, bookings: { none: {} } } });
+    return count;
+  });
+}
+
+export async function bulkDelete(ids: string[]): Promise<BulkResult> {
+  const user = await requireUser();
+  if (!canManage(user.role)) return { ok: false, error: "Suppression réservée au propriétaire et aux administrateurs." };
+  const p = idsSchema.safeParse(ids);
+  if (!p.success) return { ok: false, error: "Sélection invalide." };
+  const count = await hardDelete(p.data);
+  revalidatePath("/admin", "layout");
+  return { ok: true, count };
+}
+
+/** Delete one booking for good, from its page. */
+export async function deleteBooking(id: string) {
+  await requireManager();
+  await hardDelete([id]);
+  revalidatePath("/admin", "layout");
+  redirect("/admin/bookings?deleted=1");
 }
