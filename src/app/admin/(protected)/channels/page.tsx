@@ -96,7 +96,7 @@ export default async function ChannelsPage({ searchParams }: Props) {
                       </span>
                       {f.lastError && <span className="w-full text-rose-800">Erreur : {f.lastError}</span>}
                       {manager && <form action={removeFeed.bind(null, f.id)} className="ms-auto">
-                        <SubmitButton variant="danger" confirm="Retirer ce calendrier ? Ses séjours importés seront supprimés de ce site." className="px-3 py-1.5">
+                        <SubmitButton variant="danger" confirmLabel="Retirer" confirm="Retirer ce calendrier ? Ses séjours importés seront supprimés de ce site." className="px-3 py-1.5">
                           <Trash2 className="h-4 w-4" aria-label="Retirer" />
                         </SubmitButton>
                       </form>}

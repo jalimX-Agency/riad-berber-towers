@@ -4,15 +4,19 @@ import { useDeferredValue, useEffect, useMemo, useState, useTransition } from "r
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { BookingStatus } from "@prisma/client";
-import { Ban, Download, Loader2, Search, Trash2, X } from "lucide-react";
+import { ArrowDownUp, Ban, Download, Loader2, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { PendingPanel } from "@/components/admin/BookingPanel";
 import { bulkCancel, bulkDelete, type BulkResult } from "@/app/admin/(protected)/bookings/actions";
+import { DEFAULT_SORT, SORTS, filterParams, type Filters, type SortKey } from "@/lib/admin/booking-filters";
+import { cn } from "@/lib/utils";
+import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 
 export type BookingRow = {
   id: string;
   reference: string;
   source: string;
+  sourceKey: string;
   guest: string;
   email: string;
   phone: string;
@@ -21,17 +25,29 @@ export type BookingRow = {
   stay: string;
   details: string;
   total: string;
+  totalValue: number;
   payment: string;
+  paymentKey: string;
+  bed: "DOUBLE" | "TWIN";
   status: BookingStatus;
+  /** check-in, YYYY-MM-DD */
+  checkIn: string;
+  /** reservation date (Imlil time), YYYY-MM-DD, plus its timestamp for sorting and its label */
+  booked: string;
+  bookedTs: number;
+  bookedLabel: string;
   /** lower-case text searched by the box: reference, name, email, phone */
   haystack: string;
 };
 
+type Option = { value: string; label: string };
 type Props = {
   rows: BookingRow[];
   rooms: { slug: string; name: string }[];
   statuses: { value: BookingStatus; label: string }[];
-  initial: { q: string; status: string; room: string };
+  sources: Option[];
+  payments: Option[];
+  initial: Filters;
   /** more bookings exist than were loaded: the search can also look in the whole history */
   truncated: boolean;
   view: string;
@@ -41,50 +57,78 @@ type Props = {
 
 const PAGE = 50;
 const CANCELLABLE: BookingStatus[] = ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED"];
+const BEDS: Option[] = [
+  { value: "DOUBLE", label: "Grand lit" },
+  { value: "TWIN", label: "Lits séparés" },
+];
 const field = "rounded-[8px] border border-rule bg-snow px-3 py-2 text-sm";
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+const EMPTY: Omit<Filters, "q" | "sort"> = { statuses: [], room: "", source: "", payment: "", bed: "", arrFrom: "", arrTo: "", bookFrom: "", bookTo: "" };
+const shortDate = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`));
+
+const sorters: Record<SortKey, (a: BookingRow, b: BookingRow) => number> = {
+  "booked-desc": (a, b) => b.bookedTs - a.bookedTs,
+  "booked-asc": (a, b) => a.bookedTs - b.bookedTs,
+  "arrival-asc": (a, b) => (a.checkIn < b.checkIn ? -1 : a.checkIn > b.checkIn ? 1 : b.bookedTs - a.bookedTs),
+  "arrival-desc": (a, b) => (a.checkIn > b.checkIn ? -1 : a.checkIn < b.checkIn ? 1 : b.bookedTs - a.bookedTs),
+  "total-desc": (a, b) => b.totalValue - a.totalValue,
+};
 
 /**
- * Filters the loaded bookings in the browser: no request per keystroke or select change.
- * The filters are mirrored in the URL (without navigation) so a filtered list can be shared or reloaded.
+ * The bookings list, filtered and sorted in the browser: no server request per keystroke, filter or sort.
+ * Filters are mirrored in the URL (without navigation) so a filtered list can be shared or reloaded.
  * Rows can be selected for bulk actions: CSV export, cancel, delete for good (owner / admin).
  */
-export function BookingsList({ rows, rooms, statuses, initial, truncated, view, canDelete }: Props) {
+export function BookingsList({ rows, rooms, statuses, sources, payments, initial, truncated, view, canDelete }: Props) {
   const router = useRouter();
-  const [q, setQ] = useState(initial.q);
-  const [status, setStatus] = useState(initial.status);
-  const [room, setRoom] = useState(initial.room);
+  const [filters, setFilters] = useState<Filters>(initial);
+  const [panel, setPanel] = useState(() => Object.keys(EMPTY).some((k) => {
+    const v = initial[k as keyof typeof EMPTY];
+    return Array.isArray(v) ? v.length > 0 : !!v;
+  }));
   const [shown, setShown] = useState(PAGE);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, startBusy] = useTransition();
-  const query = useDeferredValue(q);
+  const [ask, setAsk] = useState<"cancel" | "delete" | null>(null);
+  // rows deleted here disappear at once, before the refreshed list arrives
+  const [gone, setGone] = useState<Set<string>>(new Set());
+  // typing and clicking stay responsive even on a long list: the list catches up just after
+  const f = useDeferredValue(filters);
   const statusLabel = useMemo(() => Object.fromEntries(statuses.map((s) => [s.value, s.label])), [statuses]);
+  const set = <K extends keyof Filters>(k: K, v: Filters[K]) => setFilters((prev) => ({ ...prev, [k]: v }));
 
   const filtered = useMemo(() => {
-    const needle = norm(query);
+    const needle = norm(f.q);
     const digits = needle.replace(/\D/g, "");
-    return rows.filter(
+    const st = f.statuses.length ? new Set(f.statuses) : null;
+    const out = rows.filter(
       (r) =>
-        (!status || r.status === status) &&
-        (!room || r.roomSlug === room) &&
+        !gone.has(r.id) &&
+        (!st || st.has(r.status)) &&
+        (!f.room || r.roomSlug === f.room) &&
+        (!f.source || r.sourceKey === f.source) &&
+        (!f.payment || r.paymentKey === f.payment) &&
+        (!f.bed || r.bed === f.bed) &&
+        (!f.arrFrom || r.checkIn >= f.arrFrom) &&
+        (!f.arrTo || r.checkIn <= f.arrTo) &&
+        (!f.bookFrom || r.booked >= f.bookFrom) &&
+        (!f.bookTo || r.booked <= f.bookTo) &&
         (!needle || r.haystack.includes(needle) || (digits.length >= 4 && r.haystack.replace(/\D/g, "").includes(digits))),
     );
-  }, [rows, query, status, room]);
+    return out.sort(sorters[f.sort]);
+  }, [rows, f, gone]);
 
-  // keep the URL in sync without a server round trip
+  // keep the URL in sync without a server round trip (only when it really changes)
   useEffect(() => {
-    const p = new URLSearchParams();
-    if (view !== "upcoming") p.set("view", view);
-    if (query.trim()) p.set("q", query.trim());
-    if (status) p.set("status", status);
-    if (room) p.set("room", room);
+    const p = filterParams(f, view);
     const open = new URLSearchParams(window.location.search).get("b"); // keep an open panel
     if (open) p.set("b", open);
     const s = p.toString();
-    window.history.replaceState(null, "", `/admin/bookings${s ? `?${s}` : ""}`);
+    const next = `/admin/bookings${s ? `?${s}` : ""}`;
+    if (next !== `${window.location.pathname}${window.location.search}`) window.history.replaceState(null, "", next);
     setShown(PAGE);
-  }, [query, status, room, view]);
+  }, [f, view]);
 
   // a selection only ever contains rows that still exist (after a delete or a refresh)
   useEffect(() => {
@@ -121,21 +165,23 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
       setMessage(null);
       try {
         const r = await action(ids);
+        setAsk(null);
         if (r.ok) {
           setMessage({ ok: true, text: done(r.count) });
           setSelected(new Set());
           router.refresh();
         } else setMessage({ ok: false, text: r.error });
       } catch {
+        setAsk(null);
         setMessage({ ok: false, text: "L’action n’a pas pu aboutir. Réessayez." });
       }
     });
 
   const exportCsv = () => {
     const cell = (v: string) => `"${v.replace(/"/g, '""')}"`;
-    const head = ["Référence", "Client", "Email", "Téléphone", "Chambre", "Séjour", "Détails", "Total", "Paiement", "Statut", "Source"];
+    const head = ["Référence", "Réservée le", "Client", "Email", "Téléphone", "Chambre", "Séjour", "Détails", "Total", "Paiement", "Statut", "Source"];
     const lines = picked.map((r) =>
-      [r.reference, r.guest, r.email, r.phone, r.room, r.stay, r.details, r.total, r.payment, statusLabel[r.status], r.source].map(cell).join(";"),
+      [r.reference, r.bookedLabel, r.guest, r.email, r.phone, r.room, r.stay, r.details, r.total, r.payment, statusLabel[r.status], r.source].map(cell).join(";"),
     );
     // BOM so Excel opens the accents correctly; ";" is the separator Excel expects in French locales
     const blob = new Blob([`﻿${[head.map(cell).join(";"), ...lines].join("\r\n")}`], { type: "text/csv;charset=utf-8" });
@@ -146,58 +192,134 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
     URL.revokeObjectURL(a.href);
   };
 
-  const any = q || status || room;
+  // active advanced filters, as removable chips
+  const label = (opts: Option[], v: string) => opts.find((o) => o.value === v)?.label ?? v;
+  const chips: { key: string; text: string; clear: () => void }[] = [
+    ...filters.statuses.map((s) => ({ key: `st-${s}`, text: statusLabel[s] ?? s, clear: () => set("statuses", filters.statuses.filter((x) => x !== s)) })),
+    ...(filters.room ? [{ key: "room", text: rooms.find((r) => r.slug === filters.room)?.name ?? filters.room, clear: () => set("room", "") }] : []),
+    ...(filters.source ? [{ key: "src", text: label(sources, filters.source), clear: () => set("source", "") }] : []),
+    ...(filters.payment ? [{ key: "pay", text: label(payments, filters.payment), clear: () => set("payment", "") }] : []),
+    ...(filters.bed ? [{ key: "bed", text: label(BEDS, filters.bed), clear: () => set("bed", "") }] : []),
+    ...(filters.arrFrom || filters.arrTo
+      ? [{ key: "arr", text: `Arrivée ${filters.arrFrom ? `du ${shortDate(filters.arrFrom)}` : ""} ${filters.arrTo ? `au ${shortDate(filters.arrTo)}` : ""}`.trim(), clear: () => setFilters((p) => ({ ...p, arrFrom: "", arrTo: "" })) }]
+      : []),
+    ...(filters.bookFrom || filters.bookTo
+      ? [{ key: "book", text: `Réservée ${filters.bookFrom ? `du ${shortDate(filters.bookFrom)}` : ""} ${filters.bookTo ? `au ${shortDate(filters.bookTo)}` : ""}`.trim(), clear: () => setFilters((p) => ({ ...p, bookFrom: "", bookTo: "" })) }]
+      : []),
+  ];
+  const clearAll = () => setFilters((p) => ({ ...p, ...EMPTY, q: "" }));
+
   // a row opens the booking in the side panel over this list, keeping the filters
   const rowHref = (id: string) => {
-    const p = new URLSearchParams();
-    if (view !== "upcoming") p.set("view", view);
-    if (query.trim()) p.set("q", query.trim());
-    if (status) p.set("status", status);
-    if (room) p.set("room", room);
+    const p = filterParams(f, view);
     p.set("b", id);
     return `/admin/bookings?${p}`;
   };
 
+  const sel = (k: "room" | "source" | "payment" | "bed", text: string, opts: Option[]) => (
+    <label className="grid gap-1 text-xs text-muted">
+      {text}
+      <select value={filters[k]} onChange={(e) => set(k, e.target.value)} className={field}>
+        <option value="">Tous</option>
+        {opts.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+  const range = (from: "arrFrom" | "bookFrom", to: "arrTo" | "bookTo", text: string) => (
+    <fieldset className="grid gap-1 text-xs text-muted">
+      <legend className="mb-1">{text}</legend>
+      <div className="grid grid-cols-2 gap-2">
+        <input type="date" value={filters[from]} max={filters[to] || undefined} onChange={(e) => set(from, e.target.value)} className={field} aria-label={`${text} : du`} />
+        <input type="date" value={filters[to]} min={filters[from] || undefined} onChange={(e) => set(to, e.target.value)} className={field} aria-label={`${text} : au`} />
+      </div>
+    </fieldset>
+  );
+
   return (
     <div className="grid gap-4">
-      {/* Enter in the box searches the whole history on the server when not everything is loaded */}
+      {/* search, sort, advanced filters */}
       <form className="flex flex-wrap items-center gap-2" role="search" action="/admin/bookings" onSubmit={(e) => !truncated && e.preventDefault()}>
         {view !== "upcoming" && <input type="hidden" name="view" value={view} />}
         <label className="relative min-w-[220px] flex-1">
           <span className="sr-only">Rechercher</span>
           <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
-          <input name="q" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Référence, nom, email, téléphone" className={`${field} w-full ps-9`} />
+          <input name="q" value={filters.q} onChange={(e) => set("q", e.target.value)} placeholder="Référence, nom, email, téléphone" className={`${field} w-full ps-9`} />
         </label>
-        <select name="status" value={status} onChange={(e) => setStatus(e.target.value)} className={field} aria-label="Statut">
-          <option value="">Tous les statuts</option>
-          {statuses.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-        <select name="room" value={room} onChange={(e) => setRoom(e.target.value)} className={field} aria-label="Chambre">
-          <option value="">Toutes les chambres</option>
-          {rooms.map((r) => (
-            <option key={r.slug} value={r.slug}>
-              {r.name}
-            </option>
-          ))}
-        </select>
-        {any && (
-          <button
-            type="button"
-            onClick={() => {
-              setQ("");
-              setStatus("");
-              setRoom("");
-            }}
-            className="text-sm text-earth underline underline-offset-4"
-          >
-            Effacer
-          </button>
-        )}
+        <label className="relative">
+          <span className="sr-only">Trier par</span>
+          <ArrowDownUp className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
+          <select value={filters.sort} onChange={(e) => set("sort", e.target.value as SortKey)} className={`${field} ps-9`}>
+            {SORTS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          onClick={() => setPanel((v) => !v)}
+          aria-expanded={panel}
+          aria-controls="advanced-filters"
+          className={cn("inline-flex items-center gap-2 rounded-[8px] border px-3 py-2 text-sm", panel || chips.length ? "border-earth text-earth" : "border-rule bg-snow hover:border-earth")}
+        >
+          <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+          Filtres
+          {chips.length > 0 && <span className="rounded-full bg-earth px-1.5 text-xs text-snow">{chips.length}</span>}
+        </button>
       </form>
+
+      {panel && (
+        <section id="advanced-filters" aria-label="Filtres avancés" className="grid gap-4 rounded-[10px] border border-rule bg-snow p-4">
+          <fieldset className="grid gap-2">
+            <legend className="mb-1 text-xs text-muted">Statut (plusieurs possibles)</legend>
+            <div className="flex flex-wrap gap-2">
+              {statuses.map((s) => {
+                const on = filters.statuses.includes(s.value);
+                return (
+                  <button
+                    key={s.value}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => set("statuses", on ? filters.statuses.filter((x) => x !== s.value) : [...filters.statuses, s.value])}
+                    className={cn("rounded-full border px-3 py-1 text-xs transition-colors", on ? "border-earth bg-earth text-snow" : "border-rule hover:border-earth")}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {sel("room", "Chambre", rooms.map((r) => ({ value: r.slug, label: r.name })))}
+            {sel("source", "Source", sources)}
+            {sel("payment", "Paiement", payments)}
+            {sel("bed", "Lits", BEDS)}
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {range("arrFrom", "arrTo", "Arrivée")}
+            {range("bookFrom", "bookTo", "Date de réservation")}
+          </div>
+        </section>
+      )}
+
+      {(chips.length > 0 || filters.q) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {chips.map((c) => (
+            <button key={c.key} type="button" onClick={c.clear} className="inline-flex items-center gap-1.5 rounded-full border border-earth/40 bg-earth/5 px-3 py-1 text-xs text-ink hover:border-earth" aria-label={`Retirer le filtre ${c.text}`}>
+              {c.text}
+              <X className="h-3 w-3" aria-hidden="true" />
+            </button>
+          ))}
+          <button type="button" onClick={clearAll} className="text-xs text-earth underline underline-offset-4">
+            Tout effacer
+          </button>
+        </div>
+      )}
 
       {message && (
         <p role="status" className={`rounded-[10px] border p-3 text-sm ${message.ok ? "border-emerald-300 bg-emerald-50 text-emerald-900" : "border-rose-300 bg-rose-50 text-rose-900"}`}>
@@ -207,6 +329,7 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
 
       <p className="text-sm text-muted" aria-live="polite">
         {filtered.length} réservation{filtered.length > 1 ? "s" : ""}
+        {filters.sort === DEFAULT_SORT && " · les plus récentes d’abord"}
         {truncated && " · seules les plus récentes sont chargées : appuyez sur Entrée dans la recherche pour chercher dans tout l’historique"}
       </p>
 
@@ -228,7 +351,7 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
               />
             </label>
             <span aria-hidden="true" className="hidden grid-cols-[1.5fr_1fr_1.4fr_0.8fr_auto] gap-4 py-3 pe-4 text-xs uppercase tracking-wider text-muted md:grid">
-              <span>Client</span>
+              <span>Client · réservée le</span>
               <span>Chambre</span>
               <span>Séjour</span>
               <span className="text-end">Total</span>
@@ -250,8 +373,8 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
               >
                 <span className="min-w-0">
                   <span className="block truncate font-medium">{b.guest}</span>
-                  <span className="block font-mono text-xs text-muted">
-                    {b.reference} · {b.source}
+                  <span className="block truncate font-mono text-xs text-muted">
+                    {b.reference} · {b.source} · {b.bookedLabel}
                   </span>
                 </span>
                 <span className="justify-self-end md:order-last md:w-36 md:justify-self-start">
@@ -292,10 +415,7 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
           <button
             type="button"
             disabled={busy || cancellable.length === 0}
-            onClick={() => {
-              if (window.confirm(`Annuler ${cancellable.length} réservation(s) ? Les nuits redeviendront disponibles. Aucun email ne sera envoyé.`))
-                run(bulkCancel, cancellable.map((r) => r.id), (n) => `${n} réservation(s) annulée(s).`);
-            }}
+            onClick={() => setAsk("cancel")}
             className="inline-flex items-center gap-1.5 rounded-full border border-snow/30 px-3 py-1.5 hover:bg-snow/10 disabled:opacity-50"
             title={cancellable.length === 0 ? "Aucune réservation annulable dans la sélection" : undefined}
           >
@@ -305,13 +425,7 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
             <button
               type="button"
               disabled={busy}
-              onClick={() => {
-                const n = selected.size;
-                const typed = window.prompt(
-                  `Supprimer définitivement ${n} réservation(s) ?\n\nLes réservations, leurs preuves de paiement et les clients sans autre réservation seront effacés. C’est irréversible.\n\nTapez SUPPRIMER pour confirmer.`,
-                );
-                if (typed?.trim().toUpperCase() === "SUPPRIMER") run(bulkDelete, [...selected], (c) => `${c} réservation(s) supprimée(s) définitivement.`);
-              }}
+              onClick={() => setAsk("delete")}
               className="inline-flex items-center gap-1.5 rounded-full bg-rose-700 px-3 py-1.5 hover:bg-rose-800 disabled:opacity-50"
             >
               <Trash2 className="h-4 w-4" aria-hidden="true" /> Supprimer définitivement
@@ -323,6 +437,34 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
           </button>
         </div>
       )}
+
+      <ConfirmDialog
+        open={ask === "cancel"}
+        tone="danger"
+        title={`Annuler ${cancellable.length} réservation${cancellable.length > 1 ? "s" : ""} ?`}
+        body="Les nuits redeviendront disponibles. Aucun email ne sera envoyé aux clients."
+        confirmLabel="Annuler les réservations"
+        cancelLabel="Retour"
+        busy={busy}
+        onCancel={() => setAsk(null)}
+        onConfirm={() => run(bulkCancel, cancellable.map((r) => r.id), (n) => `${n} réservation(s) annulée(s).`)}
+      />
+      <ConfirmDialog
+        open={ask === "delete"}
+        tone="danger"
+        title={`Supprimer définitivement ${selected.size} réservation${selected.size > 1 ? "s" : ""} ?`}
+        body="Les réservations, leurs preuves de paiement et les clients sans autre réservation seront effacés. C’est irréversible."
+        confirmLabel="Supprimer définitivement"
+        busy={busy}
+        onCancel={() => setAsk(null)}
+        onConfirm={() => {
+          const ids = [...selected];
+          run(bulkDelete, ids, (c) => {
+            setGone((prev) => new Set([...prev, ...ids]));
+            return `${c} réservation(s) supprimée(s) définitivement.`;
+          });
+        }}
+      />
     </div>
   );
 }

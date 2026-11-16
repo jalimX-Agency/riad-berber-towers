@@ -104,7 +104,7 @@ export default async function RatesPage({ searchParams }: Props) {
                 <span className="font-medium">{r.price != null ? `${eur(Number(r.price))} / nuit` : `${r.percent! > 0 ? "+" : ""}${r.percent} %`}</span>
                 {r.minNights > 1 && <span className="text-muted">min. {r.minNights} nuits</span>}
                 {manager && <form action={deleteRate.bind(null, r.id)} className="ms-auto">
-                  <SubmitButton variant="danger" confirm={`Supprimer « ${r.name} » ?`} className="px-3 py-1.5">
+                  <SubmitButton variant="danger" confirmLabel="Supprimer" confirm={`Supprimer le tarif « ${r.name} » ?`} className="px-3 py-1.5">
                     <Trash2 className="h-4 w-4" aria-label="Supprimer" />
                   </SubmitButton>
                 </form>}
@@ -179,7 +179,7 @@ export default async function RatesPage({ searchParams }: Props) {
                 </span>
                 {b.source !== "ICAL" ? (
                   <form action={deleteBlock.bind(null, b.id)} className="ms-auto">
-                    <SubmitButton variant="danger" confirm="Rouvrir la chambre sur ces dates ?" className="px-3 py-1.5">
+                    <SubmitButton variant="danger" confirmLabel="Rouvrir" confirm="Rouvrir la chambre sur ces dates ?" className="px-3 py-1.5">
                       <Trash2 className="h-4 w-4" aria-label="Supprimer" />
                     </SubmitButton>
                   </form>

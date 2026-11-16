@@ -314,12 +314,14 @@ export function GuestForm({ room, checkIn, checkOut, adults, summary }: Props) {
           <span />
         )}
         {step < STEPS.length - 1 ? (
-          <button type="button" onClick={next} className="btn-primary">
+          // distinct keys: without them React reuses this <button> for "submit" during the last "continue"
+          // click, and the browser then submits the form from that same click (booking sent without review)
+          <button key="next" type="button" onClick={next} className="btn-primary">
             {t("continue")}
             <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
           </button>
         ) : (
-          <button type="submit" disabled={pending} className="btn-primary px-8 disabled:opacity-70">
+          <button key="submit" type="submit" disabled={pending} className="btn-primary px-8 disabled:opacity-70">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Lock className="h-4 w-4" aria-hidden="true" />}
             {pending ? t("sending") : t("submit")}
           </button>

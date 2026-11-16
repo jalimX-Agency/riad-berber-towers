@@ -242,7 +242,7 @@ export async function BookingDetail({
                 </form>
                 <form action={declineBooking.bind(null, b.id)} className="flex flex-wrap items-center gap-3">
                 {R}
-                  <SubmitButton variant="danger" confirm="Refuser cette demande ? Le client sera prévenu qu’aucune chambre n’est disponible.">
+                  <SubmitButton variant="danger" confirmLabel="Refuser la demande" confirm="Refuser cette demande ? Le client sera prévenu qu’aucune chambre n’est disponible.">
                     Refuser (pas de disponibilité)
                   </SubmitButton>
                   {b.guest.email && <Notify label="prévenir" />}
@@ -277,7 +277,7 @@ export async function BookingDetail({
               </form>
               <form action={rejectProof.bind(null, b.id)} className="flex flex-wrap items-center gap-3">
                 {R}
-                <SubmitButton variant="outline" confirm="Refuser cette preuve ? Le client devra en envoyer une nouvelle.">
+                <SubmitButton variant="outline" confirmLabel="Refuser la preuve" confirm="Refuser cette preuve ? Le client devra en envoyer une nouvelle.">
                   Refuser la preuve
                 </SubmitButton>
                 {b.guest.email && <Notify label="prévenir" />}
@@ -299,6 +299,7 @@ export async function BookingDetail({
                   <SubmitButton
                     variant={to === "CANCELLED" || to === "NO_SHOW" ? "danger" : to === actions[0] && b.status !== "AWAITING_PAYMENT" ? "primary" : "outline"}
                     confirm={to === "CANCELLED" ? "Annuler cette réservation ? Les nuits redeviendront disponibles." : to === "NO_SHOW" ? "Marquer ce client comme non présenté ?" : undefined}
+                    confirmLabel={to === "CANCELLED" ? "Annuler la réservation" : "Confirmer"}
                   >
                     {actionLabel[to]}
                   </SubmitButton>
@@ -308,7 +309,7 @@ export async function BookingDetail({
               {b.status === "CANCELLED" && (
                 <form action={restore.bind(null, b.id)}>
                 {R}
-                  <SubmitButton variant="outline" confirm="Rétablir cette réservation (statut Confirmée) ?">
+                  <SubmitButton variant="outline" confirmLabel="Rétablir" confirm="Rétablir cette réservation (statut Confirmée) ?">
                     Rétablir la réservation
                   </SubmitButton>
                 </form>
@@ -451,7 +452,7 @@ export async function BookingDetail({
               </p>
               <form action={deleteBooking.bind(null, b.id)}>
                 {R}
-                <SubmitButton variant="danger" confirm={`Supprimer définitivement ${b.reference} ? C’est irréversible.`}>
+                <SubmitButton variant="danger" confirmLabel="Supprimer définitivement" confirm={`Supprimer définitivement ${b.reference} ? Ses preuves de paiement seront effacées. C’est irréversible.`}>
                   Supprimer définitivement
                 </SubmitButton>
               </form>

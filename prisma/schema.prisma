@@ -179,6 +179,8 @@ model Booking {
   // admin lists and dashboard filter by date without a room
   @@index([checkIn])
   @@index([checkOut])
+  // bookings list: newest reservations first
+  @@index([createdAt])
 }
 
 enum BookingStatus {
