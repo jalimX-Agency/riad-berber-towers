@@ -13,7 +13,6 @@ export const footerNav = [
   { key: "imlil", href: "/imlil", ns: "nav" },
   { key: "gallery", href: "/gallery", ns: "footer" },
   { key: "story", href: "/story", ns: "nav" },
-  { key: "blog", href: "/journal", ns: "footer" },
   { key: "contact", href: "/contact", ns: "nav" },
 ] as const;
 

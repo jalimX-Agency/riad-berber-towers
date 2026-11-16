@@ -178,19 +178,13 @@ export default async function ImlilGuidePage({ params }: Props) {
           <ul className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {PLACES.map((p) => {
               const x = g.around.places[p];
-              const photoId = p === "asni" ? null : GUIDE_PHOTOS.places[p];
+              const photoId = GUIDE_PHOTOS.places[p];
               const act = PLACE_ACTIVITY[p];
               return (
                 <li key={p} className="grid content-start gap-3">
-                  {photoId ? (
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-card">
-                      <Image src={pexels(photoId).src} alt="" fill sizes="(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 100vw" className="object-cover" />
-                    </div>
-                  ) : (
-                    <div className="grid aspect-[4/3] place-items-center rounded-card bg-walnut p-6 text-center">
-                      <span className="font-display text-3xl text-ochre [html[dir=rtl]_&]:font-arabic-display">{x.name}</span>
-                    </div>
-                  )}
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-card">
+                    <Image src={pexels(photoId).src} alt="" fill sizes="(min-width: 1024px) 31vw, (min-width: 640px) 45vw, 100vw" className="object-cover" />
+                  </div>
                   <span className="meta text-granite">{x.meta}</span>
                   <h3 className="text-2xl">{x.name}</h3>
                   <p className="text-sm text-muted">{x.text}</p>
@@ -259,7 +253,6 @@ export default async function ImlilGuidePage({ params }: Props) {
             <Link href="/activities" className="btn-outline border-snow/60 text-snow hover:border-ochre hover:text-ochre">{g.cta.activities}</Link>
           </div>
         </div>
-        <p className="meta mt-4 text-granite">{g.photoCredit}</p>
       </section>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

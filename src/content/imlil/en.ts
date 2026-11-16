@@ -99,7 +99,6 @@ const en: GuideCopy = {
     rooms: "See the rooms",
     activities: "Our activities",
   },
-  photoCredit: "Illustrative photos: Pexels",
 };
 
 export default en;

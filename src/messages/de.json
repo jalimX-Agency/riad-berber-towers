@@ -412,6 +412,7 @@
   "policy": {
     "title": "Gut zu wissen",
     "adultsOnly": "Nur für Erwachsene: Kinder werden im Riad nicht aufgenommen.",
+    "noPets": "Keine Tiere: Haustiere sind im Riad nicht erlaubt.",
     "guests": "Höchstens {max} Gäste pro Zimmer. Die Suite Toubkal nimmt einen dritten Gast auf, mit einem Aufpreis von {percent} %.",
     "deposit": "Eine Anzahlung von {percent} % bestätigt Ihre Buchung. Sie wird nicht erstattet.",
     "balance": "Der Rest wird bei der Ankunft in bar bezahlt: {currencies}."

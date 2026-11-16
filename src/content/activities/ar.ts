@@ -198,7 +198,6 @@ const ar: ActivitiesCopy = {
     details: "التفاصيل",
     others: "أنشطة أخرى",
     from: "انطلاقًا من رياض بربر تاورز، إمليل",
-    photoCredit: "صور توضيحية: Pexels",
   },
   info: {
     label: "معلومات مفيدة",

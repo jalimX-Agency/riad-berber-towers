@@ -13,11 +13,11 @@ export const GUIDE_PHOTOS = {
   hero: "29601658",
   village: "35802017",
   seasons: { spring: "5029303", summer: "37538525", autumn: "29601661", winter: "35449705" },
-  places: { aroumd: "35802018", chamharouch: "37587575", tamatert: "40922826", mzik: "35206443", toubkal: "36533362" },
+  places: { aroumd: "35802018", chamharouch: "37587575", tamatert: "40922826", mzik: "35206443", toubkal: "36533362", asni: "7835692" },
 } as const;
 
 export type Season = keyof typeof GUIDE_PHOTOS.seasons;
-export type Place = keyof typeof GUIDE_PHOTOS.places | "asni";
+export type Place = keyof typeof GUIDE_PHOTOS.places;
 
 /** Places that have a matching activity page */
 export const PLACE_ACTIVITY: Partial<Record<Place, string>> = { chamharouch: "sidi-chamharouch", mzik: "tizi-mzik-tasghimoute", aroumd: "sidi-chamharouch" };
@@ -34,7 +34,6 @@ export type GuideCopy = {
   toubkal: { label: string; title: string; paras: string[]; facts: { value: string; label: string }[] };
   practical: { label: string; title: string; items: { title: string; text: string }[] };
   cta: { title: string; text: string; rooms: string; activities: string };
-  photoCredit: string;
 };
 
 const copy: Record<Locale, GuideCopy> = { en, fr, es, de, ar };

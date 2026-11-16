@@ -27,7 +27,7 @@ export const PEXELS: Record<string, { w: number; h: number }> = {
   "30005517": { w: 1280, h: 1920 }, "30005513": { w: 1280, h: 1920 }, "29601661": { w: 1440, h: 1920 },
   "29601658": { w: 1440, h: 1920 }, "35802017": { w: 1280, h: 1920 }, "40922826": { w: 1280, h: 1920 },
   "35449705": { w: 1920, h: 1280 }, "36533362": { w: 1081, h: 1920 }, "5029303": { w: 1920, h: 1271 },
-  "31177138": { w: 1440, h: 1920 },
+  "31177138": { w: 1440, h: 1920 }, "7835692": { w: 1920, h: 1280 },
 };
 export const pexels = (id: string): Photo => ({ src: mediaUrl(`photos/pexels/${id}.webp`), ...(PEXELS[id] ?? { w: 1920, h: 1280 }) });
 
@@ -83,7 +83,7 @@ export type ActivitiesCopy = {
       }
     >;
   };
-  detail: { back: string; description: string; details: string; others: string; from: string; photoCredit: string };
+  detail: { back: string; description: string; details: string; others: string; from: string };
   info: { label: string; title: string; items: { title: string; text: string }[] };
   contact: { label: string; title: string; text: string; whatsapp: string; email: string };
 };

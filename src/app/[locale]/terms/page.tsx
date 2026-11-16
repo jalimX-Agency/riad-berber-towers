@@ -1,5 +1,5 @@
-import { buildInProgressPage } from "@/components/site/BuildInProgress";
+import { legalPage } from "@/components/site/LegalPage";
 
-const { Page, generateMetadata } = buildInProgressPage("terms");
+const { Page, generateMetadata } = legalPage("terms");
 export default Page;
 export { generateMetadata };

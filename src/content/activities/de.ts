@@ -198,7 +198,6 @@ const de: ActivitiesCopy = {
     details: "Details",
     others: "Weitere Aktivitäten",
     from: "Ab Riad Berber Towers, Imlil",
-    photoCredit: "Illustrationsfotos: Pexels",
   },
   info: {
     label: "Gut zu wissen",

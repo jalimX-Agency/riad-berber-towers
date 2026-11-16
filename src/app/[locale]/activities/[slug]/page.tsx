@@ -26,7 +26,6 @@ type View = {
   price: number;
   facts: { label: string; value: string }[];
   photos: (Photo & { alt: string })[];
-  stock: boolean; // illustrative stock photos (credited)
 };
 
 function view(c: ActivitiesCopy, slug: string): View | null {
@@ -47,7 +46,6 @@ function view(c: ActivitiesCopy, slug: string): View | null {
         { ...m.bread, alt: c.cooking.alts.bread },
         { ...m.tagine, alt: c.cooking.alts.tagine },
       ],
-      stock: false,
     };
   }
   const o = OUTINGS.find((x) => x.slug === slug);
@@ -62,7 +60,6 @@ function view(c: ActivitiesCopy, slug: string): View | null {
     price: o.price,
     facts: keys.filter((k) => it.facts[k]).map((k) => ({ label: c.outings.facts[k], value: it.facts[k]! })),
     photos: o.photos.map((id) => ({ ...pexels(id), alt: it.name })),
-    stock: true,
   };
 }
 
@@ -133,7 +130,6 @@ export default async function ActivityPage({ params }: Props) {
               <Image src={p.src} alt={p.alt} fill sizes="(min-width: 1024px) 28vw, 50vw" className="object-cover" />
             </div>
           ))}
-          {v.stock && <p className="meta col-span-2 text-granite">{c.detail.photoCredit}</p>}
         </div>
       </section>
 

@@ -99,7 +99,6 @@ const ar: GuideCopy = {
     rooms: "اكتشف الغرف",
     activities: "أنشطتنا",
   },
-  photoCredit: "صور توضيحية: Pexels",
 };
 
 export default ar;

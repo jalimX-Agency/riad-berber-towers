@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { Banknote, CalendarCheck, UserRound, Users } from "lucide-react";
+import { Banknote, CalendarCheck, PawPrint, UserRound, Users } from "lucide-react";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT, EXTRA_GUEST_PERCENT, STANDARD_OCCUPANCY } from "@/lib/booking/policy";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +8,7 @@ export function StayPolicies({ className, title = true }: { className?: string; 
   const t = useTranslations("policy");
   const items = [
     { icon: UserRound, text: t("adultsOnly") },
+    { icon: PawPrint, text: t("noPets") },
     { icon: Users, text: t("guests", { max: STANDARD_OCCUPANCY, percent: EXTRA_GUEST_PERCENT }) },
     { icon: CalendarCheck, text: t("deposit", { percent: DEPOSIT_PERCENT }) },
     { icon: Banknote, text: t("balance", { currencies: CASH_CURRENCIES.join(", ") }) },

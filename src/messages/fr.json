@@ -412,6 +412,7 @@
   "policy": {
     "title": "Bon à savoir",
     "adultsOnly": "Réservé aux adultes : les enfants ne sont pas acceptés au riad.",
+    "noPets": "Animaux non admis : les animaux de compagnie ne sont pas acceptés au riad.",
     "guests": "{max} personnes maximum par chambre. La Suite Toubkal accueille une troisième personne, avec {percent} % de plus sur le prix.",
     "deposit": "Un acompte de {percent} % confirme votre réservation. Il n’est pas remboursable.",
     "balance": "Le solde se règle en espèces à l’arrivée : {currencies}."

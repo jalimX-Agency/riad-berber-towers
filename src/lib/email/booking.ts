@@ -79,7 +79,7 @@ ${row(tb("deposit", { percent: DEPOSIT_PERCENT }), formatPrice(pay.deposit, b.cu
 ${row(tb("balance"), formatPrice(pay.balance, b.currency, locale))}
 </table>
 <p style="margin-top:20px">${esc(t("guest.next"))}</p>
-<p style="font-size:13px;color:#6C7472">${esc(tp("adultsOnly"))} ${esc(tp("balance", { currencies: CASH_CURRENCIES.join(", ") }))}</p>
+<p style="font-size:13px;color:#6C7472">${esc(tp("adultsOnly"))} ${esc(tp("noPets"))} ${esc(tp("balance", { currencies: CASH_CURRENCIES.join(", ") }))}</p>
 <p><a href="https://wa.me/${site.whatsapp}" style="color:#955738">WhatsApp ${site.phones[0]}</a></p>
 <p style="color:#6C7472;font-size:13px">${esc(t("guest.signoff"))}</p>`,
       locale === "ar" ? "rtl" : "ltr",

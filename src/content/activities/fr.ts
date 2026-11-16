@@ -198,7 +198,6 @@ const fr: ActivitiesCopy = {
     details: "Détails",
     others: "Autres activités",
     from: "Au départ de Riad Berber Towers, Imlil",
-    photoCredit: "Photos d’illustration : Pexels",
   },
   info: {
     label: "Bon à savoir",
