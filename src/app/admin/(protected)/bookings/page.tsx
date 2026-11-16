@@ -7,6 +7,7 @@ import { getActiveRooms } from "@/lib/admin/rooms";
 import { todayInImlil } from "@/lib/booking/dates";
 import { eur, frDate, sourceLabel, statusLabel, paymentLabel } from "@/lib/admin/labels";
 import { BookingsList, type BookingRow } from "@/components/admin/BookingsList";
+import { BookingPanelSlot } from "@/components/admin/BookingPanelSlot";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Réservations" };
@@ -137,6 +138,8 @@ export default async function BookingsPage({ searchParams }: Props) {
         view={view}
         canDelete={canManage(user.role)}
       />
+
+      <BookingPanelSlot basePath="/admin/bookings" sp={sp} />
     </div>
   );
 }

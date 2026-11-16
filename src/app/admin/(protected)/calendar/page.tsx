@@ -7,6 +7,8 @@ import { requireUser } from "@/lib/admin/guard";
 import { addDays, nightsBetween, todayInImlil, toISO } from "@/lib/booking/dates";
 import { statusLabel } from "@/lib/admin/labels";
 import { cn } from "@/lib/utils";
+import { PendingPanel } from "@/components/admin/BookingPanel";
+import { BookingPanelSlot, pageHref, panelHref } from "@/components/admin/BookingPanelSlot";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Calendrier" };
@@ -144,12 +146,14 @@ export default async function CalendarPage({ searchParams }: Props) {
                     <Link
                       key={b.id}
                       prefetch={false}
-                      href={`/admin/bookings/${b.id}`}
+                      href={panelHref(pageHref("/admin/calendar", sp), b.id)}
+                      scroll={false}
                       style={{ ...row, ...col(b.checkIn, b.checkOut) }}
                       className={cn("z-10 my-2 truncate rounded-[6px] px-2 py-1 font-medium shadow-sm hover:brightness-95", bar[b.status], clashes.has(b.id) && "ring-2 ring-rose-600")}
                       title={`${b.guest.firstName} ${b.guest.lastName} · ${b.reference} · ${statusLabel[b.status]}`}
                     >
                       {b.guest.firstName} {b.guest.lastName}
+                      <PendingPanel />
                     </Link>
                   ))}
               </div>
@@ -181,6 +185,8 @@ export default async function CalendarPage({ searchParams }: Props) {
         </li>
         <li>Cliquez sur un jour libre pour fermer la chambre.</li>
       </ul>
+
+      <BookingPanelSlot basePath="/admin/calendar" sp={sp} />
     </div>
   );
 }

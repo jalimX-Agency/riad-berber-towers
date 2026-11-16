@@ -12,16 +12,31 @@ import { parseStayQuery } from "@/lib/booking/availability";
 import { adminGuestSchema, createBooking, restoreBooking } from "@/lib/booking/create";
 import { sendStatusEmail } from "@/lib/email/booking";
 
-const back = (id: string, params: Record<string, string>): never => {
-  revalidatePath("/admin", "layout");
-  redirect(`/admin/bookings/${id}?${new URLSearchParams(params)}`);
-};
+/** A same-site admin path sent back by the panel forms (never an open redirect). */
+function safeReturn(form?: FormData) {
+  const r = String(form?.get("_return") ?? "");
+  return /^\/admin(\/|\?|$)/.test(r) && !r.startsWith("//") && r.length < 500 ? r : null;
+}
+
+/**
+ * After a booking action, show the result with its message:
+ * full page → /admin/bookings/<id>?done=…; side panel → the page underneath with ?b=<id>&done=…
+ */
+async function back(id: string, params: Record<string, string>, form?: FormData) {
+  // no revalidatePath("/admin", "layout") here: in production, revalidating the whole admin layout and
+  // redirecting in the same action left the client without the new page. The redirect alone renders the
+  // destination fresh (every admin page is dynamic), layout and pending counter included.
+  const page = safeReturn(form);
+  const qs = new URLSearchParams(params).toString();
+  if (page) redirect(`${page}${page.includes("?") ? "&" : "?"}b=${encodeURIComponent(id)}&${qs}`);
+  redirect(`/admin/bookings/${id}?${qs}`);
+}
 
 /** Move a booking to its next status. Confirm and cancel can email the guest. */
 export async function changeStatus(id: string, to: BookingStatus, form: FormData) {
   await requireUser();
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
-  if (!nextStatuses[b.status].includes(to)) back(id, { error: "transition" });
+  if (!nextStatuses[b.status].includes(to)) return back(id, { error: "transition" }, form);
 
   await db.booking.update({
     where: { id },
@@ -37,65 +52,65 @@ export async function changeStatus(id: string, to: BookingStatus, form: FormData
   if ((to === "CONFIRMED" || to === "CANCELLED") && form.get("notify") === "on") {
     email = await sendStatusEmail(id, to === "CONFIRMED" ? "confirmed" : "cancelled");
   }
-  back(id, { done: to, ...(email ? { email } : {}) });
+  return back(id, { done: to, ...(email ? { email } : {}) }, form);
 }
 
 /** Step 2 of the flow: the riad accepts a request. The guest gets the link to pay the deposit and upload the proof. */
 export async function acceptBooking(id: string, form: FormData) {
   await requireUser();
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true, payToken: true } });
-  if (b.status !== "PENDING") back(id, { error: "transition" });
+  if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
   await db.booking.update({
     where: { id },
     data: { status: "AWAITING_PAYMENT", acceptedAt: new Date(), payToken: b.payToken ?? randomBytes(24).toString("base64url") },
   });
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "accepted") : "";
-  back(id, { done: "accepted", ...(email ? { email } : {}) });
+  return back(id, { done: "accepted", ...(email ? { email } : {}) }, form);
 }
 
 /** The riad has no room for this request: cancel it and tell the guest. */
 export async function declineBooking(id: string, form: FormData) {
   await requireUser();
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
-  if (b.status !== "PENDING") back(id, { error: "transition" });
+  if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
   await db.booking.update({ where: { id }, data: { status: "CANCELLED", cancelledAt: new Date() } });
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "declined") : "";
-  back(id, { done: "declined", ...(email ? { email } : {}) });
+  return back(id, { done: "declined", ...(email ? { email } : {}) }, form);
 }
 
 /** Last step: the proof is good. The booking is confirmed and the guest gets the confirmation with the voucher PDF. */
 export async function approvePayment(id: string, form: FormData) {
   await requireUser();
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
-  if (b.status !== "PAYMENT_REVIEW") back(id, { error: "transition" });
+  if (b.status !== "PAYMENT_REVIEW") return back(id, { error: "transition" }, form);
   await db.booking.update({ where: { id }, data: { status: "CONFIRMED", paymentStatus: "DEPOSIT_PAID" } });
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "confirmed") : "";
-  back(id, { done: "CONFIRMED", ...(email ? { email } : {}) });
+  return back(id, { done: "CONFIRMED", ...(email ? { email } : {}) }, form);
 }
 
 /** The proof can't be accepted (wrong amount, unreadable…): back to "awaiting payment", the guest can upload again. */
 export async function rejectProof(id: string, form: FormData) {
   await requireUser();
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
-  if (b.status !== "PAYMENT_REVIEW") back(id, { error: "transition" });
+  if (b.status !== "PAYMENT_REVIEW") return back(id, { error: "transition" }, form);
   await db.booking.update({ where: { id }, data: { status: "AWAITING_PAYMENT" } });
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "proofRejected") : "";
-  back(id, { done: "proofRejected", ...(email ? { email } : {}) });
+  return back(id, { done: "proofRejected", ...(email ? { email } : {}) }, form);
 }
 
 /** Send the payment link again (the guest lost the email). */
-export async function resendPaymentLink(id: string) {
+export async function resendPaymentLink(id: string, form?: FormData) {
   await requireUser();
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
-  if (b.status !== "AWAITING_PAYMENT") back(id, { error: "transition" });
-  back(id, { done: "resent", email: await sendStatusEmail(id, "accepted") });
+  if (b.status !== "AWAITING_PAYMENT") return back(id, { error: "transition" }, form);
+  return back(id, { done: "resent", email: await sendStatusEmail(id, "accepted") }, form);
 }
 
 /** Re-open a cancelled booking, only if the nights are still free. */
-export async function restore(id: string) {
+export async function restore(id: string, form?: FormData) {
   await requireUser();
   const ok = await restoreBooking(id);
-  back(id, ok ? { done: "CONFIRMED" } : { error: "restore" });
+  return back(id, ok ? { done: "CONFIRMED" } : { error: "restore" }, form);
 }
 
 const paymentSchema = z.object({
@@ -107,13 +122,13 @@ const paymentSchema = z.object({
 export async function savePayment(id: string, form: FormData) {
   await requireUser();
   const p = paymentSchema.safeParse(Object.fromEntries(form));
-  if (!p.success) return back(id, { error: "payment" });
+  if (!p.success) return back(id, { error: "payment" }, form);
   const data = p.data;
   await db.booking.update({
     where: { id },
     data: { paymentStatus: data.paymentStatus as PaymentStatus, depositAmount: data.depositAmount, paymentMethod: data.paymentMethod || null },
   });
-  back(id, { done: "payment" });
+  return back(id, { done: "payment" }, form);
 }
 
 export async function saveNotes(id: string, form: FormData) {
@@ -121,7 +136,7 @@ export async function saveNotes(id: string, form: FormData) {
   const notes = String(form.get("internalNotes") ?? "").slice(0, 4000);
   const arrival = String(form.get("arrivalTime") ?? "").slice(0, 20);
   await db.booking.update({ where: { id }, data: { internalNotes: notes, arrivalTime: arrival } });
-  back(id, { done: "notes" });
+  return back(id, { done: "notes" }, form);
 }
 
 export type NewBookingState = { error?: string; values?: Record<string, string> };
@@ -201,9 +216,11 @@ export async function bulkDelete(ids: string[]): Promise<BulkResult> {
 }
 
 /** Delete one booking for good, from its page. */
-export async function deleteBooking(id: string) {
+export async function deleteBooking(id: string, form?: FormData) {
   await requireManager();
   await hardDelete([id]);
   revalidatePath("/admin", "layout");
-  redirect("/admin/bookings?deleted=1");
+  // from the panel: back to the page underneath (closed panel); from the full page: the list
+  const page = safeReturn(form) ?? "/admin/bookings";
+  redirect(`${page}${page.includes("?") ? "&" : "?"}deleted=1`);
 }

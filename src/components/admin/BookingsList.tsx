@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { BookingStatus } from "@prisma/client";
 import { Ban, Download, Loader2, Search, Trash2, X } from "lucide-react";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { PendingPanel } from "@/components/admin/BookingPanel";
 import { bulkCancel, bulkDelete, type BulkResult } from "@/app/admin/(protected)/bookings/actions";
 
 export type BookingRow = {
@@ -78,6 +79,8 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
     if (query.trim()) p.set("q", query.trim());
     if (status) p.set("status", status);
     if (room) p.set("room", room);
+    const open = new URLSearchParams(window.location.search).get("b"); // keep an open panel
+    if (open) p.set("b", open);
     const s = p.toString();
     window.history.replaceState(null, "", `/admin/bookings${s ? `?${s}` : ""}`);
     setShown(PAGE);
@@ -144,6 +147,16 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
   };
 
   const any = q || status || room;
+  // a row opens the booking in the side panel over this list, keeping the filters
+  const rowHref = (id: string) => {
+    const p = new URLSearchParams();
+    if (view !== "upcoming") p.set("view", view);
+    if (query.trim()) p.set("q", query.trim());
+    if (status) p.set("status", status);
+    if (room) p.set("room", room);
+    p.set("b", id);
+    return `/admin/bookings?${p}`;
+  };
 
   return (
     <div className="grid gap-4">
@@ -230,8 +243,9 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
               </label>
               {/* one markup for every screen; no prefetch: a long list must not fire a request per row */}
               <Link
-                href={`/admin/bookings/${b.id}`}
+                href={rowHref(b.id)}
                 prefetch={false}
+                scroll={false}
                 className="grid min-w-0 grid-cols-[1fr_auto] gap-x-4 gap-y-1 py-3 pe-4 hover:bg-paper/60 md:grid-cols-[1.5fr_1fr_1.4fr_0.8fr_auto] md:items-center"
               >
                 <span className="min-w-0">
@@ -253,6 +267,7 @@ export function BookingsList({ rows, rooms, statuses, initial, truncated, view, 
                   {b.total}
                   <span className="block text-xs text-muted">{b.payment}</span>
                 </span>
+                <PendingPanel />
               </Link>
             </li>
           ))}

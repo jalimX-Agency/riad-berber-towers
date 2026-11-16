@@ -7,6 +7,10 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { BedDouble, CalendarDays, ExternalLink, LayoutDashboard, LogOut, Menu, Plus, RefreshCw, Settings, Tags, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NavPending } from "@/components/admin/NavPending";
+
+// the admin has no loading.tsx (with Next 15.5 it blocked same-page navigations and redirects in production):
+// the skeleton comes from the clicked sidebar link itself
 
 const items = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
@@ -47,6 +51,7 @@ export function AdminNav({ user, pending }: { user: string; pending: number }) {
             {href === "/admin/bookings" && pending > 0 && (
               <span className="ms-auto rounded-full bg-amber-400 px-2 text-xs font-semibold text-ink">{pending}</span>
             )}
+            <NavPending />
           </Link>
         ),
       )}
@@ -57,6 +62,7 @@ export function AdminNav({ user, pending }: { user: string; pending: number }) {
       >
         <Plus className="h-4 w-4" aria-hidden="true" />
         Nouvelle réservation
+        <NavPending />
       </Link>
     </nav>
   );

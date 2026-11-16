@@ -6,6 +6,8 @@ import { requireUser } from "@/lib/admin/guard";
 import { addDays, todayInImlil } from "@/lib/booking/dates";
 import { eur, frDate, sourceLabel } from "@/lib/admin/labels";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { PendingPanel } from "@/components/admin/BookingPanel";
+import { BookingPanelSlot } from "@/components/admin/BookingPanelSlot";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Tableau de bord" };
@@ -13,8 +15,10 @@ export const metadata = { title: "Tableau de bord" };
 const live = { status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN"] as BookingStatus[] } };
 const include = { guest: { select: { firstName: true, lastName: true, phone: true } }, room: { select: { name: true } } } as const;
 
-export default async function AdminDashboard() {
-  const user = await requireUser();
+type Props = { searchParams: Promise<Record<string, string | undefined>> };
+
+export default async function AdminDashboard({ searchParams }: Props) {
+  const [user, sp] = await Promise.all([requireUser(), searchParams]);
   const today = todayInImlil();
   const in7 = addDays(today, 7);
 
@@ -44,7 +48,7 @@ export default async function AdminDashboard() {
         <ul className="divide-y divide-rule">
           {rows.map((b) => (
             <li key={b.id}>
-              <Link href={`/admin/bookings/${b.id}`} prefetch={false} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5 text-sm hover:text-earth">
+              <Link href={`/admin?b=${b.id}`} prefetch={false} scroll={false} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5 text-sm hover:text-earth">
                 <span className="font-medium">
                   {b.guest.firstName} {b.guest.lastName}
                 </span>
@@ -57,6 +61,7 @@ export default async function AdminDashboard() {
                       : eur(Number(b.total), b.currency)}
                 </span>
                 <StatusBadge status={b.status} className="ms-auto" />
+                <PendingPanel />
               </Link>
             </li>
           ))}
@@ -100,6 +105,8 @@ export default async function AdminDashboard() {
         </div>
         <List title="Prochaines arrivées" rows={upcoming} empty="Aucune arrivée prévue cette semaine." show="created" />
       </section>
+
+      <BookingPanelSlot basePath="/admin" sp={sp} />
     </div>
   );
 }
