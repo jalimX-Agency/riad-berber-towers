@@ -158,6 +158,7 @@ export default async function ImlilGuidePage({ params }: Props) {
         </div>
         <div className="grid content-start gap-5 rounded-card bg-ink p-6 text-snow sm:p-10 lg:col-span-6">
           <p className="text-snow/80">{g.getting.note}</p>
+          <p className="border-t border-snow/15 pt-4 text-snow/80">{g.transfer}</p>
           <a href={wa} target="_blank" rel="noopener noreferrer" className="btn-primary w-fit bg-snow text-ink hover:bg-ochre">
             <WhatsAppIcon className="h-4 w-4" />
             {g.getting.whatsapp}
@@ -210,6 +211,10 @@ export default async function ImlilGuidePage({ params }: Props) {
             {g.toubkal.paras.map((p) => (
               <p key={p.slice(0, 32)} className="text-snow/80">{p}</p>
             ))}
+            <p className="text-snow/80">
+              {g.partner.text}{" "}
+              <a href={site.partner.url} target="_blank" rel="noopener" className="font-medium text-ochre hover:underline">{g.partner.cta}</a>
+            </p>
             <dl className="grid grid-cols-3 gap-4 border-t border-snow/20 pt-5">
               {g.toubkal.facts.map((f) => (
                 <div key={f.label} className="grid gap-1">

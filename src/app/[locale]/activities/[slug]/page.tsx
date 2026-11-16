@@ -228,6 +228,10 @@ export default async function ActivityPage({ params }: Props) {
               <WhatsAppIcon className="h-4 w-4" />
               {c.book}
             </a>
+            <p className="border-t border-rule pt-4 text-sm text-muted">
+              {c.detail.addToStay}{" "}
+              <Link href="/rooms" className="font-medium text-earth hover:underline">{c.detail.rooms}</Link>
+            </p>
             <a href={`mailto:${site.email}?subject=${encodeURIComponent(v.name)}`} className="btn-outline justify-center">
               <Mail className="h-4 w-4" aria-hidden="true" />
               {c.contact.email}
@@ -254,7 +258,7 @@ export default async function ActivityPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 4 · Other activities */}
+      {/* 4 · Other activities (+ the owner's agency for longer trips) */}
       <section className="container-site grid gap-6 py-14 lg:py-20">
         <h2 className="text-3xl lg:text-4xl">{c.detail.others}</h2>
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -272,6 +276,11 @@ export default async function ActivityPage({ params }: Props) {
             </li>
           ))}
         </ul>
+        <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-rule pt-5 text-sm text-muted">
+          <span className="label">{c.partner.label}</span>
+          {c.partner.title}.
+          <a href={site.partner.url} target="_blank" rel="noopener" className="font-medium text-earth hover:underline">{c.partner.cta}</a>
+        </p>
       </section>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

@@ -8,6 +8,7 @@ import { formatPrice } from "@/lib/rooms";
 import { formatStayDate } from "@/lib/email/booking";
 import { bookingPayment } from "./payment";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "./policy";
+import { extraLines, extrasInclude } from "./extra-names";
 
 // Brand colours (globals.css)
 const INK = rgb(0.184, 0.125, 0.086); // #2F2016
@@ -24,7 +25,7 @@ const PAPER = rgb(0.969, 0.953, 0.918); // #F7F3EA
 export async function buildVoucher(bookingId: string): Promise<{ filename: string; bytes: Uint8Array } | null> {
   const b = await db.booking.findUnique({
     where: { id: bookingId },
-    include: { guest: true, room: { include: { translations: true } } },
+    include: { guest: true, room: { include: { translations: true } }, ...extrasInclude },
   });
   if (!b) return null;
 
@@ -118,6 +119,9 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
     [t("guests"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
     [tb("bed"), tb(`beds.${b.bedSetup}`)],
     [t("included"), t("breakfast")],
+    ...extraLines(b.extras, locale, tb("transfer.title")).map(
+      (x) => [x.transfer ? x.name : tb("extras.title"), x.transfer ? money(x.total) : `${x.name} · ${tb("extras.people", { count: x.people })}`] as [string, string],
+    ),
   ], colW);
   const guestEnd = rows(M + colW + 24, 690, t("guest"), [
     [t("name"), `${b.guest.firstName} ${b.guest.lastName}`],

@@ -177,7 +177,8 @@
     "gallery": "Gallery",
     "blog": "Journal",
     "privacy": "Privacy",
-    "terms": "Booking terms"
+    "terms": "Booking terms",
+    "partner": "Treks and tours with our agency"
   },
   "whatsapp": {
     "label": "Chat on WhatsApp",
@@ -321,7 +322,7 @@
       "22+": "After 22:00"
     },
     "requests": "Special requests",
-    "requestsHint": "Transfer from Marrakech, dietary needs, a celebration… We read every note.",
+    "requestsHint": "Dietary needs, a celebration, a question… We read every note.",
     "submit": "Request booking",
     "sending": "Sending…",
     "noPayment": "No payment now. You won’t be charged by this website.",
@@ -359,6 +360,7 @@
     "step": {
       "details": "Your details",
       "arrival": "Your arrival",
+      "extras": "Activities",
       "review": "Review and confirm"
     },
     "continue": "Continue",
@@ -367,7 +369,36 @@
     "dates": "Dates",
     "guest": "Guest",
     "arrivalHint": "Helps us have your room and a mint tea ready.",
-    "reviewNote": "Please check your details. When you confirm, we send your request to the riad and a summary to your email."
+    "reviewNote": "Please check your details. When you confirm, we send your request to the riad and a summary to your email.",
+    "roomTotal": "Room",
+    "extras": {
+      "option": "Add activities to my stay",
+      "title": "Activities",
+      "intro": "Guided hikes, mountain biking or the cooking class. The price is added to your total, and we arrange the day with you.",
+      "perPerson": "per person",
+      "people": "{count, plural, one {# person} other {# people}}",
+      "peopleLabel": "People for {name}",
+      "less": "One person less",
+      "more": "One person more",
+      "add": "Add",
+      "remove": "Remove",
+      "none": "None"
+    },
+    "transfer": {
+      "title": "Transfer from Marrakech",
+      "text": "Private transfer from the airport, your hotel or riad, or anywhere in Marrakech, to our door.",
+      "from": "Pick-up",
+      "pickups": {
+        "airport": "Marrakech airport",
+        "hotel": "Hotel or riad in Marrakech",
+        "other": "Other place in Marrakech"
+      },
+      "details": "Flight number or address",
+      "detailsHint": "e.g. AT 801, or the name of your hotel",
+      "price": "per transfer",
+      "otherCity": "Coming from another city? Contact us and we will arrange it."
+    },
+    "extrasSum": "Activities & transfer"
   },
   "email": {
     "guest": {

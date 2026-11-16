@@ -10,7 +10,8 @@ const de: PagesCopy = {
     label: "Unsere Geschichte",
     title: ["Ein Berghaus,", "von Hand gebaut"],
     lead: "Drei Etagen aus Tadelakt, Zellige aus Fès und geschnitztem Holz, am Ende der Straße aus Marrakesch. Statt es zu beschreiben, erzählen wir, wie sich ein Tag hier anfühlt.",
-    facts: ["Imlil · 1.740 m", "3 Etagen + Dach", "7 Zimmer"],
+    facts: ["Imlil · 1.740 m","Grundstück gekauft 2014","Eröffnet 2025","7 Zimmer, jedes mit eigenem Bad"],
+    decade: {"label":"Zehn Jahre Leidenschaft","title":"Ein Jahrzehnt voller Träume, in Stein gemeißelt","text":"2014 haben wir das Grundstück gekauft. Es brauchte Jahre voller Leidenschaft und Arbeit, mit lokalen Materialien und den Händen marokkanischer Handwerker, bis sich 2025 die Türen öffneten: Tadelakt-Putz, Zellige aus Fès, geschnitzte Zeder und Berberhandwerk, damit jeder Gast ein echtes Stück marokkanischer Kultur erlebt.","from":"Grundstück gekauft","to":"Türen geöffnet","sign":"Das Team von Riad Berber Towers"},
     day: {
       label: "Ein Tag im Haus",
       title: "Vom ersten Licht bis zur letzten Lampe",
@@ -62,8 +63,8 @@ const de: PagesCopy = {
           text: "Glasierte Fliesen, von Hand Stück für Stück geschnitten. Auf den Böden, am Brunnen und in jeder Dusche.",
         },
         {
-          name: "Geschnitztes Holz",
-          text: "Türen, Balken, die Rezeption und die Galerie um den Innenhof.",
+          name: "Geschnitzte Zeder",
+          text: "Türen, Balken, die Rezeption und die Galerie um den Innenhof, aus Zedernholz geschnitzt.",
         },
         {
           name: "Tadelakt",
@@ -123,6 +124,7 @@ const de: PagesCopy = {
     faq: {
       title: "Häufige Fragen",
       items: [
+        {"q":"Können Sie uns in Marrakesch abholen?","a":"Ja. Wir bieten einen privaten Transfer vom Flughafen Marrakesch, Ihrem Hotel oder Riad oder von überall in Marrakesch bis zum Haus. Aus einer anderen Stadt schreiben Sie uns, wir organisieren es."},
         {
           q: "Ist das Frühstück inklusive?",
           a: "Ja. Jede Nacht beinhaltet Frühstück, serviert auf der Dachterrasse.",

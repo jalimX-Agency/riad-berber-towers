@@ -81,6 +81,8 @@ const en: GuideCopy = {
       { value: "Guide", label: "Required since 2019" },
     ],
   },
+  partner: {"text":"Our sister agency Toubkal Peaks organises the Toubkal ascent with certified local guides, from Imlil.","cta":"Toubkal treks on toubkal-peaks.com"},
+  transfer: "We also offer a private transfer from Marrakech (airport, hotel or riad) to the house; from other cities, contact us.",
   practical: {
     label: "Practical tips",
     title: "Good to know before you come",

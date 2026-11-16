@@ -71,7 +71,31 @@ export default async function StoryPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 2 · One day at the house (signature) */}
+      {/* 2 · Ten years, from the land to the open door (owner's own story) */}
+      <section aria-labelledby="decade-title" className="bg-ink py-16 text-snow lg:py-24">
+        <div className="container-site grid gap-12 lg:grid-cols-12 lg:gap-10">
+          <div className="grid content-start gap-4 lg:col-span-5">
+            <p className="label text-ochre">{s.decade.label}</p>
+            <h2 id="decade-title" className="text-4xl lg:text-5xl">{s.decade.title}</h2>
+            <p className="text-snow/75">{s.decade.text}</p>
+            <p className="font-display italic text-snow/60 [html[dir=rtl]_&]:not-italic">— {s.decade.sign}</p>
+          </div>
+          <ol className="grid gap-6 self-center lg:col-span-7 lg:col-start-6" dir="ltr">
+            <li className="grid gap-1">
+              <span className="font-mono text-[clamp(4.5rem,13vw,10rem)] leading-[0.85] tracking-tighter text-snow/90">2014</span>
+              <span className="label text-ochre">{s.decade.from}</span>
+            </li>
+            <li aria-hidden="true" className="relative ms-[0.6em] h-24 w-px bg-gradient-to-b from-ochre to-earth lg:h-28">
+            </li>
+            <li className="grid justify-items-end gap-1 text-end">
+              <span className="font-mono text-[clamp(4.5rem,13vw,10rem)] leading-[0.85] tracking-tighter text-ochre">2025</span>
+              <span className="label text-ochre">{s.decade.to}</span>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      {/* 3 · One day at the house (signature) */}
       <section aria-labelledby="day-title" className="container-site pb-16 lg:pb-8">
         <header className="grid gap-2 pb-6 lg:pb-0">
           <p className="label">{s.day.label}</p>

@@ -48,6 +48,10 @@ export async function SiteFooter() {
           >
             <WhatsAppIcon className="h-4 w-4" /> WhatsApp
           </a>
+          <p className="mt-3 text-xs text-snow/60">
+            {t("partner")}{" "}
+            <a href={site.partner.url} target="_blank" rel="noopener" className="text-snow/85 underline-offset-4 hover:text-ochre hover:underline">{site.partner.name}</a>
+          </p>
         </div>
 
         <div className="grid content-start gap-3">

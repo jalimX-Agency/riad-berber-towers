@@ -10,7 +10,8 @@ const en: PagesCopy = {
     label: "Our story",
     title: ["A mountain house", "made by hand"],
     lead: "Three floors of tadelakt, Fes zellij and carved wood, at the end of the road from Marrakech. Rather than tell you about it, here is what a day in it feels like.",
-    facts: ["Imlil · 1,740 m", "3 floors + roof", "7 rooms"],
+    facts: ["Imlil · 1,740 m","Land bought in 2014","Opened in 2025","7 rooms, each with its bathroom"],
+    decade: {"label":"Ten years of passion","title":"A decade of dreams, set in stone","text":"We bought the land in 2014. It took years of passion and work, with local materials and the hands of Moroccan craftsmen, before the doors opened in 2025: tadelakt plaster, Fassi zellij, carved cedar and Berber craft, so that every guest lives a true piece of Moroccan culture.","from":"Land bought","to":"Doors open","sign":"The Riad Berber Towers team"},
     day: {
       label: "One day at the house",
       title: "From first light to the last lamp",
@@ -62,8 +63,8 @@ const en: PagesCopy = {
           text: "Glazed tiles cut by hand, piece by piece. On the floors, around the fountain and in every shower.",
         },
         {
-          name: "Carved wood",
-          text: "Doors, beams, the reception counter and the gallery around the atrium.",
+          name: "Carved cedar",
+          text: "Doors, beams, the reception counter and the gallery around the atrium, carved in cedar.",
         },
         {
           name: "Tadelakt",
@@ -123,6 +124,7 @@ const en: PagesCopy = {
     faq: {
       title: "Frequent questions",
       items: [
+        {"q":"Can you pick us up in Marrakech?","a":"Yes. We offer a private transfer from Marrakech airport, your hotel or riad, or anywhere in Marrakech to the house. From another city, contact us and we will arrange it."},
         {
           q: "Is breakfast included?",
           a: "Yes. Every night includes breakfast, served on the roof terrace.",

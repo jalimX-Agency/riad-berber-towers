@@ -81,6 +81,8 @@ const de: GuideCopy = {
       { value: "Guide", label: "Pflicht seit 2019" },
     ],
   },
+  partner: {"text":"Unsere Partneragentur Toubkal Peaks organisiert die Toubkal-Besteigung mit zertifizierten einheimischen Guides ab Imlil.","cta":"Toubkal-Treks auf toubkal-peaks.com"},
+  transfer: "Wir bieten auch einen privaten Transfer ab Marrakesch (Flughafen, Hotel oder Riad) bis zum Haus an; aus anderen Städten schreiben Sie uns.",
   practical: {
     label: "Praktische Tipps",
     title: "Gut zu wissen vor der Anreise",

@@ -10,7 +10,8 @@ const fr: PagesCopy = {
     label: "Notre histoire",
     title: ["Une maison de montagne", "faite à la main"],
     lead: "Trois étages de tadelakt, de zellige de Fès et de bois sculpté, au bout de la route de Marrakech. Plutôt que de vous la décrire, voici à quoi ressemble une journée ici.",
-    facts: ["Imlil · 1 740 m", "3 étages + toit", "7 chambres"],
+    facts: ["Imlil · 1 740 m","Terrain acquis en 2014","Ouvert en 2025","7 chambres, chacune avec sa salle de bain"],
+    decade: {"label":"Dix ans de passion","title":"Une décennie de rêves, gravés dans la pierre","text":"Nous avons acheté le terrain en 2014. Il a fallu des années de passion et de travail, avec des matériaux locaux et les mains d’artisans marocains, avant d’ouvrir les portes en 2025 : plâtre tadelakt, zellige fassi, cèdre sculpté et artisanat berbère, pour que chaque hôte vive un vrai morceau de culture marocaine.","from":"Terrain acquis","to":"Portes ouvertes","sign":"L’équipe de Riad Berber Towers"},
     day: {
       label: "Une journée à la maison",
       title: "De la première lumière à la dernière lampe",
@@ -62,8 +63,8 @@ const fr: PagesCopy = {
           text: "Des carreaux émaillés taillés à la main, un à un. Sur les sols, autour de la fontaine et dans chaque douche.",
         },
         {
-          name: "Bois sculpté",
-          text: "Portes, poutres, comptoir de la réception et galerie autour du patio.",
+          name: "Cèdre sculpté",
+          text: "Portes, poutres, comptoir de la réception et galerie autour du patio, sculptés dans le cèdre.",
         },
         {
           name: "Tadelakt",
@@ -123,6 +124,7 @@ const fr: PagesCopy = {
     faq: {
       title: "Questions fréquentes",
       items: [
+        {"q":"Pouvez-vous venir nous chercher à Marrakech ?","a":"Oui. Nous proposons un transfert privé depuis l’aéroport de Marrakech, votre hôtel ou riad, ou n’importe où à Marrakech, jusqu’à la maison. Depuis une autre ville, contactez-nous, nous l’organisons."},
         {
           q: "Le petit-déjeuner est-il inclus ?",
           a: "Oui. Chaque nuit inclut le petit-déjeuner, servi sur la terrasse.",

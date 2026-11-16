@@ -177,7 +177,8 @@
     "gallery": "Galería",
     "blog": "Diario",
     "privacy": "Privacidad",
-    "terms": "Condiciones de reserva"
+    "terms": "Condiciones de reserva",
+    "partner": "Treks y circuitos con nuestra agencia"
   },
   "whatsapp": {
     "label": "Escríbenos por WhatsApp",
@@ -321,7 +322,7 @@
       "22+": "Después de las 22:00"
     },
     "requests": "Peticiones especiales",
-    "requestsHint": "Traslado desde Marrakech, dieta, una celebración… Leemos cada mensaje.",
+    "requestsHint": "Dieta, una celebración, una pregunta… Leemos cada mensaje.",
     "submit": "Solicitar la reserva",
     "sending": "Enviando…",
     "noPayment": "Sin pago ahora. Esta web no te cobrará nada.",
@@ -359,6 +360,7 @@
     "step": {
       "details": "Tus datos",
       "arrival": "Tu llegada",
+      "extras": "Actividades",
       "review": "Revisar y confirmar"
     },
     "continue": "Continuar",
@@ -367,7 +369,36 @@
     "dates": "Fechas",
     "guest": "Huésped",
     "arrivalHint": "Así tendremos lista tu habitación y un té a la menta.",
-    "reviewNote": "Revisa tus datos. Al confirmar, enviamos tu solicitud al riad y un resumen a tu correo."
+    "reviewNote": "Revisa tus datos. Al confirmar, enviamos tu solicitud al riad y un resumen a tu correo.",
+    "roomTotal": "Habitación",
+    "extras": {
+      "option": "Añadir actividades a mi estancia",
+      "title": "Actividades",
+      "intro": "Rutas guiadas, bicicleta de montaña o la clase de cocina. El precio se suma al total y acordamos el día contigo.",
+      "perPerson": "por persona",
+      "people": "{count, plural, one {# persona} other {# personas}}",
+      "peopleLabel": "Personas para {name}",
+      "less": "Una persona menos",
+      "more": "Una persona más",
+      "add": "Añadir",
+      "remove": "Quitar",
+      "none": "Ninguna"
+    },
+    "transfer": {
+      "title": "Traslado desde Marrakech",
+      "text": "Traslado privado desde el aeropuerto, tu hotel o riad, o cualquier lugar de Marrakech, hasta nuestra puerta.",
+      "from": "Recogida",
+      "pickups": {
+        "airport": "Aeropuerto de Marrakech",
+        "hotel": "Hotel o riad en Marrakech",
+        "other": "Otro lugar de Marrakech"
+      },
+      "details": "Número de vuelo o dirección",
+      "detailsHint": "p. ej. AT 801, o el nombre de tu hotel",
+      "price": "por traslado",
+      "otherCity": "¿Vienes de otra ciudad? Escríbenos y lo organizamos."
+    },
+    "extrasSum": "Actividades y traslado"
   },
   "email": {
     "guest": {

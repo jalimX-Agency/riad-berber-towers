@@ -9,7 +9,10 @@ import { toISO } from "@/lib/booking/dates";
 import { formatStayDate } from "@/lib/email/booking";
 import { GuestForm } from "@/components/booking/GuestForm";
 import { StayPolicies } from "@/components/booking/StayPolicies";
+import { LiveTotal } from "@/components/booking/LiveTotal";
 import { DEPOSIT_PERCENT, EXTRA_GUEST_PERCENT, splitPayment } from "@/lib/booking/policy";
+import { ACTIVITY_EXTRAS } from "@/lib/booking/extras";
+import { OUTINGS, activitiesCopy, activityMedia, pexels } from "@/lib/activities";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -67,6 +70,19 @@ export default async function BookPage({ params, searchParams }: Props) {
   }
 
   const fmt = (n: number) => formatPrice(n, room.currency, locale);
+  // activities the guest can add in the wizard (name, short line, small photo)
+  const ac = activitiesCopy(locale);
+  const extraOptions = ACTIVITY_EXTRAS.map((x) => {
+    const o = OUTINGS.find((y) => y.slug === x.slug);
+    const it = o ? ac.outings.items[o.id] : null;
+    return {
+      slug: x.slug,
+      price: x.price,
+      name: it ? it.name : ac.cooking.title,
+      line: it ? `${it.facts.duration ?? ""}` : ac.cooking.duration,
+      photo: o ? pexels(o.photos[0]).src : activityMedia.bread.src,
+    };
+  });
 
   return (
     <div className="container-site grid gap-8 pb-24 pt-8 md:pt-12">
@@ -96,6 +112,9 @@ export default async function BookPage({ params, searchParams }: Props) {
               checkIn={toISO(query.checkIn)}
               checkOut={toISO(query.checkOut)}
               adults={query.adults}
+              currency={room.currency}
+              roomTotal={a.total}
+              extras={extraOptions}
               summary={{
                 room: room.name,
                 dates: `${formatStayDate(query.checkIn, locale)} → ${formatStayDate(query.checkOut, locale)}`,
@@ -156,23 +175,13 @@ export default async function BookPage({ params, searchParams }: Props) {
               </ul>
             </details>
 
-            <div className="flex items-baseline justify-between border-t border-ink pt-3">
-              <span className="font-medium">{t("total")}</span>
-              <span className="font-display text-3xl font-semibold" dir="ltr">
-                {fmt(a.total)}
-              </span>
-            </div>
-            {a.extraGuest && <p className="-mt-2 text-xs text-muted">{tres("extraGuest", { percent: EXTRA_GUEST_PERCENT })}</p>}
-            <dl className="grid gap-1.5 text-sm">
-              <div className="flex justify-between gap-3">
-                <dt>{t("deposit", { percent: DEPOSIT_PERCENT })}</dt>
-                <dd className="font-medium" dir="ltr">{fmt(splitPayment(a.total).deposit)}</dd>
-              </div>
-              <div className="flex justify-between gap-3 text-muted">
-                <dt>{t("balance")}</dt>
-                <dd dir="ltr">{fmt(splitPayment(a.total).balance)}</dd>
-              </div>
-            </dl>
+            <LiveTotal
+              roomTotal={a.total}
+              currency={room.currency}
+              locale={locale}
+              note={a.extraGuest ? tres("extraGuest", { percent: EXTRA_GUEST_PERCENT }) : undefined}
+              labels={{ total: t("total"), room: t("roomTotal"), extras: t("extrasSum"), deposit: t("deposit", { percent: DEPOSIT_PERCENT }), balance: t("balance") }}
+            />
             <StayPolicies className="border-t border-rule pt-4" />
           </div>
         </aside>

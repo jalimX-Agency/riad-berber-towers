@@ -25,6 +25,7 @@ import { payUrl } from "@/lib/email/booking";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { bookingPayment } from "@/lib/booking/payment";
 import { cn } from "@/lib/utils";
+import { extraLines, extrasInclude } from "@/lib/booking/extra-names";
 
 const doneText: Record<string, string> = {
   created: "Réservation créée.",
@@ -109,6 +110,7 @@ export async function BookingDetail({
       room: { select: { name: true, slug: true } },
       // never load the file bytes here
       proofs: { select: { id: true, filename: true, mimeType: true, size: true, createdAt: true }, orderBy: { createdAt: "desc" } },
+      ...extrasInclude,
     },
   });
   if (!b) notFound();
@@ -116,6 +118,7 @@ export async function BookingDetail({
   const nightly = (Array.isArray(b.nightlyRates) ? b.nightlyRates : []) as { date: string; price: number }[];
   const computed = nightly.reduce((s, n) => s + n.price, 0);
   const pay = bookingPayment(b);
+  const extras = extraLines(b.extras, "fr", "Transfert depuis Marrakech");
   const phoneDigits = b.guest.phone.replace(/\D/g, "");
   const actions = nextStatuses[b.status];
   const step = stepTone[b.status];
@@ -337,7 +340,24 @@ export async function BookingDetail({
             <span className="text-[11px] text-muted">{CASH_CURRENCIES.join(" · ")}</span>
           </div>
         </div>
-        {Math.round(computed) !== Math.round(pay.total) && computed > 0 && <p className="text-xs text-muted">Prix convenu. Le tarif calculé était {eur(computed, b.currency)}.</p>}
+        {Math.round(computed) !== Math.round(Number(b.roomTotal)) && computed > 0 && <p className="text-xs text-muted">Prix convenu. Le tarif calculé était {eur(computed, b.currency)}.</p>}
+        {extras.length > 0 && (
+          <ul className="grid divide-y divide-rule rounded-[10px] border border-rule bg-snow text-sm">
+            <li className="flex justify-between gap-3 px-4 py-2.5 text-muted">
+              <span>Chambre</span>
+              <span>{eur(Number(b.roomTotal), b.currency)}</span>
+            </li>
+            {extras.map((x) => (
+              <li key={x.slug} className="flex justify-between gap-3 px-4 py-2.5">
+                <span>
+                  {x.name}
+                  {!x.transfer && <span className="text-muted"> · {x.people} pers.</span>}
+                </span>
+                <span className={x.transfer ? "text-muted" : ""}>{x.transfer && !x.total ? "prix à confirmer" : eur(x.total, b.currency)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="grid gap-2">
           {nightly.length > 0 && (
             <details className="group rounded-[10px] border border-rule bg-snow">

@@ -1,7 +1,8 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
-import { ArrowUpRight, Mail } from "lucide-react";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { TRANSFER_PRICE } from "@/lib/booking/extras";
+import { ArrowUpRight, Car, Mail } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { routing, localePath } from "@/i18n/routing";
 import { site } from "@/lib/site";
@@ -43,6 +44,7 @@ export default async function ActivitiesPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const c = activitiesCopy(locale);
+  const tb = await getTranslations("book");
   const price = (n: number) => formatPrice(n, "EUR", locale);
   const wa = (activity: string) =>
     `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(c.whatsappMessage.replace("{activity}", activity))}`;
@@ -215,7 +217,46 @@ export default async function ActivitiesPage({ params }: Props) {
         </div>
       </section>
 
-      {/* 4 · Good to know + contact */}
+      {/* 4 · Further afield: Toubkal Peaks (the owner's agency) and the Marrakech transfer */}
+      <section aria-labelledby="partner-title" className="container-site grid gap-4 pb-16 lg:grid-cols-12 lg:pb-24">
+        <div className="relative isolate grid overflow-hidden rounded-card bg-ink text-snow lg:col-span-8 lg:grid-cols-2">
+          <div className="relative min-h-[240px]">
+            <Image src={pexels("tp-im9").src} alt="" fill sizes="(min-width: 1024px) 33vw, 100vw" className="object-cover" />
+          </div>
+          <div className="grid content-start gap-4 p-6 sm:p-8">
+            <p className="label text-ochre">{c.partner.label}</p>
+            <h2 id="partner-title" className="text-3xl lg:text-4xl">{c.partner.title}</h2>
+            <p className="text-sm text-snow/75">{c.partner.text}</p>
+            <ul className="grid gap-1.5 text-sm">
+              {c.partner.items.map((x) => (
+                <li key={x} className="flex gap-2.5">
+                  <span className="mt-2 h-1 w-3 shrink-0 bg-ochre" aria-hidden="true" />
+                  {x}
+                </li>
+              ))}
+            </ul>
+            <a href={site.partner.url} target="_blank" rel="noopener" className="group mt-1 inline-flex w-fit items-center gap-2 border-b border-snow/40 pb-1 text-sm uppercase tracking-[0.16em] hover:border-ochre hover:text-ochre">
+              {c.partner.cta}
+              <ArrowUpRight className="h-4 w-4 rtl:-scale-x-100" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+        <div className="grid content-start gap-4 rounded-card border border-rule bg-snow p-6 sm:p-8 lg:col-span-4">
+          <Car className="h-7 w-7 text-earth" aria-hidden="true" strokeWidth={1.5} />
+          <h2 className="text-3xl">{c.transfer.title}</h2>
+          <p className="flex items-baseline gap-2">
+            <span className="font-mono text-2xl tracking-tight" dir="ltr">{price(TRANSFER_PRICE)}</span>
+            <span className="text-sm text-muted">{tb("transfer.price")}</span>
+          </p>
+          <p className="text-sm text-muted">{c.transfer.text}</p>
+          <a href={wa(c.transfer.title)} target="_blank" rel="noopener noreferrer" className="btn-outline w-fit">
+            <WhatsAppIcon className="h-4 w-4" />
+            {c.transfer.cta}
+          </a>
+        </div>
+      </section>
+
+      {/* 5 · Good to know + contact */}
       <section className="border-t border-rule bg-snow py-16 lg:py-24">
         <div className="container-site grid gap-12 lg:grid-cols-12 lg:gap-10">
           <div className="grid content-start gap-6 lg:col-span-7">

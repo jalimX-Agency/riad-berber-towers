@@ -7,6 +7,10 @@ import { routing } from "@/i18n/routing";
 import { parseStayQuery } from "@/lib/booking/availability";
 import { createBooking, guestSchema } from "@/lib/booking/create";
 import { confirmationPath, sendBookingEmails } from "@/lib/email/booking";
+import { parseExtras } from "@/lib/booking/extras";
+
+/** Pick-up place as the riad (French admin) reads it */
+const PICKUP_FR = { airport: "aéroport de Marrakech", hotel: "hôtel ou riad à Marrakech", other: "autre lieu à Marrakech" } as const;
 
 export type BookState = {
   error?: "invalid" | "unavailable" | "too_many" | "server" | "dates";
@@ -39,7 +43,11 @@ export async function requestBooking(_prev: BookState, form: FormData): Promise<
 
   let result;
   try {
-    result = await createBooking({ roomSlug: str(form, "room"), query, guest: parsed.data, locale });
+    const extras = parseExtras((k) => str(form, k));
+    const transferNote = extras.transfer
+      ? `Transfert depuis Marrakech : ${PICKUP_FR[extras.transfer.from]}${extras.transfer.details ? ` (${extras.transfer.details})` : ""}`
+      : undefined;
+    result = await createBooking({ roomSlug: str(form, "room"), query, guest: parsed.data, locale, extras: { ...extras, transferNote } });
   } catch (e) {
     console.error("[booking] create failed", e);
     return { error: "server", values };

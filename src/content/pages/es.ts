@@ -10,7 +10,8 @@ const es: PagesCopy = {
     label: "Nuestra historia",
     title: ["Una casa de montaña", "hecha a mano"],
     lead: "Tres plantas de tadelakt, zellige de Fez y madera tallada, al final de la carretera de Marrakech. En vez de describirla, te contamos cómo es un día aquí.",
-    facts: ["Imlil · 1.740 m", "3 plantas + azotea", "7 habitaciones"],
+    facts: ["Imlil · 1.740 m","Terreno comprado en 2014","Abierto en 2025","7 habitaciones, cada una con su baño"],
+    decade: {"label":"Diez años de pasión","title":"Una década de sueños, grabados en piedra","text":"Compramos el terreno en 2014. Hicieron falta años de pasión y trabajo, con materiales locales y las manos de artesanos marroquíes, antes de abrir las puertas en 2025: revoco de tadelakt, zellige de Fez, cedro tallado y artesanía bereber, para que cada huésped viva un auténtico pedazo de cultura marroquí.","from":"Terreno comprado","to":"Puertas abiertas","sign":"El equipo de Riad Berber Towers"},
     day: {
       label: "Un día en la casa",
       title: "De la primera luz a la última lámpara",
@@ -62,8 +63,8 @@ const es: PagesCopy = {
           text: "Azulejos esmaltados cortados a mano, pieza a pieza. En los suelos, alrededor de la fuente y en cada ducha.",
         },
         {
-          name: "Madera tallada",
-          text: "Puertas, vigas, el mostrador de la recepción y la galería alrededor del patio.",
+          name: "Cedro tallado",
+          text: "Puertas, vigas, el mostrador de la recepción y la galería alrededor del patio, tallados en cedro.",
         },
         {
           name: "Tadelakt",
@@ -127,6 +128,7 @@ const es: PagesCopy = {
     faq: {
       title: "Preguntas frecuentes",
       items: [
+        {"q":"¿Podéis recogernos en Marrakech?","a":"Sí. Ofrecemos un traslado privado desde el aeropuerto de Marrakech, tu hotel o riad, o cualquier lugar de Marrakech hasta la casa. Desde otra ciudad, escríbenos y lo organizamos."},
         {
           q: "¿El desayuno está incluido?",
           a: "Sí. Todas las noches incluyen desayuno, servido en la terraza.",

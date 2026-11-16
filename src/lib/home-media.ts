@@ -22,8 +22,8 @@ export const homeMedia = {
     fountain: p("inside/dsc00375.webp", 1920, 1280),
   },
   valley: p("outside-day/dji_20250428172232_0312_d.webp", 1920, 1080),
-  /** Hero loop (morning drone → fountain → tea → night terrace), silent, ~15 s. Bump -vN when re-encoding (cached immutable). */
-  heroVideo: { desktop: mediaUrl("video/hero-desktop-v2.mp4"), mobile: mediaUrl("video/hero-mobile-v2.mp4") },
+  /** Hero loop v3 (morning → skylight, atrium, zellij fountain, carved cedar, zellij basin → tea → night), silent, ~20 s, 3 s per shot. Bump -vN when re-encoding (cached immutable). */
+  heroVideo: { desktop: mediaUrl("video/hero-desktop-v3.mp4"), mobile: mediaUrl("video/hero-mobile-v3.mp4") },
 } as const;
 
 export type Photo = { src: string; w: number; h: number };

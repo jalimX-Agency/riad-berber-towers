@@ -5,6 +5,22 @@ import { db } from "@/lib/db";
 import { getAvailability, type RoomAvailability, type StayQuery } from "./availability";
 import { ARRIVAL_TIMES } from "./arrival";
 import { BED_SETUPS, splitPayment } from "./policy";
+import { TRANSFER_PRICE, TRANSFER_SLUG, activityPrice, extraPrice, type ExtraChoice, type TransferChoice } from "./extras";
+
+/** The Extra rows behind the wizard options, created on first use (prices live in code, see extras.ts). */
+async function extraIds(slugs: string[]) {
+  const rows = await Promise.all(
+    slugs.map((slug) =>
+      db.extra.upsert({
+        where: { slug },
+        update: { price: extraPrice(slug) },
+        create: { slug, price: extraPrice(slug), priceType: slug === TRANSFER_SLUG ? "PER_STAY" : "PER_PERSON" },
+        select: { id: true, slug: true },
+      }),
+    ),
+  );
+  return new Map(rows.map((r) => [r.slug, r.id]));
+}
 
 /** Unambiguous alphabet (no 0/O, 1/I/L) so guests can read the reference over the phone. */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -75,6 +91,8 @@ export async function createBooking(input: {
   query: StayQuery;
   guest: GuestInput;
   locale: Locale;
+  /** activities added in the wizard (price × people) and an optional transfer from Marrakech (fixed price); both are added to the total */
+  extras?: { activities: ExtraChoice[]; transfer: TransferChoice | null; transferNote?: string };
   /** Admin-entered bookings (phone, WhatsApp, agencies…). Website bookings use the defaults. */
   admin?: {
     source: BookingSource;
@@ -94,6 +112,20 @@ export async function createBooking(input: {
     });
     if (recent >= MAX_PENDING_PER_EMAIL) return { ok: false, error: "too_many" };
   }
+
+  const activities = input.extras?.activities ?? [];
+  const transfer = input.extras?.transfer ?? null;
+  const ids = activities.length || transfer ? await extraIds([...activities.map((a) => a.slug), ...(transfer ? [TRANSFER_SLUG] : [])]) : new Map<string, string>();
+  const extraRows = [
+    ...activities.map((a) => {
+      const unit = activityPrice(a.slug);
+      return { extraId: ids.get(a.slug)!, quantity: a.people, unitPrice: unit, total: unit * a.people };
+    }),
+    ...(transfer ? [{ extraId: ids.get(TRANSFER_SLUG)!, quantity: 1, unitPrice: TRANSFER_PRICE, total: TRANSFER_PRICE }] : []),
+  ];
+  const extrasSum = extraRows.reduce((s, e) => s + e.total, 0);
+  // the transfer pick-up goes with the guest's requests so the riad sees it everywhere
+  const requests = [input.extras?.transferNote, guest.specialRequests].filter(Boolean).join("\n\n");
 
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
@@ -135,13 +167,15 @@ export async function createBooking(input: {
               status: admin?.status ?? "PENDING",
               source: admin?.source ?? "WEBSITE",
               roomTotal: admin?.total ?? a.total,
-              total: admin?.total ?? a.total,
+              extrasTotal: extrasSum,
+              total: (admin?.total ?? a.total) + extrasSum,
               currency: room.currency,
               nightlyRates: a.nightly,
               // owner policy: 40% non-refundable advance to confirm, balance in cash on arrival
-              depositAmount: splitPayment(admin?.total ?? a.total).deposit,
+              depositAmount: splitPayment((admin?.total ?? a.total) + extrasSum).deposit,
               arrivalTime: guest.arrivalTime === "unknown" ? "" : guest.arrivalTime,
-              specialRequests: guest.specialRequests,
+              specialRequests: requests,
+              ...(extraRows.length ? { extras: { create: extraRows } } : {}),
               internalNotes: admin?.internalNotes ?? "",
               locale: input.locale,
             },

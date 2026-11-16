@@ -16,6 +16,8 @@ export type PagesCopy = {
     title: [string, string];
     lead: string;
     facts: string[];
+    /** from the owner (old site): land bought 2014, opened 2025 */
+    decade: { label: string; title: string; text: string; from: string; to: string; sign: string };
     day: { label: string; title: string; hours: { time: string; title: string; text: string; alt: string }[] };
     touch: { label: string; title: string; materials: { name: string; text: string }[] };
     word: { label: string; word: string; text: string };

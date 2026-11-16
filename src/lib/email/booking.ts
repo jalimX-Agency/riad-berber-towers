@@ -8,6 +8,7 @@ import { localePath } from "@/i18n/routing";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { bookingPayment } from "@/lib/booking/payment";
 import { buildVoucher } from "@/lib/booking/voucher";
+import { extraLines, extrasInclude } from "@/lib/booking/extra-names";
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
@@ -49,7 +50,7 @@ export async function sendBookingEmails(bookingId: string) {
   try {
     const b = await db.booking.findUnique({
       where: { id: bookingId },
-      include: { guest: true, room: { include: { translations: true } } },
+      include: { guest: true, room: { include: { translations: true } }, ...extrasInclude },
     });
     if (!b) return;
     const locale = b.locale;
@@ -59,6 +60,10 @@ export async function sendBookingEmails(bookingId: string) {
     const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
     const total = formatPrice(Number(b.total), b.currency, locale);
     const pay = bookingPayment(b);
+    // activities (price × people) and the transfer (price on request)
+    const extraRows = extraLines(b.extras, locale, tb("transfer.title"))
+      .map((x) => row(x.transfer ? x.name : `${x.name} · ${tb("extras.people", { count: x.people })}`, formatPrice(x.total, b.currency, locale)))
+      .join("");
     const tp = await getTranslations({ locale, namespace: "policy" });
     const resend = new Resend(key);
     const { adminEmail: admin } = await getSettings();
@@ -74,6 +79,7 @@ ${row(ts("checkIn"), formatStayDate(b.checkIn, locale))}
 ${row(ts("checkOut"), formatStayDate(b.checkOut, locale))}
 ${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`)}
 ${row(tb("bed"), tb(`beds.${b.bedSetup}`))}
+${extraRows}
 ${row(tb("total"), total)}
 ${row(tb("deposit", { percent: DEPOSIT_PERCENT }), formatPrice(pay.deposit, b.currency, locale))}
 ${row(tb("balance"), formatPrice(pay.balance, b.currency, locale))}

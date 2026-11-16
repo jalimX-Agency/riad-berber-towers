@@ -193,12 +193,16 @@ const de: ActivitiesCopy = {
     },
   },
   detail: {
+    addToStay: "Buchen Sie sie zu Ihrem Aufenthalt dazu: Wählen Sie sie bei der Zimmerbuchung aus, der Preis kommt zum Gesamtbetrag hinzu.",
+    rooms: "Zimmer buchen",
     back: "Alle Aktivitäten",
     description: "Das Erlebnis",
     details: "Details",
     others: "Weitere Aktivitäten",
     from: "Ab Riad Berber Towers, Imlil",
   },
+  partner: {"label":"Unsere Partneragentur","title":"Längere Treks und Reisen: Toubkal Peaks","text":"Riad Berber Towers und die Reiseagentur Toubkal Peaks gehören derselben Familie. Für mehr als einen Tagesausflug organisiert sie private Treks und Rundreisen mit einheimischen Guides, und Ihr Aufenthalt im Riad kann Teil der Reise sein.","items":["Toubkal-Besteigung, 2 bis 3 Tage","Treks durch Atlastäler und Berberdörfer","Reisen in die Sahara","Königsstädte und Tagesausflüge ab Marrakesch"],"cta":"toubkal-peaks.com besuchen"},
+  transfer: {"title":"Transfer ab Marrakesch","text":"Wir holen Sie am Flughafen Marrakesch, in Ihrem Hotel oder Riad oder überall in Marrakesch ab und bringen Sie bis vor unsere Tür. Sie kommen aus einer anderen Stadt? Schreiben Sie uns, wir organisieren es. Den Transfer können Sie bei der Zimmerbuchung hinzufügen.","cta":"Transfer anfragen"},
   info: {
     label: "Gut zu wissen",
     title: "Wichtige Informationen",

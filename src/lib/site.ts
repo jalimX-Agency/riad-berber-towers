@@ -18,4 +18,6 @@ export const site = {
   altitudeM: 1740,
   fromMarrakechKm: 64,
   rooms: 7,
+  /** the owner's travel agency: longer treks, Toubkal, desert and city tours */
+  partner: { name: "Toubkal Peaks", url: "https://toubkal-peaks.com/" },
 } as const;
