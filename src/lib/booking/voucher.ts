@@ -32,6 +32,7 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
   const t = await getTranslations({ locale, namespace: "voucher" });
   const ts = await getTranslations({ locale, namespace: "search" });
   const tp = await getTranslations({ locale, namespace: "policy" });
+  const tb = await getTranslations({ locale, namespace: "book" });
   const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
   const pay = bookingPayment(b);
   const money = (n: number) => formatPrice(n, b.currency, locale).replace(/ | /g, " ");
@@ -115,6 +116,7 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
     [ts("checkIn"), formatStayDate(b.checkIn, locale)],
     [ts("checkOut"), formatStayDate(b.checkOut, locale)],
     [t("guests"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
+    [tb("bed"), tb(`beds.${b.bedSetup}`)],
     [t("included"), t("breakfast")],
   ], colW);
   const guestEnd = rows(M + colW + 24, 690, t("guest"), [

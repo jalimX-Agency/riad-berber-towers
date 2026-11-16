@@ -4,7 +4,7 @@ import type { BookingStatus } from "@prisma/client";
 import { ArrowLeft, ArrowRight, BedDouble, ChevronDown, Expand, FileDown, FileText, Mail, MessageCircle, Phone, Users } from "lucide-react";
 import { db } from "@/lib/db";
 import { canManage, requireUser } from "@/lib/admin/guard";
-import { actionLabel, eur, frDate, nextStatuses, paymentLabel, sourceLabel, statusLabel } from "@/lib/admin/labels";
+import { actionLabel, bedLabel, eur, frDate, nextStatuses, paymentLabel, sourceLabel, statusLabel } from "@/lib/admin/labels";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { CopyField } from "@/components/admin/CopyField";
@@ -217,6 +217,9 @@ export async function BookingDetail({
           <span className="inline-flex items-center gap-2 text-muted">
             <Users className="h-4 w-4 text-earth" aria-hidden="true" />
             {b.nights} nuit{b.nights > 1 ? "s" : ""} · {b.adults} adulte{b.adults > 1 ? "s" : ""}
+          </span>
+          <span className={cn("inline-flex w-fit items-center gap-2 rounded-full px-2.5 py-0.5 text-xs ring-1", b.bedSetup === "TWIN" ? "bg-sky-50 text-sky-900 ring-sky-200" : "bg-stone-100 text-stone-800 ring-stone-300")}>
+            {bedLabel[b.bedSetup]}
           </span>
         </div>
       </div>

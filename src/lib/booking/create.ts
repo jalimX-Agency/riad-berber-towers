@@ -4,7 +4,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getAvailability, type RoomAvailability, type StayQuery } from "./availability";
 import { ARRIVAL_TIMES } from "./arrival";
-import { splitPayment } from "./policy";
+import { BED_SETUPS, splitPayment } from "./policy";
 
 /** Unambiguous alphabet (no 0/O, 1/I/L) so guests can read the reference over the phone. */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -26,6 +26,7 @@ export const guestSchema = z.object({
     .regex(/^[+\d\s().-]+$/),
   country: z.string().trim().max(60).default(""),
   arrivalTime: z.enum(ARRIVAL_TIMES).default("unknown"),
+  bedSetup: z.enum(BED_SETUPS).default("DOUBLE"),
   specialRequests: z.string().trim().max(1000).default(""),
 });
 export type GuestInput = z.infer<typeof guestSchema>;
@@ -130,6 +131,7 @@ export async function createBooking(input: {
               nights: query.nights,
               adults: query.adults,
               children: 0,
+              bedSetup: guest.bedSetup,
               status: admin?.status ?? "PENDING",
               source: admin?.source ?? "WEBSITE",
               roomTotal: admin?.total ?? a.total,

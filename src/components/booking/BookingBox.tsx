@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { CalendarDays, Loader2, Users } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/rooms";
 import { cn } from "@/lib/utils";
+import { DateRangePicker } from "@/components/booking/DateRangePicker";
 import { EXTRA_GUEST_PERCENT } from "@/lib/booking/policy";
 import { StayPolicies } from "@/components/booking/StayPolicies";
 
@@ -21,11 +22,6 @@ type Quote = {
   extraGuest?: boolean;
 };
 
-const plusDays = (iso: string, n: number) => {
-  const d = new Date(`${iso}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + n);
-  return d.toISOString().slice(0, 10);
-};
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Live price for this room: dates live in the URL so the link can be shared and carried to checkout. */
@@ -107,30 +103,18 @@ export function BookingBox({ slug, basePrice, currency, maxAdults, today }: Prop
       </p>
 
       <div className="grid grid-cols-2 overflow-hidden rounded-[10px] border border-rule">
-        <label className="grid gap-0.5 border-e border-b border-rule px-3 py-2">
-          <span className={labelCls}>
-            <CalendarDays className="me-1 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
-            {t("checkIn")}
-          </span>
-          <input
-            type="date"
-            min={today}
-            value={inDate}
-            onChange={(e) => {
-              const v = e.target.value;
-              setIn(v);
-              if (v && (!outDate || outDate <= v)) setOut(plusDays(v, 1));
-            }}
-            className={inputCls}
-          />
-        </label>
-        <label className="grid gap-0.5 border-b border-rule px-3 py-2">
-          <span className={labelCls}>
-            <CalendarDays className="me-1 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
-            {t("checkOut")}
-          </span>
-          <input type="date" min={inDate ? plusDays(inDate, 1) : plusDays(today, 1)} value={outDate} onChange={(e) => setOut(e.target.value)} className={inputCls} />
-        </label>
+        <DateRangePicker
+          checkIn={inDate}
+          checkOut={outDate}
+          min={today}
+          idPrefix="box-"
+          onChange={({ checkIn: i, checkOut: o }) => {
+            setIn(i);
+            setOut(o);
+          }}
+          cellClass={["grid gap-0.5 border-e border-b border-rule px-3 py-2", "grid gap-0.5 border-b border-rule px-3 py-2"]}
+          labelCls={labelCls}
+        />
         <label className="col-span-2 grid gap-0.5 px-3 py-2">
           <span className={labelCls}>
             <Users className="me-1 inline h-3 w-3 align-[-1px]" aria-hidden="true" />

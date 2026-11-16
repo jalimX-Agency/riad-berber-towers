@@ -73,6 +73,7 @@ ${row(tb("room"), roomName)}
 ${row(ts("checkIn"), formatStayDate(b.checkIn, locale))}
 ${row(ts("checkOut"), formatStayDate(b.checkOut, locale))}
 ${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`)}
+${row(tb("bed"), tb(`beds.${b.bedSetup}`))}
 ${row(tb("total"), total)}
 ${row(tb("deposit", { percent: DEPOSIT_PERCENT }), formatPrice(pay.deposit, b.currency, locale))}
 ${row(tb("balance"), formatPrice(pay.balance, b.currency, locale))}
@@ -93,6 +94,7 @@ ${row("Room", b.room.name)}
 ${row("Check-in", formatStayDate(b.checkIn, "en"))}
 ${row("Check-out", formatStayDate(b.checkOut, "en"))}
 ${row("Stay", `${b.nights} night(s), ${b.adults} adult(s)`)}
+${row("Beds", b.bedSetup === "TWIN" ? "Two separate beds" : "One king-size bed")}
 ${row("Total", formatPrice(Number(b.total), b.currency, "en"))}
 ${row(`Deposit to collect (${DEPOSIT_PERCENT}%, non-refundable)`, formatPrice(pay.deposit, b.currency, "en"))}
 ${row("Balance, cash on arrival", formatPrice(pay.balance, b.currency, "en"))}
@@ -180,6 +182,7 @@ ${row(tb("room"), roomName)}
 ${row(ts("checkIn"), formatStayDate(b.checkIn, locale))}
 ${row(ts("checkOut"), formatStayDate(b.checkOut, locale))}
 ${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`)}
+${row(tb("bed"), tb(`beds.${b.bedSetup}`))}
 ${showMoney ? row(tb("total"), money(pay.total)) + row(tb("deposit", { percent: DEPOSIT_PERCENT }), money(pay.deposit)) + row(tb("balance"), money(pay.balance)) : ""}
 </table>
 ${link}

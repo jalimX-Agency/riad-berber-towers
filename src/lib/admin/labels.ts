@@ -1,4 +1,4 @@
-import type { BookingSource, BookingStatus, PaymentStatus } from "@prisma/client";
+import type { BedSetup, BookingSource, BookingStatus, PaymentStatus } from "@prisma/client";
 
 // The admin is in French (the owner's working language).
 
@@ -70,3 +70,8 @@ export const frDate = (d: Date, opts: Intl.DateTimeFormatOptions = { weekday: "s
 
 export const eur = (n: number | string, currency = "EUR") =>
   new Intl.NumberFormat("fr-FR", { style: "currency", currency, maximumFractionDigits: 0 }).format(Number(n));
+
+export const bedLabel: Record<BedSetup, string> = {
+  DOUBLE: "Un grand lit (king size)",
+  TWIN: "Deux lits séparés",
+};

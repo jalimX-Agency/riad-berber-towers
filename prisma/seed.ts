@@ -19,13 +19,13 @@ const manifest = JSON.parse(readFileSync(path.join(__dirname, "media-manifest.js
 
 // Prices and floors from the owner (Nov 2026). Order = the owner's room numbers 1-7.
 const rooms = [
-  { slug: "targa", code: "TRG", name: "Targa Room", category: "standard", floor: 0, price: 72, view: "garden", order: 1, amenities: ["heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
-  { slug: "tarzoute", code: "TRZ", name: "Suite Tarzoute", category: "suite", floor: 0, price: 82, view: "village", order: 2, amenities: ["private_terrace", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
-  { slug: "imlil", code: "IML", name: "Suite Imlil", category: "suite", floor: 1, price: 82, view: "mountain", order: 3, amenities: ["heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi", "coffee_maker"] },
-  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, maxAdults: 3, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"], featured: true },
-  { slug: "atlas", code: "ATL", name: "Suite Atlas", category: "suite", floor: 1, price: 82, view: "garden", order: 5, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
-  { slug: "taddart", code: "TDR", name: "Suite Taddart", category: "suite", floor: 1, price: 92, view: "mountain", order: 6, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
-  { slug: "adrar", code: "ADR", name: "Suite Adrar", category: "suite", floor: 2, price: 92, view: "mountain", order: 7, amenities: ["balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "targa", code: "TRG", name: "Targa Room", category: "standard", floor: 0, price: 72, view: "garden", order: 1, amenities: ["bed_choice", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "tarzoute", code: "TRZ", name: "Suite Tarzoute", category: "suite", floor: 0, price: 82, view: "village", order: 2, amenities: ["bed_choice", "private_terrace", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "imlil", code: "IML", name: "Suite Imlil", category: "suite", floor: 1, price: 82, view: "mountain", order: 3, amenities: ["bed_choice", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi", "coffee_maker"] },
+  { slug: "toubkal", code: "TBK", name: "Suite Toubkal", category: "suite", floor: 1, price: 112, view: "mountain", order: 4, maxAdults: 3, amenities: ["bed_choice", "balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"], featured: true },
+  { slug: "atlas", code: "ATL", name: "Suite Atlas", category: "suite", floor: 1, price: 82, view: "garden", order: 5, amenities: ["bed_choice", "balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "taddart", code: "TDR", name: "Suite Taddart", category: "suite", floor: 1, price: 92, view: "mountain", order: 6, amenities: ["bed_choice", "balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
+  { slug: "adrar", code: "ADR", name: "Suite Adrar", category: "suite", floor: 2, price: 92, view: "mountain", order: 7, amenities: ["bed_choice", "balcony", "heated_floor", "tadelakt_walls", "zellij_shower", "private_bathroom", "wifi"] },
 ];
 
 const locales: Locale[] = ["en", "fr", "es", "de", "ar"];

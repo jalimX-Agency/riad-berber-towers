@@ -22,7 +22,7 @@ const str = (f: FormData, k: string) => {
 
 export async function requestBooking(_prev: BookState, form: FormData): Promise<BookState> {
   const values = Object.fromEntries(
-    ["firstName", "lastName", "email", "phone", "country", "arrivalTime", "specialRequests"].map((k) => [k, str(form, k)]),
+    ["firstName", "lastName", "email", "phone", "country", "arrivalTime", "bedSetup", "specialRequests"].map((k) => [k, str(form, k)]),
   );
 
   // honeypot: real people never see or fill this field

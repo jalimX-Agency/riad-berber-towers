@@ -147,6 +147,8 @@ model Booking {
   checkOut        DateTime       @db.Date // exclusive
   nights          Int
   adults          Int            @default(2)
+  /// guest choice: one king-size bed or two separate beds (every room can be set up either way)
+  bedSetup        BedSetup       @default(DOUBLE)
   children        Int            @default(0)
   status          BookingStatus  @default(PENDING)
   source          BookingSource  @default(WEBSITE)
@@ -199,6 +201,11 @@ enum BookingSource {
   AIRBNB
   AGENCY
   WALK_IN
+}
+
+enum BedSetup {
+  DOUBLE // one king-size bed
+  TWIN // two separate beds
 }
 
 enum PaymentStatus {

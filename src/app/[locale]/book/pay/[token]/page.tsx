@@ -63,6 +63,7 @@ export default async function PayPage({ params }: Props) {
         [ts("checkIn"), formatStayDate(b.checkIn, locale)],
         [ts("checkOut"), formatStayDate(b.checkOut, locale)],
         [tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
+        [tb("bed"), tb(`beds.${b.bedSetup}`)],
         [tb("total"), money(pay.total)],
         [tb("deposit", { percent: DEPOSIT_PERCENT }), money(pay.deposit)],
         [tb("balance"), money(pay.balance)],

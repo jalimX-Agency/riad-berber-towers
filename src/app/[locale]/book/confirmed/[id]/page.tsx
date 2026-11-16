@@ -56,6 +56,7 @@ export default async function ConfirmedPage({ params }: Props) {
             [ts("checkIn"), formatStayDate(b.checkIn, locale)],
             [ts("checkOut"), formatStayDate(b.checkOut, locale)],
             [t("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
+            [t("bed"), t(`beds.${b.bedSetup}`)],
             [t("total"), formatPrice(Number(b.total), b.currency, locale)],
             [t("deposit", { percent: DEPOSIT_PERCENT }), formatPrice(pay.deposit, b.currency, locale)],
             [t("balance"), formatPrice(pay.balance, b.currency, locale)],

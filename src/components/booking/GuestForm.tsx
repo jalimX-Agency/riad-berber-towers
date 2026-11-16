@@ -6,7 +6,29 @@ import { ArrowLeft, ArrowRight, Check, Loader2, Lock, Pencil } from "lucide-reac
 import { requestBooking, type BookState } from "@/app/[locale]/book/actions";
 import { ARRIVAL_TIMES } from "@/lib/booking/arrival";
 import { cn } from "@/lib/utils";
-import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
+import { BED_SETUPS, DEPOSIT_PERCENT } from "@/lib/booking/policy";
+
+/** One wide bed, or two narrow ones. */
+function BedIcon({ twin }: { twin: boolean }) {
+  return (
+    <svg viewBox="0 0 40 24" className="h-7 w-12 shrink-0 text-earth" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+      {twin ? (
+        <>
+          <rect x="2" y="6" width="15" height="14" rx="2" />
+          <rect x="4.5" y="8.5" width="10" height="4" rx="1" />
+          <rect x="23" y="6" width="15" height="14" rx="2" />
+          <rect x="25.5" y="8.5" width="10" height="4" rx="1" />
+        </>
+      ) : (
+        <>
+          <rect x="4" y="6" width="32" height="14" rx="2" />
+          <rect x="7" y="8.5" width="11" height="4" rx="1" />
+          <rect x="22" y="8.5" width="11" height="4" rx="1" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 type Props = {
   room: string;
@@ -17,8 +39,8 @@ type Props = {
   summary: { room: string; dates: string; stay: string; total: string; deposit: string; balance: string };
 };
 
-type Values = Record<"firstName" | "lastName" | "email" | "phone" | "country" | "arrivalTime" | "specialRequests", string>;
-const empty: Values = { firstName: "", lastName: "", email: "", phone: "", country: "", arrivalTime: "unknown", specialRequests: "" };
+type Values = Record<"firstName" | "lastName" | "email" | "phone" | "country" | "arrivalTime" | "bedSetup" | "specialRequests", string>;
+const empty: Values = { firstName: "", lastName: "", email: "", phone: "", country: "", arrivalTime: "unknown", bedSetup: "DOUBLE", specialRequests: "" };
 
 const STEPS = ["details", "arrival", "review"] as const;
 const DETAIL_FIELDS = ["firstName", "lastName", "email", "phone", "country"];
@@ -73,6 +95,7 @@ export function GuestForm({ room, checkIn, checkOut, adults, summary }: Props) {
     [t("email"), values.email, 0],
     [t("phone"), values.phone, 0],
     ...(values.country ? ([[t("country"), values.country, 0]] as [string, string, number][]) : []),
+    [t("bed"), t(`beds.${values.bedSetup === "TWIN" ? "TWIN" : "DOUBLE"}`), 1],
     [t("arrivalTime"), t(`arrival.${values.arrivalTime || "unknown"}`), 1],
     ...(values.specialRequests ? ([[t("requests"), values.specialRequests, 1]] as [string, string, number][]) : []),
   ];
@@ -191,6 +214,29 @@ export function GuestForm({ room, checkIn, checkOut, adults, summary }: Props) {
         {/* Step 2: arrival */}
         <fieldset data-step={1} hidden={step !== 1} className="grid gap-5">
           <legend className="mb-4 text-2xl">{t("step.arrival")}</legend>
+          {/* beds: every room can be set up either way */}
+          <div role="radiogroup" aria-label={t("bed")} className="grid gap-2">
+            <span className="text-sm">{t("bed")}</span>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {BED_SETUPS.map((b) => (
+                <label
+                  key={b}
+                  className={cn(
+                    "flex cursor-pointer items-center gap-3 rounded-[10px] border bg-snow p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-earth/40",
+                    values.bedSetup === b ? "border-earth ring-1 ring-earth" : "border-rule hover:border-earth/60",
+                  )}
+                >
+                  <input type="radio" name="bedSetup" value={b} checked={values.bedSetup === b} onChange={set("bedSetup")} className="sr-only" />
+                  <BedIcon twin={b === "TWIN"} />
+                  <span className="grid">
+                    <span className="font-medium">{t(`beds.${b}`)}</span>
+                  </span>
+                  {values.bedSetup === b && <Check className="ms-auto h-4 w-4 text-earth" aria-hidden="true" />}
+                </label>
+              ))}
+            </div>
+            <span className="text-xs text-muted">{t("bedHint")}</span>
+          </div>
           <label className={label}>
             <span>{t("arrivalTime")}</span>
             <select name="arrivalTime" value={values.arrivalTime} onChange={set("arrivalTime")} className={input}>

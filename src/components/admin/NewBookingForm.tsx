@@ -176,6 +176,13 @@ export function NewBookingForm({ rooms, today }: { rooms: Room[]; today: string 
             </select>
           </label>
           <label className={label}>
+            Lits
+            <select name="bedSetup" defaultValue={v.bedSetup ?? "DOUBLE"} className={field}>
+              <option value="DOUBLE">Un grand lit (king size)</option>
+              <option value="TWIN">Deux lits séparés</option>
+            </select>
+          </label>
+          <label className={label}>
             Heure d’arrivée
             <select name="arrivalTime" defaultValue={v.arrivalTime ?? "unknown"} className={field}>
               {ARRIVAL_TIMES.map((a) => (

@@ -2,9 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarDays, Users, Search } from "lucide-react";
+import { Users, Search } from "lucide-react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { DateRangePicker } from "@/components/booking/DateRangePicker";
 import { MAX_GUESTS } from "@/lib/booking/policy";
 
 type Props = {
@@ -23,12 +24,6 @@ type Props = {
   layout?: "row" | "stacked";
 };
 
-const plusDays = (iso: string, n: number) => {
-  const d = new Date(`${iso}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + n);
-  return d.toISOString().slice(0, 10);
-};
-
 /** Booking-style search bar. Dates live in the URL (?checkIn=&checkOut=&adults=) so results can be shared. */
 export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, className, target, idPrefix = "", layout = "row" }: Props) {
   const t = useTranslations("search");
@@ -39,12 +34,6 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
   const [outDate, setOut] = useState(checkOut ?? "");
   const [guests, setGuests] = useState(adults);
   const [error, setError] = useState("");
-
-  function onCheckIn(v: string) {
-    setIn(v);
-    setError("");
-    if (v && (!outDate || outDate <= v)) setOut(plusDays(v, 1));
-  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,31 +57,22 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
           error && "border-earth",
         )}
       >
-        <label className={cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "border-e border-b border-rule")}>
-          <span className={labelCls}>
-            <CalendarDays className="me-1.5 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
-            {t("checkIn")}
-          </span>
-          <input id={`${idPrefix}checkIn`} type="date" min={today} value={inDate} onChange={(e) => onCheckIn(e.target.value)} className={inputCls} required />
-        </label>
-        <label className={cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "border-b border-rule")}>
-          <span className={labelCls}>
-            <CalendarDays className="me-1.5 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
-            {t("checkOut")}
-          </span>
-          <input
-            id={`${idPrefix}checkOut`}
-            type="date"
-            min={inDate ? plusDays(inDate, 1) : plusDays(today, 1)}
-            value={outDate}
-            onChange={(e) => {
-              setOut(e.target.value);
-              setError("");
-            }}
-            className={inputCls}
-            required
-          />
-        </label>
+        <DateRangePicker
+          checkIn={inDate}
+          checkOut={outDate}
+          min={today}
+          idPrefix={idPrefix}
+          onChange={({ checkIn: i, checkOut: o }) => {
+            setIn(i);
+            setOut(o);
+            setError("");
+          }}
+          cellClass={[
+            cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "border-e border-b border-rule"),
+            cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "border-b border-rule"),
+          ]}
+          labelCls={labelCls}
+        />
         <label className={cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "col-span-2 border-b border-rule")}>
           <span className={labelCls}>
             <Users className="me-1.5 inline h-3 w-3 align-[-1px]" aria-hidden="true" />

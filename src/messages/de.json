@@ -231,6 +231,7 @@
     "filter": "Zimmer filtern",
     "showing": "{count} Zimmer",
     "amenities": {
+      "bed_choice": "Ein Kingsize-Bett oder zwei getrennte Betten, nach Wahl",
       "heated_floor": "Fußbodenheizung",
       "tadelakt_walls": "Wände aus Tadelakt",
       "zellij_shower": "Dusche aus Zellige aus Fès",
@@ -304,6 +305,12 @@
     "phoneHint": "Mit Ländervorwahl, damit wir Sie am Anreisetag erreichen.",
     "country": "Land",
     "arrivalTime": "Voraussichtliche Ankunft",
+    "bed": "Betten",
+    "beds": {
+      "DOUBLE": "Ein Kingsize-Bett",
+      "TWIN": "Zwei getrennte Betten"
+    },
+    "bedHint": "Jedes Zimmer kann auf beide Arten hergerichtet werden.",
     "arrival": {
       "unknown": "Weiß ich noch nicht",
       "12-14": "12:00 – 14:00",
@@ -465,5 +472,16 @@
     "rules": "Hausregeln",
     "address": "Imlil Zentrum, Asni · Al Haouz, Marokko",
     "thanks": "Bis bald in Imlil"
+  },
+  "datepicker": {
+    "addDate": "Datum wählen",
+    "chooseCheckIn": "Wählen Sie Ihr Anreisedatum",
+    "chooseCheckOut": "Wählen Sie Ihr Abreisedatum",
+    "clear": "Daten löschen",
+    "done": "Fertig",
+    "close": "Schließen",
+    "prev": "Vorheriger Monat",
+    "next": "Nächster Monat",
+    "maxNights": "Aufenthalte bis zu {count} Nächte"
   }
 }

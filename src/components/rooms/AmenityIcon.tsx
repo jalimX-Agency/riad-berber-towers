@@ -1,6 +1,7 @@
-import { Bath, BrickWall, Coffee, Fence, Flame, ShowerHead, Sunrise, Wifi, type LucideIcon } from "lucide-react";
+import { Bath, BedDouble, BrickWall, Coffee, Fence, Flame, ShowerHead, Sunrise, Wifi, type LucideIcon } from "lucide-react";
 
 const icons: Record<string, LucideIcon> = {
+  bed_choice: BedDouble,
   heated_floor: Flame,
   tadelakt_walls: BrickWall,
   zellij_shower: ShowerHead,

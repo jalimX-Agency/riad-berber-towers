@@ -24,3 +24,10 @@ export function splitPayment(total: number) {
 
 /** Payment proof upload limit. Vercel caps a function request body at 4.5 MB. */
 export const MAX_PROOF_BYTES = 4 * 1024 * 1024;
+
+/** Every room can be set up with one king-size bed or two separate beds: the guest chooses. */
+export const BED_SETUPS = ["DOUBLE", "TWIN"] as const;
+export type BedChoice = (typeof BED_SETUPS)[number];
+
+/** Longest stay bookable online (the server checks it too, see MAX_NIGHTS in availability.ts). */
+export const MAX_NIGHTS_CLIENT = 30;
