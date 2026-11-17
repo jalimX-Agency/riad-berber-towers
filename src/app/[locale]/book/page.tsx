@@ -112,6 +112,7 @@ export default async function BookPage({ params, searchParams }: Props) {
               checkIn={toISO(query.checkIn)}
               checkOut={toISO(query.checkOut)}
               adults={query.adults}
+              nights={query.nights}
               currency={room.currency}
               roomTotal={a.total}
               extras={extraOptions}

@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { getAvailability, type RoomAvailability, type StayQuery } from "./availability";
 import { ARRIVAL_TIMES } from "./arrival";
 import { BED_SETUPS, splitPayment } from "./policy";
-import { TRANSFER_PRICE, TRANSFER_SLUG, activityPrice, extraPrice, type ExtraChoice, type TransferChoice } from "./extras";
+import { DINNER_PRICE, DINNER_SLUG, TRANSFER_PRICE, TRANSFER_SLUG, activityPrice, extraPrice, type DinnerChoice, type ExtraChoice, type TransferChoice } from "./extras";
 
 /** The Extra rows behind the wizard options, created on first use (prices live in code, see extras.ts). */
 async function extraIds(slugs: string[]) {
@@ -14,7 +14,7 @@ async function extraIds(slugs: string[]) {
       db.extra.upsert({
         where: { slug },
         update: { price: extraPrice(slug) },
-        create: { slug, price: extraPrice(slug), priceType: slug === TRANSFER_SLUG ? "PER_STAY" : "PER_PERSON" },
+        create: { slug, price: extraPrice(slug), priceType: slug === TRANSFER_SLUG ? "PER_STAY" : slug === DINNER_SLUG ? "PER_PERSON_NIGHT" : "PER_PERSON" },
         select: { id: true, slug: true },
       }),
     ),
@@ -92,7 +92,7 @@ export async function createBooking(input: {
   guest: GuestInput;
   locale: Locale;
   /** activities added in the wizard (price × people) and an optional transfer from Marrakech (fixed price); both are added to the total */
-  extras?: { activities: ExtraChoice[]; transfer: TransferChoice | null; transferNote?: string };
+  extras?: { activities: ExtraChoice[]; transfer: TransferChoice | null; dinner?: DinnerChoice | null; transferNote?: string; dinnerNote?: string };
   /** Admin-entered bookings (phone, WhatsApp, agencies…). Website bookings use the defaults. */
   admin?: {
     source: BookingSource;
@@ -115,17 +115,20 @@ export async function createBooking(input: {
 
   const activities = input.extras?.activities ?? [];
   const transfer = input.extras?.transfer ?? null;
-  const ids = activities.length || transfer ? await extraIds([...activities.map((a) => a.slug), ...(transfer ? [TRANSFER_SLUG] : [])]) : new Map<string, string>();
+  const dinner = input.extras?.dinner ? { ...input.extras.dinner, evenings: Math.min(input.extras.dinner.evenings, query.nights) } : null;
+  const ids = activities.length || transfer || dinner ? await extraIds([...activities.map((a) => a.slug), ...(transfer ? [TRANSFER_SLUG] : []), ...(dinner ? [DINNER_SLUG] : [])]) : new Map<string, string>();
   const extraRows = [
     ...activities.map((a) => {
       const unit = activityPrice(a.slug);
       return { extraId: ids.get(a.slug)!, quantity: a.people, unitPrice: unit, total: unit * a.people };
     }),
     ...(transfer ? [{ extraId: ids.get(TRANSFER_SLUG)!, quantity: 1, unitPrice: TRANSFER_PRICE, total: TRANSFER_PRICE }] : []),
+    // dinner: quantity = covers (people × evenings)
+    ...(dinner ? [{ extraId: ids.get(DINNER_SLUG)!, quantity: dinner.people * dinner.evenings, unitPrice: DINNER_PRICE, total: DINNER_PRICE * dinner.people * dinner.evenings }] : []),
   ];
   const extrasSum = extraRows.reduce((s, e) => s + e.total, 0);
   // the transfer pick-up goes with the guest's requests so the riad sees it everywhere
-  const requests = [input.extras?.transferNote, guest.specialRequests].filter(Boolean).join("\n\n");
+  const requests = [input.extras?.transferNote, input.extras?.dinnerNote, guest.specialRequests].filter(Boolean).join("\n\n");
 
   for (let attempt = 0; attempt < 3; attempt++) {
     try {

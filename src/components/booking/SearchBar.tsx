@@ -35,13 +35,17 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
   const [guests, setGuests] = useState(adults);
   const [error, setError] = useState("");
 
+  function search(i: string, o: string, g: number) {
+    if (!i || !o) return setError(t("errors.missing"));
+    if (o <= i) return setError(t("errors.order"));
+    setError("");
+    const qs = new URLSearchParams({ checkIn: i, checkOut: o, adults: String(g) });
+    startTransition(() => router.push(`${target ?? pathname}?${qs.toString()}`, { scroll: !!target }));
+  }
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!inDate || !outDate) return setError(t("errors.missing"));
-    if (outDate <= inDate) return setError(t("errors.order"));
-    setError("");
-    const qs = new URLSearchParams({ checkIn: inDate, checkOut: outDate, adults: String(guests) });
-    startTransition(() => router.push(`${target ?? pathname}?${qs.toString()}`, { scroll: !!target }));
+    search(inDate, outDate, guests);
   }
 
   const field = "grid min-w-0 gap-0.5 px-4 py-2.5 text-start";
@@ -66,6 +70,8 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
             setIn(i);
             setOut(o);
             setError("");
+            // search as soon as both dates are chosen (the button stays for changing guests)
+            if (i && o && o > i) search(i, o, guests);
           }}
           cellClass={[
             cn(field, layout === "row" ? "border-b border-rule sm:border-b-0 sm:border-e" : "border-e border-b border-rule"),
@@ -78,7 +84,17 @@ export function SearchBar({ checkIn, checkOut, adults = 2, today, hasQuery, clas
             <Users className="me-1.5 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
             {t("guests")}
           </span>
-          <select id={`${idPrefix}adults`} value={guests} onChange={(e) => setGuests(Number(e.target.value))} className={inputCls}>
+          <select
+            id={`${idPrefix}adults`}
+            value={guests}
+            onChange={(e) => {
+              const g = Number(e.target.value);
+              setGuests(g);
+              // on the rooms page, dates already chosen: refresh the results right away
+              if (!target && inDate && outDate && outDate > inDate) search(inDate, outDate, g);
+            }}
+            className={inputCls}
+          >
             {Array.from({ length: MAX_GUESTS }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
                 {t("adults", { count: n })}

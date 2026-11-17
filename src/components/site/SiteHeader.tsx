@@ -43,10 +43,10 @@ export function SiteHeader() {
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-3 btn-primary">
         {t("skip")}
       </a>
-      <div className="container-site flex h-[80px] items-center justify-between gap-6">
+      <div className="container-site flex h-[80px] max-w-[1440px] items-center justify-between gap-6">
         <Brand />
 
-        <nav aria-label={t("primary")} className="hidden xl:flex items-center gap-7">
+        <nav aria-label={t("primary")} className="hidden min-[1360px]:flex items-center gap-5 2xl:gap-7">
           {primaryNav.map((item) => (
             <Link
               key={item.key}
@@ -61,7 +61,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-5">
           <LanguageSwitcher className="hidden md:block" />
-          <Link href="/rooms" className="btn-primary hidden sm:inline-flex">
+          <Link href="/rooms" className="btn-primary hidden whitespace-nowrap sm:inline-flex">
             {t("book")}
           </Link>
           <button
@@ -69,7 +69,7 @@ export function SiteHeader() {
             onClick={() => setOpen(true)}
             aria-expanded={open}
             aria-controls="mobile-menu"
-            className="xl:hidden grid h-11 w-11 place-items-center rounded-full border border-rule text-ink"
+            className="min-[1360px]:hidden grid h-11 w-11 place-items-center rounded-full border border-rule text-ink"
           >
             <Menu className="h-5 w-5" aria-hidden="true" />
             <span className="sr-only">{t("menu")}</span>
@@ -85,7 +85,7 @@ export function SiteHeader() {
         aria-modal="true"
         aria-label={t("menu")}
         hidden={!open}
-        className="fixed inset-0 z-50 flex flex-col bg-ink text-snow xl:hidden"
+        className="fixed inset-0 z-50 flex flex-col bg-ink text-snow min-[1360px]:hidden"
       >
         <div className="container-site flex h-[80px] items-center justify-between">
           <Brand ivory />

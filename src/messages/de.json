@@ -7,6 +7,7 @@
     "home": "Startseite",
     "rooms": "Zimmer",
     "activities": "Aktivitäten",
+    "restaurant": "Restaurant",
     "imlil": "Imlil-Guide",
     "gallery": "Galerie",
     "story": "Unsere Geschichte",
@@ -398,7 +399,17 @@
       "price": "pro Transfer",
       "otherCity": "Sie kommen aus einer anderen Stadt? Schreiben Sie uns, wir organisieren es."
     },
-    "extrasSum": "Aktivitäten & Transfer"
+    "extrasSum": "Aktivitäten, Abendessen & Transfer",
+    "dinner": {
+      "title": "Abendessen im Riad",
+      "text": "Traditionelles marokkanisches und Berber-Menü: Suppe und Salat, Tajine oder Couscous, Obst und Minztee. Serviert 18:00–21:00 Uhr.",
+      "per": "pro Person und Abend",
+      "peopleLabel": "Personen",
+      "eveningsLabel": "Abende",
+      "evenings": "{count, plural, one {# Abend} other {# Abende}}",
+      "covers": "{count, plural, one {# Abendessen} other {# Abendessen}}",
+      "note": "Vorspeise und Hauptgericht wählen Sie am selben Tag bis 14:00 Uhr mit uns. Vegetarisch, vegan, glutenfrei und laktosefrei auf Anfrage."
+    }
   },
   "email": {
     "guest": {

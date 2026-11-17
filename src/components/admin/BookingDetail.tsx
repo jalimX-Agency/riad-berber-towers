@@ -118,7 +118,7 @@ export async function BookingDetail({
   const nightly = (Array.isArray(b.nightlyRates) ? b.nightlyRates : []) as { date: string; price: number }[];
   const computed = nightly.reduce((s, n) => s + n.price, 0);
   const pay = bookingPayment(b);
-  const extras = extraLines(b.extras, "fr", "Transfert depuis Marrakech");
+  const extras = extraLines(b.extras, "fr", "Transfert depuis Marrakech", "Dîner au riad");
   const phoneDigits = b.guest.phone.replace(/\D/g, "");
   const actions = nextStatuses[b.status];
   const step = stepTone[b.status];
@@ -351,7 +351,7 @@ export async function BookingDetail({
               <li key={x.slug} className="flex justify-between gap-3 px-4 py-2.5">
                 <span>
                   {x.name}
-                  {!x.transfer && <span className="text-muted"> · {x.people} pers.</span>}
+                  {!x.transfer && <span className="text-muted"> · {x.people} {x.slug === "dinner" ? "couvert(s)" : "pers."}</span>}
                 </span>
                 <span className={x.transfer ? "text-muted" : ""}>{x.transfer && !x.total ? "prix à confirmer" : eur(x.total, b.currency)}</span>
               </li>

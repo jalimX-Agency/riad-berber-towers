@@ -47,7 +47,10 @@ export async function requestBooking(_prev: BookState, form: FormData): Promise<
     const transferNote = extras.transfer
       ? `Transfert depuis Marrakech : ${PICKUP_FR[extras.transfer.from]}${extras.transfer.details ? ` (${extras.transfer.details})` : ""}`
       : undefined;
-    result = await createBooking({ roomSlug: str(form, "room"), query, guest: parsed.data, locale, extras: { ...extras, transferNote } });
+    const dinnerNote = extras.dinner
+      ? `Dîner au riad : ${extras.dinner.people} pers. × ${Math.min(extras.dinner.evenings, query.nights)} soir(s), menu à choisir avant 14 h`
+      : undefined;
+    result = await createBooking({ roomSlug: str(form, "room"), query, guest: parsed.data, locale, extras: { ...extras, transferNote, dinnerNote } });
   } catch (e) {
     console.error("[booking] create failed", e);
     return { error: "server", values };

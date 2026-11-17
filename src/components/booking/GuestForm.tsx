@@ -13,7 +13,7 @@ import {
   Minus,
   Mountain,
   Pencil,
-  Plus,
+  Plus, UtensilsCrossed,
 } from "lucide-react";
 import { requestBooking, type BookState } from "@/app/[locale]/book/actions";
 import { ARRIVAL_TIMES } from "@/lib/booking/arrival";
@@ -23,7 +23,7 @@ import {
   DEPOSIT_PERCENT,
   splitPayment,
 } from "@/lib/booking/policy";
-import { MAX_EXTRA_PEOPLE, TRANSFER_PICKUPS, TRANSFER_PRICE, type TransferPickup } from "@/lib/booking/extras";
+import { DINNER_PRICE, MAX_EXTRA_PEOPLE, TRANSFER_PICKUPS, TRANSFER_PRICE, type TransferPickup } from "@/lib/booking/extras";
 import { setExtrasTotal } from "./extras-total";
 
 export type ExtraOption = {
@@ -68,6 +68,8 @@ type Props = {
   checkIn: string;
   checkOut: string;
   adults: number;
+  /** nights of the stay: most evenings dinner can be booked for */
+  nights: number;
   currency: string;
   /** room price for the stay; activities are added to it */
   roomTotal: number;
@@ -114,6 +116,7 @@ export function GuestForm({
   checkIn,
   checkOut,
   adults,
+  nights,
   currency,
   roomTotal,
   extras,
@@ -135,6 +138,9 @@ export function GuestForm({
     from: TransferPickup;
     details: string;
   }>({ on: false, from: "airport", details: "" });
+  // dinner at the riad: people and evenings
+  const [dinner, setDinner] = useState<{ on: boolean; people: number; evenings: number }>({ on: false, people: Math.min(adults, MAX_EXTRA_PEOPLE), evenings: 1 });
+  const dinnerSum = dinner.on ? DINNER_PRICE * dinner.people * dinner.evenings : 0;
   const money = (n: number) =>
     new Intl.NumberFormat(locale === "ar" ? "en" : locale, {
       style: "currency",
@@ -142,7 +148,7 @@ export function GuestForm({
       maximumFractionDigits: 0,
     }).format(n);
   const chosen = extras.filter((x) => picks[x.slug] > 0);
-  const extrasSum = chosen.reduce((sum, x) => sum + x.price * picks[x.slug], 0) + (transfer.on ? TRANSFER_PRICE : 0);
+  const extrasSum = chosen.reduce((sum, x) => sum + x.price * picks[x.slug], 0) + (transfer.on ? TRANSFER_PRICE : 0) + dinnerSum;
   // keep the stay summary beside the form in step with the choices
   useEffect(() => setExtrasTotal(extrasSum), [extrasSum]);
   useEffect(() => () => setExtrasTotal(0), []);
@@ -238,6 +244,9 @@ export function GuestForm({
         : t("extras.none"),
       2,
     ],
+    ...(dinner.on
+      ? ([[t("dinner.title"), `${t("extras.people", { count: dinner.people })} × ${t("dinner.evenings", { count: dinner.evenings })}\n${money(dinnerSum)}`, 2]] as [string, string, number][])
+      : []),
     ...(transfer.on
       ? ([
           [
@@ -263,6 +272,12 @@ export function GuestForm({
     >
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="room" value={room} />
+      {dinner.on && (
+        <>
+          <input type="hidden" name="dinnerPeople" value={dinner.people} />
+          <input type="hidden" name="dinnerEvenings" value={dinner.evenings} />
+        </>
+      )}
       <input type="hidden" name="checkIn" value={checkIn} />
       <input type="hidden" name="checkOut" value={checkOut} />
       <input type="hidden" name="adults" value={adults} />
@@ -625,6 +640,45 @@ export function GuestForm({
                   );
                 })}
               </ul>
+            )}
+          </div>
+
+          {/* dinner at the riad (restaurant set menu) */}
+          <div className={cn("grid gap-4 rounded-[10px] border bg-snow p-4", dinner.on ? "border-earth ring-1 ring-earth" : "border-rule")}>
+            <label className="flex cursor-pointer items-start gap-3">
+              <input type="checkbox" checked={dinner.on} onChange={(e) => setDinner((d) => ({ ...d, on: e.target.checked }))} className="mt-1 h-4 w-4 accent-[var(--earth)]" />
+              <span className="grid gap-0.5">
+                <span className="flex items-center gap-2 font-medium">
+                  <UtensilsCrossed className="h-4 w-4 text-earth" aria-hidden="true" />
+                  {t("dinner.title")}
+                </span>
+                <span className="text-sm text-muted">{t("dinner.text")}</span>
+                <span className="text-sm">
+                  <span className="font-medium" dir="ltr">{money(DINNER_PRICE)}</span> <span className="text-muted">{t("dinner.per")}</span>
+                </span>
+              </span>
+            </label>
+            {dinner.on && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {([
+                  ["people", t("dinner.peopleLabel"), MAX_EXTRA_PEOPLE, (n: number) => t("extras.people", { count: n })],
+                  ["evenings", t("dinner.eveningsLabel"), Math.max(1, nights), (n: number) => t("dinner.evenings", { count: n })],
+                ] as const).map(([key, lab, max, fmt]) => (
+                  <div key={key} className="grid gap-1.5 text-sm">
+                    <span>{lab}</span>
+                    <div className="flex w-fit items-center rounded-full border border-rule" role="group" aria-label={lab}>
+                      <button type="button" onClick={() => setDinner((d) => ({ ...d, [key]: Math.max(1, d[key] - 1) }))} disabled={dinner[key] <= 1} className="grid h-9 w-9 place-items-center disabled:opacity-40" aria-label={t("extras.less")}>
+                        <Minus className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
+                      <span className="min-w-[6rem] text-center" aria-live="polite">{fmt(dinner[key])}</span>
+                      <button type="button" onClick={() => setDinner((d) => ({ ...d, [key]: Math.min(max, d[key] + 1) }))} disabled={dinner[key] >= max} className="grid h-9 w-9 place-items-center disabled:opacity-40" aria-label={t("extras.more")}>
+                        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <p className="text-xs text-muted sm:col-span-2">{t("dinner.note")}</p>
+              </div>
             )}
           </div>
 

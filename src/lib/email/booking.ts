@@ -61,8 +61,8 @@ export async function sendBookingEmails(bookingId: string) {
     const total = formatPrice(Number(b.total), b.currency, locale);
     const pay = bookingPayment(b);
     // activities (price × people) and the transfer (price on request)
-    const extraRows = extraLines(b.extras, locale, tb("transfer.title"))
-      .map((x) => row(x.transfer ? x.name : `${x.name} · ${tb("extras.people", { count: x.people })}`, formatPrice(x.total, b.currency, locale)))
+    const extraRows = extraLines(b.extras, locale, tb("transfer.title"), tb("dinner.title"))
+      .map((x) => row(x.transfer ? x.name : `${x.name} · ${x.slug === "dinner" ? tb("dinner.covers", { count: x.people }) : tb("extras.people", { count: x.people })}`, formatPrice(x.total, b.currency, locale)))
       .join("");
     const tp = await getTranslations({ locale, namespace: "policy" });
     const resend = new Resend(key);

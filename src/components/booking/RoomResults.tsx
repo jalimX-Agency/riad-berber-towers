@@ -43,7 +43,8 @@ export function RoomResults({
   const [views, setViews] = useState<string[]>([]);
   const [amenities, setAmenities] = useState<string[]>([]);
   const [onlyAvailable, setOnlyAvailable] = useState(false);
-  const [sort, setSort] = useState<Sort>("recommended");
+  // cheapest first by default (owner, Nov 2026)
+  const [sort, setSort] = useState<Sort>("priceAsc");
   const [panelOpen, setPanelOpen] = useState(false);
 
   const toggle = <T,>(list: T[], v: T, set: (x: T[]) => void) => set(list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
@@ -59,9 +60,8 @@ export function RoomResults({
     );
     if (sort === "priceAsc") list = [...list].sort((a, b) => price(a) - price(b));
     if (sort === "priceDesc") list = [...list].sort((a, b) => price(b) - price(a));
-    // in "our order", available rooms come first once dates are chosen
-    if (sort === "recommended" && availability)
-      list = [...list].sort((a, b) => Number(!!availability[b.id]?.available) - Number(!!availability[a.id]?.available));
+    // once dates are chosen, available rooms come first (stable sort keeps the price order inside each group)
+    if (availability) list = [...list].sort((a, b) => Number(!!availability[b.id]?.available) - Number(!!availability[a.id]?.available));
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rooms, floors, views, amenities, onlyAvailable, sort, availability]);

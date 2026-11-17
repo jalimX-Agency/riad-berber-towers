@@ -2,6 +2,7 @@
 export const primaryNav = [
   { key: "rooms", href: "/rooms" },
   { key: "activities", href: "/activities" },
+  { key: "restaurant", href: "/restaurant" },
   { key: "imlil", href: "/imlil" },
   { key: "story", href: "/story" },
   { key: "contact", href: "/contact" },
@@ -10,6 +11,7 @@ export const primaryNav = [
 export const footerNav = [
   { key: "rooms", href: "/rooms", ns: "nav" },
   { key: "activities", href: "/activities", ns: "nav" },
+  { key: "restaurant", href: "/restaurant", ns: "nav" },
   { key: "imlil", href: "/imlil", ns: "nav" },
   { key: "gallery", href: "/gallery", ns: "footer" },
   { key: "story", href: "/story", ns: "nav" },

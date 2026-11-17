@@ -119,8 +119,13 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
     [t("guests"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
     [tb("bed"), tb(`beds.${b.bedSetup}`)],
     [t("included"), t("breakfast")],
-    ...extraLines(b.extras, locale, tb("transfer.title")).map(
-      (x) => [x.transfer ? x.name : tb("extras.title"), x.transfer ? money(x.total) : `${x.name} · ${tb("extras.people", { count: x.people })}`] as [string, string],
+    ...extraLines(b.extras, locale, tb("transfer.title"), tb("dinner.title")).map(
+      (x) =>
+        (x.transfer
+          ? [x.name, money(x.total)]
+          : x.slug === "dinner"
+            ? [x.name, tb("dinner.covers", { count: x.people })]
+            : [tb("extras.title"), `${x.name} · ${tb("extras.people", { count: x.people })}`]) as [string, string],
     ),
   ], colW);
   const guestEnd = rows(M + colW + 24, 690, t("guest"), [

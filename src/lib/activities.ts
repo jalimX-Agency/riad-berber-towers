@@ -10,9 +10,9 @@ import { activityPrice } from "@/lib/booking/extras";
 
 /** Activities offered from the house (owner's list, Nov 2026). Prices are per person, in euros. */
 export const OUTINGS = [
-  { id: "mzik", slug: "tizi-mzik-tasghimoute", price: activityPrice("tizi-mzik-tasghimoute"), level: [2, 2], photos: ["35206443", "37538523", "17492446"] },
-  { id: "chamharouch", slug: "sidi-chamharouch", price: activityPrice("sidi-chamharouch"), level: [2, 2], photos: ["tp-o200", "tp-im7", "tp-im9"] },
-  { id: "tidli", slug: "tidli-forest", price: activityPrice("tidli-forest"), level: [1, 2], photos: ["tp-im5", "tp-av3", "tp-im1"] },
+  { id: "mzik", slug: "tizi-mzik-tasghimoute", price: activityPrice("tizi-mzik-tasghimoute"), level: [2, 2], photos: ["hikes/tizi-mzik", "35206443", "37538523"] },
+  { id: "chamharouch", slug: "sidi-chamharouch", price: activityPrice("sidi-chamharouch"), level: [2, 2], photos: ["hikes/aroumd", "tp-im7", "tp-im9"] },
+  { id: "tidli", slug: "tidli-forest", price: activityPrice("tidli-forest"), level: [1, 2], photos: ["hikes/tidli", "tp-im5", "tp-av3"] },
   { id: "bike", slug: "mountain-biking", price: activityPrice("mountain-biking"), level: [1, 3], photos: ["tp-o81", "tp-av12", "tp-im1"] },
 ] as const;
 export type OutingId = (typeof OUTINGS)[number]["id"];
@@ -30,9 +30,15 @@ export const PEXELS: Record<string, { w: number; h: number }> = {
   "35449705": { w: 1920, h: 1280 }, "36533362": { w: 1081, h: 1920 }, "5029303": { w: 1920, h: 1271 },
   "31177138": { w: 1440, h: 1920 }, "7835692": { w: 1920, h: 1280 },
   "tp-o81": { w: 900, h: 450 }, "tp-av12": { w: 1920, h: 1273 }, "tp-av3": { w: 1920, h: 1322 }, "tp-im5": { w: 1440, h: 1920 },
+  // the owner's own photos (photos/activities/hikes/*.webp)
+  "hikes/tizi-mzik": { w: 1600, h: 901 }, "hikes/aroumd": { w: 1585, h: 792 }, "hikes/tidli": { w: 1024, h: 683 },
   "tp-im1": { w: 1920, h: 1280 }, "tp-o200": { w: 1920, h: 1280 }, "tp-im7": { w: 1440, h: 1920 }, "tp-im9": { w: 1080, h: 1920 },
 };
-export const pexels = (id: string): Photo => ({ src: mediaUrl(`photos/pexels/${id}.webp`), ...(PEXELS[id] ?? { w: 1920, h: 1280 }) });
+/** a stock id (Pexels / Toubkal Peaks) or "hikes/<name>" for the owner's photos */
+export const pexels = (id: string): Photo => ({
+  src: mediaUrl(id.startsWith("hikes/") ? `photos/activities/${id}.webp` : `photos/pexels/${id}.webp`),
+  ...(PEXELS[id] ?? { w: 1920, h: 1280 }),
+});
 
 const p = (key: string, w: number, h: number): Photo => ({ src: mediaUrl(`photos/${key}`), w, h });
 export const activityMedia = {

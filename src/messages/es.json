@@ -7,6 +7,7 @@
     "home": "Inicio",
     "rooms": "Habitaciones",
     "activities": "Actividades",
+    "restaurant": "Restaurante",
     "imlil": "Guía de Imlil",
     "gallery": "Galería",
     "story": "Nuestra historia",
@@ -398,7 +399,17 @@
       "price": "por traslado",
       "otherCity": "¿Vienes de otra ciudad? Escríbenos y lo organizamos."
     },
-    "extrasSum": "Actividades y traslado"
+    "extrasSum": "Actividades, cena y traslado",
+    "dinner": {
+      "title": "Cena en el riad",
+      "text": "Menú tradicional marroquí y bereber: sopa y ensalada, tajín o cuscús, fruta y té de menta. Servido de 18:00 a 21:00.",
+      "per": "por persona y noche",
+      "peopleLabel": "Personas",
+      "eveningsLabel": "Noches",
+      "evenings": "{count, plural, one {# noche} other {# noches}}",
+      "covers": "{count, plural, one {# cena} other {# cenas}}",
+      "note": "Eliges tu entrante y tu plato con nosotros antes de las 14:00 del mismo día. Vegetariano, vegano, sin gluten y sin lácteos bajo petición."
+    }
   },
   "email": {
     "guest": {

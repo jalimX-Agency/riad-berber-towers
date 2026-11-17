@@ -7,6 +7,7 @@
     "home": "Home",
     "rooms": "Rooms",
     "activities": "Activities",
+    "restaurant": "Restaurant",
     "imlil": "Imlil guide",
     "gallery": "Gallery",
     "story": "Our story",
@@ -398,7 +399,17 @@
       "price": "per transfer",
       "otherCity": "Coming from another city? Contact us and we will arrange it."
     },
-    "extrasSum": "Activities & transfer"
+    "extrasSum": "Activities, dinner & transfer",
+    "dinner": {
+      "title": "Dinner at the riad",
+      "text": "Traditional Moroccan and Berber set menu: soup and salad, tagine or couscous, fruit and mint tea. Served 18:00–21:00.",
+      "per": "per person, per evening",
+      "peopleLabel": "People",
+      "eveningsLabel": "Evenings",
+      "evenings": "{count, plural, one {# evening} other {# evenings}}",
+      "covers": "{count, plural, one {# dinner} other {# dinners}}",
+      "note": "You choose your starter and main course with us before 14:00 on the day. Vegetarian, vegan, gluten-free and dairy-free on request."
+    }
   },
   "email": {
     "guest": {

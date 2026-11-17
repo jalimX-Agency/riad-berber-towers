@@ -13,7 +13,7 @@ export const GUIDE_PHOTOS = {
   hero: "29601658",
   village: "35802017",
   seasons: { spring: "5029303", summer: "37538525", autumn: "29601661", winter: "35449705" },
-  places: { aroumd: "tp-o200", chamharouch: "tp-im7", tamatert: "40922826", mzik: "35206443", toubkal: "36533362", asni: "7835692" },
+  places: { aroumd: "hikes/aroumd", chamharouch: "tp-im7", tamatert: "40922826", mzik: "35206443", toubkal: "36533362", asni: "7835692" },
 } as const;
 
 export type Season = keyof typeof GUIDE_PHOTOS.seasons;
