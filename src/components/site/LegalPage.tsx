@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import { setRequestLocale } from "next-intl/server";
 import { routing, localePath } from "@/i18n/routing";
 import { fill, pagesCopy } from "@/lib/pages";
@@ -12,11 +13,11 @@ export function legalPage(kind: Kind) {
   async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { locale } = await params;
     const d = pagesCopy(locale).legal[kind];
-    return {
+    return withSocial(locale, {
       title: d.meta.title,
       description: d.meta.description,
       alternates: { canonical: localePath(locale, `/${kind}`), languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, `/${kind}`)])) },
-    };
+    });
   }
 
   async function Page({ params }: Params) {

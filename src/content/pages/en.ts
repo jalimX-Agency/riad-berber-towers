@@ -197,7 +197,7 @@ const en: PagesCopy = {
         {
           title: "1. The guesthouse",
           paras: [
-            "Riad Berber Towers is a guesthouse in Imlil Centre, Asni, Al Haouz, Morocco. Contact: riadberbertowers@gmail.com, +212 661 283 086.",
+            "Riad Berber Towers is a guesthouse in Imlil Centre, Asni, Al Haouz, Morocco. Contact: contact@riadberbertowers.com, +212 661 283 086.",
           ],
         },
         {
@@ -267,7 +267,7 @@ const en: PagesCopy = {
         {
           title: "1. Who we are",
           paras: [
-            "Riad Berber Towers, Imlil Centre, Asni, Al Haouz, Morocco, is responsible for your data. Contact: riadberbertowers@gmail.com.",
+            "Riad Berber Towers, Imlil Centre, Asni, Al Haouz, Morocco, is responsible for your data. Contact: contact@riadberbertowers.com.",
           ],
         },
         {
@@ -305,7 +305,7 @@ const en: PagesCopy = {
         {
           title: "7. Your rights",
           paras: [
-            "You can ask to see, correct or delete your data, or object to its use, by writing to riadberbertowers@gmail.com. These rights are protected by Moroccan law 09-08 and, for guests from the European Union, by the GDPR. You can also contact the CNDP, the Moroccan data protection authority.",
+            "You can ask to see, correct or delete your data, or object to its use, by writing to contact@riadberbertowers.com. These rights are protected by Moroccan law 09-08 and, for guests from the European Union, by the GDPR. You can also contact the CNDP, the Moroccan data protection authority.",
           ],
         },
       ],

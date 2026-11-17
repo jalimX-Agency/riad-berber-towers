@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import { setRequestLocale } from "next-intl/server";
 import { routing, localePath } from "@/i18n/routing";
 import { mediaUrl } from "@/lib/media";
@@ -40,11 +41,11 @@ const HOUSE: [string, string, number, number][] = [
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const g = pagesCopy(locale).gallery;
-  return {
+  return withSocial(locale, {
     title: g.meta.title,
     description: g.meta.description,
     alternates: { canonical: localePath(locale, "/gallery"), languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, "/gallery")])) },
-  };
+  });
 }
 
 export default async function GalleryPage({ params }: Props) {

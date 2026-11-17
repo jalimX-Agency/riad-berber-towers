@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, isRtl, localePath } from "@/i18n/routing";
 import { fontVariables } from "@/lib/fonts";
 import { site } from "@/lib/site";
+import { getRooms } from "@/lib/rooms";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
@@ -56,24 +57,47 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
+  const tm = await getTranslations({ locale, namespace: "meta" });
+  const rooms = await getRooms(locale).catch(() => []);
+  const prices = rooms.map((r) => r.price);
+  const url = `${site.url}${localePath(locale)}`;
+  // the business as search engines and AI assistants should understand it
   const lodging = {
     "@context": "https://schema.org",
-    "@type": "BedAndBreakfast",
+    "@type": ["BedAndBreakfast", "LodgingBusiness"],
+    "@id": `${site.url}/#riad`,
     name: site.name,
-    url: site.url,
+    description: tm("description"),
+    url,
     email: site.email,
-    telephone: site.phones[0],
-    image: `${site.url}/og-image.png`,
+    telephone: site.phones,
+    image: [`${site.url}/og-image.png`, ...rooms.slice(0, 3).map((r) => r.cover)].filter(Boolean),
+    logo: `${site.url}/android-chrome-512.png`,
+    slogan: "Breathe the Atlas",
+    foundingDate: "2025",
     address: {
       "@type": "PostalAddress",
       streetAddress: site.address.street,
       addressLocality: site.address.locality,
       addressRegion: site.address.region,
+      postalCode: site.address.postalCode,
       addressCountry: site.address.country,
     },
+    geo: { "@type": "GeoCoordinates", latitude: 31.1355, longitude: -7.9192, elevation: site.altitudeM },
+    hasMap: "https://www.google.com/maps/search/?api=1&query=Riad+Berber+Towers+Imlil",
+    containedInPlace: { "@type": "Place", name: "Imlil, Toubkal National Park, High Atlas, Morocco" },
     numberOfRooms: site.rooms,
-    priceRange: "€€",
+    priceRange: prices.length ? `€${Math.min(...prices)}–€${Math.max(...prices)}` : "€€",
+    currenciesAccepted: "EUR, MAD, USD, GBP",
+    petsAllowed: false,
+    amenityFeature: ["Breakfast included", "Heated floors", "Free Wi-Fi", "Roof terrace with mountain views", "Restaurant (Moroccan and Berber dinner)", "Airport transfer from Marrakech", "Guided hikes and activities"].map((name) => ({
+      "@type": "LocationFeatureSpecification",
+      name,
+      value: true,
+    })),
+    potentialAction: { "@type": "ReserveAction", target: `${site.url}${localePath(locale, "/rooms")}` },
   };
+  const website = { "@context": "https://schema.org", "@type": "WebSite", "@id": `${site.url}/#website`, name: site.name, url: site.url, inLanguage: routing.locales, publisher: { "@id": `${site.url}/#riad` } };
 
   return (
     <html lang={locale} dir={isRtl(locale) ? "rtl" : "ltr"} className={fontVariables}>
@@ -84,7 +108,7 @@ export default async function LocaleLayout({
           <SiteFooter />
           <WhatsAppButton />
         </NextIntlClientProvider>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(lodging) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([lodging, website]) }} />
       </body>
     </html>
   );

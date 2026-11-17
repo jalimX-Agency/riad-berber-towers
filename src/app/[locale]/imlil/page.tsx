@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const g = guideCopy(locale);
   const hero = pexels(GUIDE_PHOTOS.hero);
-  return {
+  return withSocial(locale, {
     title: g.meta.title,
     description: g.meta.description,
     alternates: {
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, "/imlil")])),
     },
     openGraph: { images: [{ url: hero.src, width: hero.w, height: hero.h }] },
-  };
+  });
 }
 
 const SEASONS: Season[] = ["spring", "summer", "autumn", "winter"];

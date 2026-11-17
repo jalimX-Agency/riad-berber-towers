@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, localePath } from "@/i18n/routing";
 import { getRooms } from "@/lib/rooms";
@@ -16,14 +17,14 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "rooms" });
-  return {
-    title: t("title"),
+  return withSocial(locale, {
+    title: t("metaTitle"),
     description: t("intro"),
     alternates: {
       canonical: localePath(locale, "/rooms"),
       languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, "/rooms")])),
     },
-  };
+  });
 }
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSocial } from "@/lib/seo";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const room = await getRoom(locale, slug);
   if (!room) return {};
   const path = `/rooms/${slug}`;
-  return {
+  return withSocial(locale, {
     title: room.name,
     description: room.description || room.tagline,
     alternates: {
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, path)])),
     },
     openGraph: { title: room.name, description: room.tagline, images: room.cover ? [{ url: room.cover }] : undefined },
-  };
+  });
 }
 
 export default async function RoomPage({ params }: Params) {

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { TRANSFER_PRICE } from "@/lib/booking/extras";
@@ -15,7 +16,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const c = activitiesCopy(locale);
-  return {
+  return withSocial(locale, {
     title: c.meta.title,
     description: c.meta.description,
     alternates: {
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, "/activities")])),
     },
     openGraph: { images: [{ url: activityMedia.ingredients.src, width: activityMedia.ingredients.w, height: activityMedia.ingredients.h }] },
-  };
+  });
 }
 
 /** Effort on a 3-step scale; a range (easy → challenging) fills the steps in between. */

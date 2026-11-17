@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
@@ -35,12 +36,12 @@ const NIGHT = ph("outside-night/dji_20250429201732_0445_d-enhanced-nr-modifier.w
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const s = pagesCopy(locale).story;
-  return {
+  return withSocial(locale, {
     title: s.meta.title,
     description: s.meta.description,
     alternates: { canonical: localePath(locale, "/story"), languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, "/story")])) },
     openGraph: { images: [{ url: HOURS[5].src, width: HOURS[5].w, height: HOURS[5].h }] },
-  };
+  });
 }
 
 export default async function StoryPage({ params }: Props) {

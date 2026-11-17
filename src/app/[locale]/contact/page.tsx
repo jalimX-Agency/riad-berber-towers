@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { Mail, MapPin, Phone } from "lucide-react";
@@ -17,11 +18,11 @@ const MAP = "https://www.google.com/maps/search/?api=1&query=Riad+Berber+Towers+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const c = pagesCopy(locale).contact;
-  return {
+  return withSocial(locale, {
     title: c.meta.title,
     description: c.meta.description,
     alternates: { canonical: localePath(locale, "/contact"), languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, "/contact")])) },
-  };
+  });
 }
 
 export default async function ContactPage({ params }: Props) {

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
@@ -14,12 +15,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const c = restaurantCopy(locale);
   const m = restaurantMedia.tagines;
-  return {
+  return withSocial(locale, {
     title: c.meta.title,
     description: c.meta.description,
     alternates: { canonical: localePath(locale, "/restaurant"), languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, "/restaurant")])) },
     openGraph: { images: [{ url: m.src, width: m.w, height: m.h }] },
-  };
+  });
 }
 
 const ROMAN = ["I", "II", "III"];

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { withSocial } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
@@ -69,7 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const v = view(c, slug);
   if (!v) return {};
   const path = `/activities/${slug}`;
-  return {
+  return withSocial(locale, {
     title: v.name,
     description: v.summary,
     alternates: {
@@ -77,7 +78,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: Object.fromEntries(routing.locales.map((l) => [l, localePath(l, path)])),
     },
     openGraph: { images: [{ url: v.photos[0].src, width: v.photos[0].w, height: v.photos[0].h }] },
-  };
+  });
 }
 
 export default async function ActivityPage({ params }: Props) {

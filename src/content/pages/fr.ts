@@ -197,7 +197,7 @@ const fr: PagesCopy = {
         {
           title: "1. La maison d’hôtes",
           paras: [
-            "Riad Berber Towers est une maison d’hôtes située à Imlil Centre, Asni, Al Haouz, Maroc. Contact : riadberbertowers@gmail.com, +212 661 283 086.",
+            "Riad Berber Towers est une maison d’hôtes située à Imlil Centre, Asni, Al Haouz, Maroc. Contact : contact@riadberbertowers.com, +212 661 283 086.",
           ],
         },
         {
@@ -267,7 +267,7 @@ const fr: PagesCopy = {
         {
           title: "1. Qui sommes-nous",
           paras: [
-            "Riad Berber Towers, Imlil Centre, Asni, Al Haouz, Maroc, est responsable de vos données. Contact : riadberbertowers@gmail.com.",
+            "Riad Berber Towers, Imlil Centre, Asni, Al Haouz, Maroc, est responsable de vos données. Contact : contact@riadberbertowers.com.",
           ],
         },
         {
@@ -305,7 +305,7 @@ const fr: PagesCopy = {
         {
           title: "7. Vos droits",
           paras: [
-            "Vous pouvez demander à consulter, corriger ou supprimer vos données, ou vous opposer à leur utilisation, en écrivant à riadberbertowers@gmail.com. Ces droits sont protégés par la loi marocaine 09-08 et, pour les voyageurs de l’Union européenne, par le RGPD. Vous pouvez aussi contacter la CNDP, l’autorité marocaine de protection des données.",
+            "Vous pouvez demander à consulter, corriger ou supprimer vos données, ou vous opposer à leur utilisation, en écrivant à contact@riadberbertowers.com. Ces droits sont protégés par la loi marocaine 09-08 et, pour les voyageurs de l’Union européenne, par le RGPD. Vous pouvez aussi contacter la CNDP, l’autorité marocaine de protection des données.",
           ],
         },
       ],

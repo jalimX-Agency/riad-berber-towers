@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Riad Berber Towers · Casa de huéspedes hecha a mano en Imlil, Alto Atlas",
-    "description": "Siete habitaciones hechas a mano en el corazón de Imlil, a pocos pasos del sendero del Toubkal. Tadelakt, zellige de Fez y madera tallada. Desayuno incluido."
+    "title": "Riad Berber Towers · Riad y casa de huéspedes en Imlil, a los pies del Toubkal",
+    "description": "Riad familiar en el centro de Imlil con 7 habitaciones hechas a mano, junto al sendero del Toubkal. Desayuno incluido, cena marroquí y rutas guiadas."
   },
   "nav": {
     "home": "Inicio",
@@ -245,7 +245,8 @@
     },
     "photoOf": "foto {current} de {total}",
     "prevPhoto": "Foto anterior",
-    "nextPhoto": "Foto siguiente"
+    "nextPhoto": "Foto siguiente",
+    "metaTitle": "Habitaciones y suites en Imlil · precios y disponibilidad"
   },
   "search": {
     "checkIn": "Entrada",
