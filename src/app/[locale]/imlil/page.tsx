@@ -95,10 +95,10 @@ export default async function ImlilGuidePage({ params }: Props) {
 
       {/* 2 · The village */}
       <section id="village" className="container-site grid scroll-mt-24 gap-10 border-t border-rule py-16 md:grid-cols-12 md:items-center lg:py-24">
-        <div className="relative aspect-[4/5] overflow-hidden rounded-card md:col-span-5">
-          <Image src={village.src} alt={g.about.alt} fill sizes="(min-width: 768px) 40vw, 100vw" className="reveal-clip object-cover" />
+        <div className="relative aspect-[3/2] overflow-hidden rounded-card md:col-span-6">
+          <Image src={village.src} alt={g.about.alt} fill sizes="(min-width: 768px) 50vw, 100vw" className="reveal-clip object-cover" />
         </div>
-        <div className="grid gap-5 md:col-span-7 lg:col-span-6 lg:col-start-7">
+        <div className="grid gap-5 md:col-span-6">
           <p className="label">{g.about.label}</p>
           <h2 className="text-4xl lg:text-5xl">{g.about.title}</h2>
           {g.about.paras.map((p) => (

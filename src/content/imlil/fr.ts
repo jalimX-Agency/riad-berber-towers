@@ -27,7 +27,7 @@ const fr: GuideCopy = {
       "La langue de la vallée est le tachelhit, la langue amazighe du Haut Atlas, avec l’arabe ; la plupart de ceux qui travaillent avec les visiteurs parlent français et anglais. La vie suit encore les saisons : les vergers fleurissent au printemps, les noix se récoltent à l’automne et les mules portent ce que les routes ne peuvent pas porter.",
       "Le village est la porte du parc national du Toubkal et la base principale pour gravir le Jbel Toubkal. Mais nul besoin d’atteindre un sommet pour l’aimer : de courtes balades mènent dans toutes les directions vers des villages, des cols et des cascades, et les soirées sont calmes sous un ciel plein d’étoiles.",
     ],
-    alt: "Maisons et minaret rose parmi les arbres d’un village du Haut Atlas",
+    alt: "Un village du Haut Atlas sur sa pente, au-dessus d’arbres aux couleurs d’automne, avec des randonneurs et un mulet sur le sentier",
   },
   when: {
     label: "Quand partir",

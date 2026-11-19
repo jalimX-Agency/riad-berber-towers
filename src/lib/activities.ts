@@ -31,12 +31,12 @@ export const PEXELS: Record<string, { w: number; h: number }> = {
   "31177138": { w: 1440, h: 1920 }, "7835692": { w: 1920, h: 1280 },
   "tp-o81": { w: 900, h: 450 }, "tp-av12": { w: 1920, h: 1273 }, "tp-av3": { w: 1920, h: 1322 }, "tp-im5": { w: 1440, h: 1920 },
   // the owner's own photos (photos/activities/hikes/*.webp)
-  "hikes/tizi-mzik": { w: 1600, h: 901 }, "hikes/aroumd": { w: 1585, h: 792 }, "hikes/tidli": { w: 1024, h: 683 },
+  "imlil/village": { w: 1280, h: 853 }, "hikes/tizi-mzik": { w: 1600, h: 901 }, "hikes/aroumd": { w: 1585, h: 792 }, "hikes/tidli": { w: 1024, h: 683 },
   "tp-im1": { w: 1920, h: 1280 }, "tp-o200": { w: 1920, h: 1280 }, "tp-im7": { w: 1440, h: 1920 }, "tp-im9": { w: 1080, h: 1920 },
 };
 /** a stock id (Pexels / Toubkal Peaks) or "hikes/<name>" for the owner's photos */
 export const pexels = (id: string): Photo => ({
-  src: mediaUrl(id.startsWith("hikes/") ? `photos/activities/${id}.webp` : `photos/pexels/${id}.webp`),
+  src: mediaUrl(id.startsWith("hikes/") ? `photos/activities/${id}.webp` : id.startsWith("imlil/") ? `photos/${id}.webp` : `photos/pexels/${id}.webp`),
   ...(PEXELS[id] ?? { w: 1920, h: 1280 }),
 });
 

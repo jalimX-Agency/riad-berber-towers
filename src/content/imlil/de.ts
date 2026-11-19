@@ -27,7 +27,7 @@ const de: GuideCopy = {
       "Die Sprache des Tals ist Taschelhit, die Amazigh-Sprache des Hohen Atlas, daneben Arabisch; wer mit Besuchern arbeitet, spricht meist Französisch und Englisch. Das Leben folgt noch den Jahreszeiten: Im Frühling blühen die Obstgärten, im Herbst werden die Walnüsse geerntet, und Maultiere tragen, was keine Straße erreicht.",
       "Das Dorf ist das Tor zum Toubkal-Nationalpark und der wichtigste Ausgangspunkt für die Besteigung des Djebel Toubkal. Doch man muss keinen Gipfel erreichen, um es zu lieben: Kurze Wege führen in alle Richtungen zu Dörfern, Pässen und Wasserfällen, und die Abende sind still unter einem Himmel voller Sterne.",
     ],
-    alt: "Häuser und ein rosa Minarett zwischen den Bäumen eines Dorfes im Hohen Atlas",
+    alt: "Ein Dorf im Hohen Atlas am Hang über herbstlich gefärbten Bäumen, mit Wanderern und einem Maultier auf dem Weg",
   },
   when: {
     label: "Reisezeit",

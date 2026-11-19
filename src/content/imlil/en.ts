@@ -27,7 +27,7 @@ const en: GuideCopy = {
       "The language of the valley is Tashelhit, the Amazigh language of the High Atlas, alongside Arabic; French and English are spoken by most people who work with visitors. Life still follows the seasons: the orchards blossom in spring, the walnuts are harvested in autumn, and mules carry what the roads cannot.",
       "The village is the gateway to Toubkal National Park and the main base for climbing Jebel Toubkal. But you do not need to climb a summit to love it: short walks lead in every direction to villages, passes and waterfalls, and the evenings are quiet under a sky full of stars.",
     ],
-    alt: "Houses and a pink minaret among the trees of a High Atlas village",
+    alt: "A High Atlas village on its slope above autumn-coloured trees, with hikers and a mule on the trail",
   },
   when: {
     label: "When to go",

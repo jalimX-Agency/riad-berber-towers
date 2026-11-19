@@ -27,7 +27,7 @@ const es: GuideCopy = {
       "La lengua del valle es el tachelhit, la lengua amazigh del Alto Atlas, junto al árabe; casi todos los que trabajan con visitantes hablan francés e inglés. La vida sigue el ritmo de las estaciones: los huertos florecen en primavera, las nueces se cosechan en otoño y las mulas llevan lo que no pueden llevar las carreteras.",
       "El pueblo es la puerta del Parque Nacional del Toubkal y la base principal para subir al Yebel Toubkal. Pero no hace falta alcanzar una cumbre para enamorarse de él: paseos cortos llevan en todas direcciones a aldeas, collados y cascadas, y las noches son tranquilas bajo un cielo lleno de estrellas.",
     ],
-    alt: "Casas y un minarete rosa entre los árboles de una aldea del Alto Atlas",
+    alt: "Una aldea del Alto Atlas en su ladera, sobre árboles con colores de otoño, con senderistas y una mula en el camino",
   },
   when: {
     label: "Cuándo ir",
