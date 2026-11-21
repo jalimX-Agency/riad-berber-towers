@@ -89,7 +89,9 @@ export async function getAvailability(
     const nightly = nights.map((night) => {
       const covering = rates.filter((r) => r.startDate <= night && r.endDate > night && (r.roomId === room.id || r.roomId === null));
       for (const r of covering) minNights = Math.max(minNights, r.minNights);
-      const rate = covering.find((r) => r.roomId === room.id) ?? covering.find((r) => r.roomId === null);
+      // a row may carry only a minimum stay (price and percent empty): it must not hide a price set elsewhere
+      const priced = (r: (typeof covering)[number]) => r.price != null || r.percent != null;
+      const rate = covering.find((r) => r.roomId === room.id && priced(r)) ?? covering.find((r) => r.roomId === null && priced(r));
       let price = base;
       if (rate?.price != null) price = Number(rate.price);
       else if (rate?.percent != null) price = Math.round(base * (1 + rate.percent / 100));

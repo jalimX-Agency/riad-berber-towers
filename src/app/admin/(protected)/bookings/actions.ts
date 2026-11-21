@@ -13,6 +13,13 @@ import { parseStayQuery } from "@/lib/booking/availability";
 import { adminGuestSchema, createBooking, restoreBooking } from "@/lib/booking/create";
 import { sendStatusEmail } from "@/lib/email/booking";
 import { cancelInBeds24, pushBookingSafe } from "@/lib/beds24/push";
+import { OTA_REF_PREFIX } from "@/lib/beds24/rooms";
+
+/** Booking.com / Airbnb reservations mirrored from Beds24: their status changes on the platform, never here. */
+async function isOta(id: string) {
+  const b = await db.booking.findUnique({ where: { id }, select: { reference: true } });
+  return Boolean(b?.reference.startsWith(OTA_REF_PREFIX));
+}
 
 /** A same-site admin path sent back by the panel forms (never an open redirect). */
 function safeReturn(form?: FormData) {
@@ -37,6 +44,7 @@ async function back(id: string, params: Record<string, string>, form?: FormData)
 /** Move a booking to its next status. Confirm and cancel can email the guest. */
 export async function changeStatus(id: string, to: BookingStatus, form: FormData) {
   await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (!nextStatuses[b.status].includes(to)) return back(id, { error: "transition" }, form);
 
@@ -61,6 +69,7 @@ export async function changeStatus(id: string, to: BookingStatus, form: FormData
 /** Step 2 of the flow: the riad accepts a request. The guest gets the link to pay the deposit and upload the proof. */
 export async function acceptBooking(id: string, form: FormData) {
   await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true, payToken: true } });
   if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
   await db.booking.update({
@@ -74,6 +83,7 @@ export async function acceptBooking(id: string, form: FormData) {
 /** The riad has no room for this request: cancel it and tell the guest. */
 export async function declineBooking(id: string, form: FormData) {
   await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
   await db.booking.update({ where: { id }, data: { status: "CANCELLED", cancelledAt: new Date() } });
@@ -85,6 +95,7 @@ export async function declineBooking(id: string, form: FormData) {
 /** Last step: the proof is good. The booking is confirmed and the guest gets the confirmation with the voucher PDF. */
 export async function approvePayment(id: string, form: FormData) {
   await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PAYMENT_REVIEW") return back(id, { error: "transition" }, form);
   await db.booking.update({ where: { id }, data: { status: "CONFIRMED", paymentStatus: "DEPOSIT_PAID" } });
@@ -95,6 +106,7 @@ export async function approvePayment(id: string, form: FormData) {
 /** The proof can't be accepted (wrong amount, unreadable…): back to "awaiting payment", the guest can upload again. */
 export async function rejectProof(id: string, form: FormData) {
   await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PAYMENT_REVIEW") return back(id, { error: "transition" }, form);
   await db.booking.update({ where: { id }, data: { status: "AWAITING_PAYMENT" } });
@@ -105,6 +117,7 @@ export async function rejectProof(id: string, form: FormData) {
 /** Send the payment link again (the guest lost the email). */
 export async function resendPaymentLink(id: string, form?: FormData) {
   await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "AWAITING_PAYMENT") return back(id, { error: "transition" }, form);
   return back(id, { done: "resent", email: await sendStatusEmail(id, "accepted") }, form);
@@ -113,6 +126,7 @@ export async function resendPaymentLink(id: string, form?: FormData) {
 /** Re-open a cancelled booking, only if the nights are still free. */
 export async function restore(id: string, form?: FormData) {
   await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
   const ok = await restoreBooking(id);
   if (ok) after(() => pushBookingSafe(id));
   return back(id, ok ? { done: "CONFIRMED" } : { error: "restore" }, form);
@@ -191,7 +205,7 @@ export async function bulkCancel(ids: string[]): Promise<BulkResult> {
   const p = idsSchema.safeParse(ids);
   if (!p.success) return { ok: false, error: "Sélection invalide." };
   const r = await db.booking.updateMany({
-    where: { id: { in: p.data }, status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED"] } },
+    where: { id: { in: p.data }, status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED"] }, reference: { not: { startsWith: OTA_REF_PREFIX } } },
     data: { status: "CANCELLED", cancelledAt: new Date() },
   });
   const cancelIds = p.data;
@@ -208,9 +222,10 @@ export async function bulkCancel(ids: string[]): Promise<BulkResult> {
  */
 async function hardDelete(ids: string[]) {
   const { count, refs } = await db.$transaction(async (tx) => {
-    const rows = await tx.booking.findMany({ where: { id: { in: ids } }, select: { guestId: true, reference: true, checkIn: true } });
+    // mirrored Booking.com / Airbnb reservations are never deleted here: they would come back at the next sync
+    const rows = await tx.booking.findMany({ where: { id: { in: ids }, reference: { not: { startsWith: OTA_REF_PREFIX } } }, select: { id: true, guestId: true, reference: true, checkIn: true } });
     const guestIds = [...new Set(rows.map((r) => r.guestId))];
-    const { count } = await tx.booking.deleteMany({ where: { id: { in: ids } } });
+    const { count } = await tx.booking.deleteMany({ where: { id: { in: rows.map((r) => r.id) } } });
     await tx.guest.deleteMany({ where: { id: { in: guestIds }, bookings: { none: {} } } });
     return { count, refs: rows.map((r) => ({ reference: r.reference, checkIn: r.checkIn })) };
   });

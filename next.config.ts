@@ -37,6 +37,8 @@ const nextConfig: NextConfig = {
     ];
     const byId = ROOM_IDS.map((slug, i) => ({ id: String(i + 1), slug }));
     return [
+      // admin pages merged into the control calendar (old bookmarks keep working)
+      ...["/admin/rates", "/admin/channels", "/admin/channel-rates"].map((source) => ({ source, destination: "/admin/calendar", permanent: false })),
       // on the old domain: straight to the new domain
       ...byId.map(({ id, slug }) => ({
         source: "/booking_details.php",

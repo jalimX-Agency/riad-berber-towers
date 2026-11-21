@@ -3,7 +3,7 @@
 import { useDeferredValue, useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { BookingStatus } from "@prisma/client";
+import type { BookingSource, BookingStatus } from "@prisma/client";
 import { ArrowDownUp, Ban, Download, Loader2, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { PendingPanel } from "@/components/admin/BookingPanel";
@@ -11,6 +11,7 @@ import { bulkCancel, bulkDelete, type BulkResult } from "@/app/admin/(protected)
 import { DEFAULT_SORT, SORTS, filterParams, type Filters, type SortKey } from "@/lib/admin/booking-filters";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { PlatformIcon } from "@/components/admin/calendar/PlatformIcon";
 
 export type BookingRow = {
   id: string;
@@ -372,7 +373,10 @@ export function BookingsList({ rows, rooms, statuses, sources, payments, initial
                 className="grid min-w-0 grid-cols-[1fr_auto] gap-x-4 gap-y-1 py-3 pe-4 hover:bg-paper/60 md:grid-cols-[1.5fr_1fr_1.4fr_0.8fr_auto] md:items-center"
               >
                 <span className="min-w-0">
-                  <span className="block truncate font-medium">{b.guest}</span>
+                  <span className="flex min-w-0 items-center gap-1.5 font-medium">
+                    <PlatformIcon source={b.sourceKey as BookingSource} className="h-4 w-4 rounded-[3px]" />
+                    <span className="truncate">{b.guest}</span>
+                  </span>
                   <span className="block truncate font-mono text-xs text-muted">
                     {b.reference} · {b.source} · {b.bookedLabel}
                   </span>

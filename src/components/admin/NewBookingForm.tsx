@@ -30,14 +30,15 @@ const reasonText: Record<string, string> = {
   capacity: "Plus de personnes que la capacité habituelle (autorisé pour l’équipe)",
   min_nights: "Sous le séjour minimum (autorisé pour l’équipe)",
 };
-const SOURCES = ["WHATSAPP", "PHONE", "EMAIL", "BOOKING_COM", "AIRBNB", "AGENCY", "WALK_IN"] as const;
+// Booking.com and Airbnb reservations arrive by themselves through Beds24: entering them here would sell the nights twice
+const SOURCES = ["WHATSAPP", "PHONE", "EMAIL", "AGENCY", "WALK_IN"] as const;
 
-export function NewBookingForm({ rooms, today }: { rooms: Room[]; today: string }) {
+export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today: string; initial?: { room?: string; checkIn?: string; checkOut?: string } }) {
   const [state, action, pending] = useActionState<NewBookingState, FormData>(createManualBooking, {});
   const v = state.values ?? {};
-  const [room, setRoom] = useState(v.room ?? rooms[0]?.slug ?? "");
-  const [checkIn, setIn] = useState(v.checkIn ?? "");
-  const [checkOut, setOut] = useState(v.checkOut ?? "");
+  const [room, setRoom] = useState(v.room ?? initial?.room ?? rooms[0]?.slug ?? "");
+  const [checkIn, setIn] = useState(v.checkIn ?? initial?.checkIn ?? "");
+  const [checkOut, setOut] = useState(v.checkOut ?? initial?.checkOut ?? "");
   const [adults, setAdults] = useState(v.adults ?? "2");
   const [quote, setQuote] = useState<Quote | null>(null);
 

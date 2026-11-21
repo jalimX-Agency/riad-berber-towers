@@ -51,6 +51,7 @@ const errorText: Record<string, string> = {
   transition: "Cette action n’est plus possible : le statut a changé entre-temps.",
   restore: "Impossible de rétablir : la chambre est déjà prise ou fermée sur ces dates.",
   payment: "Montant invalide.",
+  ota: "Réservation Booking.com / Airbnb : son statut se change sur la plateforme, puis il arrive ici tout seul.",
 };
 const localeName: Record<string, string> = { en: "Anglais", fr: "Français", es: "Espagnol", de: "Allemand", ar: "Arabe" };
 const stamp = (d: Date) => new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Casablanca" }).format(d);
@@ -126,6 +127,8 @@ export async function BookingDetail({
   const depositPaid = b.paymentStatus === "DEPOSIT_PAID" || b.paymentStatus === "PAID";
   const voucher = ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"].includes(b.status);
   // in the side panel, every form tells the action which page to come back to (see back() in the actions)
+  // Booking.com / Airbnb reservation mirrored from Beds24: read-only here, managed on the platform
+  const ota = b.reference.startsWith("B24-");
   const R = mode === "panel" && returnTo ? <input type="hidden" name="_return" value={returnTo} /> : null;
 
 
@@ -227,8 +230,17 @@ export async function BookingDetail({
         </div>
       </div>
 
+      {ota && (
+        <section className="grid gap-1 rounded-[12px] border border-sky-200 bg-sky-50 p-5 text-sm">
+          <h2 className="text-lg font-medium">Réservation {sourceLabel[b.source]}</h2>
+          <p className="text-muted">
+            Importée automatiquement depuis Beds24. Les modifications et annulations se font sur {sourceLabel[b.source]} ; elles arrivent ici en quelques secondes. Vous pouvez noter le paiement et vos notes internes.
+          </p>
+        </section>
+      )}
+
       {/* what to do next */}
-      {(step || actions.length > 0) && (
+      {!ota && (step || actions.length > 0) && (
         <section className={cn("grid gap-3 rounded-[12px] border p-5", step?.tone ?? "border-rule bg-snow")}>
           <h2 className="text-lg font-medium">{step?.title ?? "Actions"}</h2>
 
@@ -463,7 +475,7 @@ export async function BookingDetail({
           Créée le {stamp(b.createdAt)} · modifiée le {stamp(b.updatedAt)}
           {b.cancelledAt && ` · annulée le ${stamp(b.cancelledAt)}`} · statut : {statusLabel[b.status]}
         </p>
-        {canManage(user.role) && (
+        {canManage(user.role) && !ota && (
           <details className="rounded-[10px] border border-rose-200 bg-rose-50/50">
             <summary className="cursor-pointer px-4 py-3 text-sm text-rose-900">Zone dangereuse</summary>
             <div className="grid gap-3 border-t border-rose-200 p-4">

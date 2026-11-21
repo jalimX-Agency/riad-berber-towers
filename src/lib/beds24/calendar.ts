@@ -59,6 +59,52 @@ export async function readCalendar(slug: string, from: Date, toInclusive: Date):
   return out;
 }
 
+/** Several rooms in one call (the control calendar shows them all). Keyed by room slug. */
+export async function readCalendarMany(slugs: string[], from: Date, toInclusive: Date): Promise<Map<string, DayCell[]>> {
+  const ids = slugs.map((s) => beds24RoomId(s)).filter((x): x is number => x !== null);
+  const out = new Map<string, DayCell[]>();
+  if (!ids.length) return out;
+  const rows: CalendarRow[] = [];
+  for (let page = 1; page <= 10; page++) {
+    const res = await b24<{ data?: CalendarRow[]; pages?: { nextPageExists?: boolean } }>(
+      "GET",
+      `/inventory/rooms/calendar?${ids.map((i) => `roomId=${i}`).join("&")}&startDate=${toISO(from)}&endDate=${toISO(toInclusive)}&${INCLUDE}&page=${page}`,
+    );
+    rows.push(...(res.data ?? []));
+    if (!res.pages?.nextPageExists) break;
+  }
+  for (const slug of slugs) {
+    const id = beds24RoomId(slug);
+    const segments = rows.filter((r) => r.roomId === id).flatMap((r) => r.calendar ?? []);
+    out.set(slug, expand(segments, from, toInclusive));
+  }
+  return out;
+}
+
+function expand(segments: Segment[], from: Date, toInclusive: Date): DayCell[] {
+  const cells = new Map<string, DayCell>();
+  for (const seg of segments) {
+    const s = parseDay(seg.from);
+    const e = parseDay(seg.to);
+    if (!s || !e) continue;
+    for (let d = s; d <= e; d = addDays(d, 1)) {
+      cells.set(toISO(d), {
+        date: toISO(d),
+        prices: { booking: seg.price1 ?? null, airbnb: seg.price2 ?? null },
+        avail: seg.numAvail ?? 0,
+        blackout: seg.override === "blackout",
+        minStay: seg.minStay ?? null,
+        channelOff: { booking: seg.price1 == null, airbnb: seg.price2 == null },
+      });
+    }
+  }
+  const out: DayCell[] = [];
+  for (let d = from; d <= toInclusive; d = addDays(d, 1)) {
+    out.push(cells.get(toISO(d)) ?? { date: toISO(d), prices: { booking: null, airbnb: null }, avail: 0, blackout: false, minStay: null, channelOff: { booking: true, airbnb: true } });
+  }
+  return out;
+}
+
 export type ChannelState = "keep" | "open" | "close";
 
 export type BulkChange = {

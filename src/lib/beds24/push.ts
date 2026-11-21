@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { addDays, eachNight, parseDay, todayInImlil, toISO } from "@/lib/booking/dates";
 import { b24, beds24Configured } from "./client";
-import { BEDS24_ROOMS, SITE_REF_PREFIX, beds24RoomId } from "./rooms";
+import { BEDS24_ROOMS, SITE_REF_PREFIX, beds24RoomId, isOtaReference } from "./rooms";
 
 /** Site statuses that occupy the room (the availability engine counts every non-cancelled booking). */
 const OCCUPYING = ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT"];
@@ -37,7 +37,8 @@ export async function pushBooking(id: string): Promise<void> {
       guest: { select: { firstName: true, lastName: true, email: true, phone: true, country: true } },
     },
   });
-  if (!b) return;
+  // a Booking.com / Airbnb reservation mirrored from Beds24 already lives there
+  if (!b || isOtaReference(b.reference)) return;
   const roomId = beds24RoomId(b.room.slug);
   if (!roomId) return;
   const status = OCCUPYING.includes(b.status) ? "confirmed" : "cancelled";
@@ -86,6 +87,7 @@ export async function pushBookingSafe(id: string) {
 export async function cancelInBeds24(bookings: { reference: string; checkIn: Date }[]) {
   if (!beds24Configured()) return;
   for (const { reference: ref, checkIn } of bookings) {
+    if (isOtaReference(ref)) continue;
     try {
       const ex = await findByReference(ref, checkIn);
       if (ex && ex.status !== "cancelled") fail("annulation", await b24<PostResult>("POST", "/bookings", [{ id: ex.id, status: "cancelled" }]));
@@ -137,6 +139,7 @@ export async function reconcileToBeds24(): Promise<ReconcileResult> {
     let created = 0;
     let updated = 0;
     for (const b of mine) {
+      if (isOtaReference(b.reference)) continue;
       const roomId = beds24RoomId(b.room.slug);
       if (!roomId) continue;
       const want = OCCUPYING.includes(b.status) ? "confirmed" : "cancelled";

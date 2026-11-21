@@ -41,4 +41,7 @@ export const slugByBeds24Room = (id: number) => Object.entries(BEDS24_ROOMS).fin
 
 /** Bookings the site pushed to Beds24 carry its own reference (RBT-XXXXXX) in apiReference; pulls skip them. */
 export const SITE_REF_PREFIX = "RBT-";
+/** Booking.com / Airbnb reservations mirrored from Beds24 into the site: reference "B24-<beds24 booking id>". */
+export const OTA_REF_PREFIX = "B24-";
+export const isOtaReference = (ref: string) => ref.startsWith(OTA_REF_PREFIX);
 export const CLOSURE_PREFIX = "b24:";
