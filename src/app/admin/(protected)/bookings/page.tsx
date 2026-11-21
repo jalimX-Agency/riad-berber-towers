@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { groupKey } from "@/lib/booking/group";
 import { Flash } from "@/components/admin/Toaster";
 import type { BookingStatus, Prisma } from "@prisma/client";
 import { Plus } from "lucide-react";
@@ -85,9 +86,7 @@ export default async function BookingsPage({ searchParams }: Props) {
   const INACTIVE = new Set(["CANCELLED", "NO_SHOW"]);
   const groups = new Map<string, typeof found>();
   for (const b of found.slice(0, limit)) {
-    const key = b.reference.startsWith("B24-")
-      ? b.id
-      : `${b.guestId}|${b.checkIn.toISOString()}|${b.checkOut.toISOString()}|${INACTIVE.has(b.status) ? "x" : "a"}`;
+    const key = `${groupKey(b)}|${INACTIVE.has(b.status) ? "x" : "a"}`;
     groups.set(key, [...(groups.get(key) ?? []), b]);
   }
 

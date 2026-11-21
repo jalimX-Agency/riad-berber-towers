@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { groupKey } from "@/lib/booking/group";
 import type { BookingStatus } from "@prisma/client";
 import { ArrowRight, LogIn, LogOut, Moon, Hourglass } from "lucide-react";
 import { db } from "@/lib/db";
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Tableau de bord" };
 
 const live = { status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN"] as BookingStatus[] } };
-const include = { guest: { select: { firstName: true, lastName: true, phone: true } }, room: { select: { name: true } } } as const;
+const include = { guest: { select: { firstName: true, lastName: true, phone: true, email: true } }, room: { select: { name: true } } } as const;
 
 type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
@@ -36,7 +37,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
   const merge = (list: Booking[]) => {
     const groups = new Map<string, Booking[]>();
     for (const b of list) {
-      const key = b.reference.startsWith("B24-") ? b.id : `${b.guestId}|${b.checkIn.toISOString()}|${b.checkOut.toISOString()}`;
+      const key = groupKey(b);
       groups.set(key, [...(groups.get(key) ?? []), b]);
     }
     return [...groups.values()].map((m) => ({

@@ -91,6 +91,8 @@ export async function createBooking(input: {
   query: StayQuery;
   guest: GuestInput;
   locale: Locale;
+  /** reuse this guest (next rooms of a multi-room reservation) */
+  guestId?: string;
   /** activities added in the wizard (price × people) and an optional transfer from Marrakech (fixed price); both are added to the total */
   extras?: { activities: ExtraChoice[]; transfer: TransferChoice | null; dinner?: DinnerChoice | null; transferNote?: string; dinnerNote?: string };
   /** Admin-entered bookings (phone, WhatsApp, agencies…). Website bookings use the defaults. */
@@ -141,9 +143,12 @@ export async function createBooking(input: {
           const blocking = a?.reason === "booked" || a?.reason === "blocked" || (!admin && a?.reason);
           if (!a || blocking) return { ok: false as const, error: "unavailable" as const, reason: a?.reason ?? null };
 
-          const existing = guest.email
-            ? await tx.guest.findFirst({ where: { email: guest.email }, orderBy: { createdAt: "desc" }, select: { id: true } })
-            : null;
+          // the other rooms of a multi-room reservation reuse the guest of the first room (phone guests often have no email)
+          const existing = input.guestId
+            ? { id: input.guestId }
+            : guest.email
+              ? await tx.guest.findFirst({ where: { email: guest.email }, orderBy: { createdAt: "desc" }, select: { id: true } })
+              : null;
           const guestData = {
             firstName: guest.firstName,
             lastName: guest.lastName,

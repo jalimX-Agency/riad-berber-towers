@@ -318,12 +318,14 @@ export async function createManualBooking(_prev: NewBookingState, form: FormData
 
   const notes = values.internalNotes?.slice(0, 3500) ?? "";
   const created: { id: string; reference: string; name: string }[] = [];
+  let sharedGuest: string | undefined;
   for (const r of rooms) {
     const result = await createBooking({
       roomSlug: r.slug,
       query,
       guest: guest.data,
       locale,
+      guestId: sharedGuest,
       admin: { source, status: values.status === "PENDING" ? "PENDING" : "CONFIRMED", total: totals.get(r.slug), internalNotes: notes },
     });
     if (!result.ok) {
@@ -332,6 +334,7 @@ export async function createManualBooking(_prev: NewBookingState, form: FormData
       return { error: result.error === "unavailable" ? `unavailable_${result.reason ?? ""}` : result.error, detail: multi ? r.name : undefined, values };
     }
     created.push({ id: result.id, reference: result.reference, name: r.name });
+    sharedGuest ??= (await db.booking.findUnique({ where: { id: result.id }, select: { guestId: true } }))?.guestId;
   }
 
   if (multi) {
