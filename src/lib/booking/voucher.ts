@@ -7,6 +7,7 @@ import { site } from "@/lib/site";
 import { formatPrice } from "@/lib/rooms";
 import { formatStayDate } from "@/lib/email/booking";
 import { bookingPayment } from "./payment";
+import { groupMembers, groupPayment } from "./group";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "./policy";
 import { extraLines, extrasInclude } from "./extra-names";
 
@@ -28,14 +29,19 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
     include: { guest: true, room: { include: { translations: true } }, ...extrasInclude },
   });
   if (!b) return null;
+  // a reservation of several rooms gets one voucher listing every room, with the summed amounts
+  const group = await groupMembers(b.id, { room: { include: { translations: true } } });
+  const rooms = group.length > 1 ? group : [b];
 
   const locale = b.locale === "ar" ? "en" : b.locale;
   const t = await getTranslations({ locale, namespace: "voucher" });
   const ts = await getTranslations({ locale, namespace: "search" });
   const tp = await getTranslations({ locale, namespace: "policy" });
   const tb = await getTranslations({ locale, namespace: "book" });
-  const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
-  const pay = bookingPayment(b);
+  const nameOf = (r: (typeof rooms)[number]) => r.room.translations.find((x) => x.locale === locale)?.name || r.room.name;
+  const roomName = rooms.length > 1 ? rooms.map((r) => `${nameOf(r)} (${ts("adults", { count: r.adults })})`).join(", ") : nameOf(b);
+  const adults = rooms.reduce((s, r) => s + r.adults, 0);
+  const pay = rooms.length > 1 ? groupPayment(rooms) : bookingPayment(b);
   const money = (n: number) => formatPrice(n, b.currency, locale).replace(/ | /g, " ");
 
   const doc = await PDFDocument.create();
@@ -93,7 +99,7 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
     text(page, site.name, M, 790, 22, serif);
   }
   right(page, t("title"), W - M, 796, 20, serif, INK);
-  right(page, b.reference, W - M, 776, 13, bold, EARTH);
+  right(page, rooms.length > 1 ? rooms.map((r) => r.reference).join(" · ") : b.reference, W - M, 776, rooms.length > 2 ? 10 : 13, bold, EARTH);
   page.drawLine({ start: { x: M, y: 752 }, end: { x: W - M, y: 752 }, thickness: 1, color: RULE });
 
   // status ribbon
@@ -113,10 +119,10 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
   };
   const colW = (W - 2 * M - 24) / 2;
   const stayEnd = rows(M, 690, t("stay"), [
-    [t("room"), roomName],
+    [rooms.length > 1 ? `${t("room")} × ${rooms.length}` : t("room"), roomName],
     [ts("checkIn"), formatStayDate(b.checkIn, locale)],
     [ts("checkOut"), formatStayDate(b.checkOut, locale)],
-    [t("guests"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
+    [t("guests"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: adults })}`],
     [tb("bed"), tb(`beds.${b.bedSetup}`)],
     [t("included"), t("breakfast")],
     ...extraLines(b.extras, locale, tb("transfer.title"), tb("dinner.title")).map(

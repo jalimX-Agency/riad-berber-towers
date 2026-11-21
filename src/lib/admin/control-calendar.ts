@@ -1,4 +1,4 @@
-import type { BookingSource, BookingStatus } from "@prisma/client";
+import type { BedSetup, BookingSource, BookingStatus, PaymentStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { addDays, eachNight, toISO } from "@/lib/booking/dates";
 import { beds24Configured } from "@/lib/beds24/client";
@@ -26,6 +26,13 @@ export type CalBooking = {
   currency: string;
   /** mirrored from Booking.com / Airbnb: read-only on the site */
   ota: boolean;
+  /** for the hover card */
+  phone: string;
+  country: string;
+  paymentStatus: PaymentStatus;
+  deposit: number;
+  arrivalTime: string;
+  bedSetup: BedSetup;
 };
 
 export type CalBlock = {
@@ -70,7 +77,8 @@ export async function loadCalendar(from: Date, to: Date): Promise<CalendarData> 
       where: { ...overlap, status: { notIn: ["CANCELLED", "NO_SHOW"] } },
       select: {
         id: true, reference: true, roomId: true, checkIn: true, checkOut: true, nights: true, status: true, source: true, adults: true, total: true, currency: true,
-        guest: { select: { firstName: true, lastName: true } },
+        paymentStatus: true, depositAmount: true, arrivalTime: true, bedSetup: true,
+        guest: { select: { firstName: true, lastName: true, phone: true, country: true } },
       },
     }),
     db.roomBlock.findMany({
@@ -132,6 +140,12 @@ export async function loadCalendar(from: Date, to: Date): Promise<CalendarData> 
       total: Number(b.total),
       currency: b.currency,
       ota: b.reference.startsWith(OTA_REF_PREFIX),
+      phone: b.guest.phone,
+      country: b.guest.country,
+      paymentStatus: b.paymentStatus,
+      deposit: Number(b.depositAmount),
+      arrivalTime: b.arrivalTime,
+      bedSetup: b.bedSetup,
     })),
     blocks: blockRows.map((k) => ({
       id: k.id,

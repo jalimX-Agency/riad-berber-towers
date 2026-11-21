@@ -187,7 +187,8 @@ export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today
             Statut
             <select name="status" defaultValue={v.status ?? "CONFIRMED"} className={field}>
               <option value="CONFIRMED">Confirmée</option>
-              <option value="PENDING">En attente</option>
+              <option value="AWAITING_PAYMENT">En attente de paiement</option>
+              <option value="PENDING">En attente (à traiter)</option>
             </select>
           </label>
         </div>

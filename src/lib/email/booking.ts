@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/rooms";
 import { localePath } from "@/i18n/routing";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { bookingPayment } from "@/lib/booking/payment";
+import { groupMembers, groupPayment } from "@/lib/booking/group";
 import { buildVoucher } from "@/lib/booking/voucher";
 import { extraLines, extrasInclude } from "@/lib/booking/extra-names";
 
@@ -171,8 +172,12 @@ export async function sendStatusEmail(bookingId: string, kind: StatusEmail): Pro
     const tb = await getTranslations({ locale, namespace: "book" });
     const ts = await getTranslations({ locale, namespace: "search" });
     const tp = await getTranslations({ locale, namespace: "policy" });
-    const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
-    const pay = bookingPayment(b);
+    // several rooms booked together: one email listing every room, with the summed amounts
+    const group = await groupMembers(b.id, { room: { include: { translations: true } } });
+    const rooms = group.length > 1 ? group : [b];
+    const roomName = rooms.map((r) => r.room.translations.find((x) => x.locale === locale)?.name || r.room.name).join(", ");
+    const adults = rooms.reduce((s, r) => s + r.adults, 0);
+    const pay = rooms.length > 1 ? groupPayment(rooms) : bookingPayment(b);
     const money = (n: number) => formatPrice(n, b.currency, locale);
     const cash = tp("balance", { currencies: CASH_CURRENCIES.join(", ") });
 
@@ -187,7 +192,7 @@ export async function sendStatusEmail(bookingId: string, kind: StatusEmail): Pro
 ${row(tb("room"), roomName)}
 ${row(ts("checkIn"), formatStayDate(b.checkIn, locale))}
 ${row(ts("checkOut"), formatStayDate(b.checkOut, locale))}
-${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`)}
+${row(tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: adults })}`)}
 ${row(tb("bed"), tb(`beds.${b.bedSetup}`))}
 ${showMoney ? row(tb("total"), money(pay.total)) + row(tb("deposit", { percent: DEPOSIT_PERCENT }), money(pay.deposit)) + row(tb("balance"), money(pay.balance)) : ""}
 </table>

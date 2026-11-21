@@ -9,6 +9,7 @@ import { getSettings } from "@/lib/settings";
 import { formatPrice } from "@/lib/rooms";
 import { formatStayDate } from "@/lib/email/booking";
 import { bookingPayment } from "@/lib/booking/payment";
+import { groupMembers, groupPayment } from "@/lib/booking/group";
 import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { StayPolicies } from "@/components/booking/StayPolicies";
 import { ProofUpload } from "@/components/booking/ProofUpload";
@@ -47,8 +48,12 @@ export default async function PayPage({ params }: Props) {
   const t = await getTranslations("pay");
   const tb = await getTranslations("book");
   const ts = await getTranslations("search");
-  const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
-  const pay = bookingPayment(b);
+  // several rooms booked together: one payment for the whole reservation
+  const group = await groupMembers(b.id, { room: { include: { translations: true } } });
+  const rooms = group.length > 1 ? group : [b];
+  const roomName = rooms.map((r) => r.room.translations.find((x) => x.locale === locale)?.name || r.room.name).join(", ");
+  const adults = rooms.reduce((s, r) => s + r.adults, 0);
+  const pay = rooms.length > 1 ? groupPayment(rooms) : bookingPayment(b);
   const money = (n: number) => formatPrice(n, b.currency, locale);
   const settings = await getSettings();
   const { paypalMe } = settings;
@@ -64,7 +69,7 @@ export default async function PayPage({ params }: Props) {
         [tb("room"), roomName],
         [ts("checkIn"), formatStayDate(b.checkIn, locale)],
         [ts("checkOut"), formatStayDate(b.checkOut, locale)],
-        [tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: b.adults })}`],
+        [tb("stay"), `${ts("nights", { count: b.nights })}, ${ts("adults", { count: adults })}`],
         [tb("bed"), tb(`beds.${b.bedSetup}`)],
         [tb("total"), money(pay.total)],
         [tb("deposit", { percent: DEPOSIT_PERCENT }), money(pay.deposit)],

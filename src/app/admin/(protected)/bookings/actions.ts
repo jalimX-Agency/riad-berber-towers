@@ -11,6 +11,7 @@ import { canManage, requireManager, requireUser } from "@/lib/admin/guard";
 import { nextStatuses } from "@/lib/admin/labels";
 import { parseStayQuery } from "@/lib/booking/availability";
 import { adminGuestSchema, createBooking, restoreBooking } from "@/lib/booking/create";
+import { groupIds } from "@/lib/booking/group";
 import { sendStatusEmail } from "@/lib/email/booking";
 import { cancelInBeds24, pushBookingSafe } from "@/lib/beds24/push";
 import { beds24Conflict, beds24HasRoom } from "@/lib/beds24/live";
@@ -66,19 +67,36 @@ async function back(id: string, params: Record<string, string>, form?: FormData)
   redirect(`/admin/bookings/${id}?${qs}`);
 }
 
-/** Move a booking to its next status. Confirm and cancel can email the guest. */
+/** Every room of the reservation must still be free; returns the first conflict found. */
+async function groupConflict(ids: string[]) {
+  for (const gid of ids) {
+    const c = await stillFree(gid);
+    if (c) return c;
+  }
+  return null;
+}
+const pushAll = (ids: string[]) =>
+  after(async () => {
+    for (const gid of ids) await pushBookingSafe(gid); // Booking.com / Airbnb reopen or close the nights
+  });
+
+/**
+ * Move a booking to its next status. Confirm and cancel can email the guest.
+ * A reservation of several rooms moves as one: every room gets the new status (see lib/booking/group.ts).
+ */
 export async function changeStatus(id: string, to: BookingStatus, form: FormData) {
   await requireUser();
   if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (!nextStatuses[b.status].includes(to)) return back(id, { error: "transition" }, form);
+  const ids = await groupIds(id);
   if (to === "CONFIRMED") {
-    const conflict = await stillFree(id);
+    const conflict = await groupConflict(ids);
     if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
   }
 
-  await db.booking.update({
-    where: { id },
+  await db.booking.updateMany({
+    where: { id: { in: ids }, status: b.status },
     data: {
       status: to,
       cancelledAt: to === "CANCELLED" ? new Date() : undefined,
@@ -86,7 +104,7 @@ export async function changeStatus(id: string, to: BookingStatus, form: FormData
       ...(to === "CONFIRMED" && b.status === "AWAITING_PAYMENT" ? { paymentStatus: "DEPOSIT_PAID" as PaymentStatus } : {}),
     },
   });
-  after(() => pushBookingSafe(id)); // Booking.com / Airbnb reopen or close the nights
+  pushAll(ids);
 
   let email = "";
   if ((to === "CONFIRMED" || to === "CANCELLED") && form.get("notify") === "on") {
@@ -99,16 +117,27 @@ export async function changeStatus(id: string, to: BookingStatus, form: FormData
 export async function acceptBooking(id: string, form: FormData) {
   await requireUser();
   if (await isOta(id)) return back(id, { error: "ota" }, form);
-  const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true, payToken: true } });
+  const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
-  const conflict = await stillFree(id);
+  const ids = await groupIds(id);
+  const conflict = await groupConflict(ids);
   if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
-  await db.booking.update({
-    where: { id },
-    data: { status: "AWAITING_PAYMENT", acceptedAt: new Date(), payToken: b.payToken ?? randomBytes(24).toString("base64url") },
-  });
+  await toAwaitingPayment(ids, "PENDING");
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "accepted") : "";
   return back(id, { done: "accepted", ...(email ? { email } : {}) }, form);
+}
+
+/** "Awaiting payment" needs the secret link of the payment page: give one to every room that has none. */
+async function toAwaitingPayment(ids: string[], from?: BookingStatus) {
+  const rows = await db.booking.findMany({ where: { id: { in: ids }, ...(from ? { status: from } : {}) }, select: { id: true, payToken: true } });
+  await db.$transaction(
+    rows.map((r) =>
+      db.booking.update({
+        where: { id: r.id },
+        data: { status: "AWAITING_PAYMENT", acceptedAt: new Date(), cancelledAt: null, payToken: r.payToken ?? randomBytes(24).toString("base64url") },
+      }),
+    ),
+  );
 }
 
 /** The riad has no room for this request: cancel it and tell the guest. */
@@ -117,8 +146,9 @@ export async function declineBooking(id: string, form: FormData) {
   if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
-  await db.booking.update({ where: { id }, data: { status: "CANCELLED", cancelledAt: new Date() } });
-  after(() => pushBookingSafe(id));
+  const ids = await groupIds(id);
+  await db.booking.updateMany({ where: { id: { in: ids }, status: "PENDING" }, data: { status: "CANCELLED", cancelledAt: new Date() } });
+  pushAll(ids);
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "declined") : "";
   return back(id, { done: "declined", ...(email ? { email } : {}) }, form);
 }
@@ -129,9 +159,10 @@ export async function approvePayment(id: string, form: FormData) {
   if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PAYMENT_REVIEW") return back(id, { error: "transition" }, form);
-  const conflict = await stillFree(id);
+  const ids = await groupIds(id);
+  const conflict = await groupConflict(ids);
   if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
-  await db.booking.update({ where: { id }, data: { status: "CONFIRMED", paymentStatus: "DEPOSIT_PAID" } });
+  await db.booking.updateMany({ where: { id: { in: ids }, status: { in: ["PAYMENT_REVIEW", "AWAITING_PAYMENT"] } }, data: { status: "CONFIRMED", paymentStatus: "DEPOSIT_PAID" } });
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "confirmed") : "";
   return back(id, { done: "CONFIRMED", ...(email ? { email } : {}) }, form);
 }
@@ -142,7 +173,8 @@ export async function rejectProof(id: string, form: FormData) {
   if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PAYMENT_REVIEW") return back(id, { error: "transition" }, form);
-  await db.booking.update({ where: { id }, data: { status: "AWAITING_PAYMENT" } });
+  const ids = await groupIds(id);
+  await db.booking.updateMany({ where: { id: { in: ids }, status: "PAYMENT_REVIEW" }, data: { status: "AWAITING_PAYMENT" } });
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "proofRejected") : "";
   return back(id, { done: "proofRejected", ...(email ? { email } : {}) }, form);
 }
@@ -156,16 +188,53 @@ export async function resendPaymentLink(id: string, form?: FormData) {
   return back(id, { done: "resent", email: await sendStatusEmail(id, "accepted") }, form);
 }
 
-/** Re-open a cancelled booking, only if the nights are still free. */
+/** Re-open a cancelled booking (all its rooms), only if the nights are still free. */
 export async function restore(id: string, form?: FormData) {
   await requireUser();
   if (await isOta(id)) return back(id, { error: "ota" }, form);
+  const ids = await groupIds(id);
   // re-opening a cancelled stay: the nights may have been sold on another channel since
-  const conflict = await stillFree(id);
+  const conflict = await groupConflict(ids);
   if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
-  const ok = await restoreBooking(id);
-  if (ok) after(() => pushBookingSafe(id));
+  let ok = true;
+  for (const gid of ids) ok = (await restoreBooking(gid)) && ok;
+  pushAll(ids);
   return back(id, ok ? { done: "CONFIRMED" } : { error: "restore" }, form);
+}
+
+const SETTABLE: BookingStatus[] = ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT", "CANCELLED", "NO_SHOW"];
+const OCCUPYING: BookingStatus[] = ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT"];
+
+/**
+ * Put the reservation (all its rooms) in any status, for the cases the step-by-step buttons don't cover
+ * (a phone booking that still has to pay, a mistake to undo…). Re-occupying the nights checks they are still free.
+ * "Awaiting payment" creates the payment link; the guest is emailed only when "notify" is ticked.
+ */
+export async function setStatus(id: string, form: FormData) {
+  await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
+  const to = String(form.get("status") ?? "") as BookingStatus;
+  if (!SETTABLE.includes(to)) return back(id, { error: "transition" }, form);
+  const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
+  // "seulement cette chambre": one room of a multi-room reservation (cancel one room, for example)
+  const ids = form.get("only") === "on" ? [id] : await groupIds(id);
+  if (b.status === to && ids.length === 1) return back(id, { done: "status" }, form);
+  if (OCCUPYING.includes(to) && !OCCUPYING.includes(b.status)) {
+    const conflict = await groupConflict(ids);
+    if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
+  }
+  if (to === "AWAITING_PAYMENT") await toAwaitingPayment(ids);
+  else
+    await db.booking.updateMany({
+      where: { id: { in: ids } },
+      data: { status: to, cancelledAt: to === "CANCELLED" ? new Date() : OCCUPYING.includes(to) ? null : undefined },
+    });
+  pushAll(ids);
+
+  const notify = form.get("notify") === "on";
+  const kind = to === "AWAITING_PAYMENT" ? "accepted" : to === "CONFIRMED" ? "confirmed" : to === "CANCELLED" ? "cancelled" : null;
+  const email = notify && kind ? await sendStatusEmail(id, kind) : "";
+  return back(id, { done: "status", ...(email ? { email } : {}) }, form);
 }
 
 const paymentSchema = z.object({
@@ -179,10 +248,20 @@ export async function savePayment(id: string, form: FormData) {
   const p = paymentSchema.safeParse(Object.fromEntries(form));
   if (!p.success) return back(id, { error: "payment" }, form);
   const data = p.data;
-  await db.booking.update({
-    where: { id },
-    data: { paymentStatus: data.paymentStatus as PaymentStatus, depositAmount: data.depositAmount, paymentMethod: data.paymentMethod || null },
-  });
+  // several rooms: one payment for the reservation, the deposit split between the rooms in proportion to their price
+  const rows = await db.booking.findMany({ where: { id: { in: await groupIds(id) } }, select: { id: true, total: true }, orderBy: { createdAt: "asc" } });
+  const sum = rows.reduce((t, r) => t + Number(r.total), 0);
+  let left = data.depositAmount;
+  await db.$transaction(
+    rows.map((r, i) => {
+      const share = i === rows.length - 1 ? left : Math.round((sum > 0 ? (data.depositAmount * Number(r.total)) / sum : data.depositAmount / rows.length) * 100) / 100;
+      left = Math.round((left - share) * 100) / 100;
+      return db.booking.update({
+        where: { id: r.id },
+        data: { paymentStatus: data.paymentStatus as PaymentStatus, depositAmount: share, paymentMethod: data.paymentMethod || null },
+      });
+    }),
+  );
   return back(id, { done: "payment" }, form);
 }
 
@@ -261,6 +340,8 @@ export async function createManualBooking(_prev: NewBookingState, form: FormData
   }
 
   const ids = created.map((c) => c.id);
+  // a phone / WhatsApp guest who still has to pay: straight to "awaiting payment", with the payment page ready
+  if (values.status === "AWAITING_PAYMENT") await toAwaitingPayment(ids);
   after(async () => {
     for (const id of ids) await pushBookingSafe(id);
   });

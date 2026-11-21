@@ -2,6 +2,7 @@ import { after, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { sendProofToOwner } from "@/lib/email/booking";
 import { MAX_PROOF_BYTES } from "@/lib/booking/policy";
+import { groupIds } from "@/lib/booking/group";
 
 export const dynamic = "force-dynamic";
 
@@ -48,10 +49,12 @@ export async function POST(req: Request) {
   const mimeType = sniff(bytes);
   if (!mimeType) return NextResponse.json({ error: "type" }, { status: 415 });
 
+  // several rooms booked together share the payment: the whole reservation goes to "payment being checked"
+  const ids = await groupIds(booking.id);
   const filename = (file.name || "proof").replace(/[^\w.\- ]/g, "_").slice(-100);
   await db.$transaction([
     db.paymentProof.create({ data: { bookingId: booking.id, filename, mimeType, size: bytes.length, data: bytes } }),
-    db.booking.update({ where: { id: booking.id }, data: { status: "PAYMENT_REVIEW" } }),
+    db.booking.updateMany({ where: { id: { in: ids }, status: { in: ["AWAITING_PAYMENT", "PAYMENT_REVIEW"] } }, data: { status: "PAYMENT_REVIEW" } }),
   ]);
   // tell the riad after the response, so the guest doesn't wait for the email
   after(() => sendProofToOwner(booking.id));

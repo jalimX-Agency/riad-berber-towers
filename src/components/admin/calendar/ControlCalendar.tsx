@@ -4,9 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { BookingSource, BookingStatus } from "@prisma/client";
-import { CheckCircle2, ChevronLeft, ChevronRight, Loader2, RefreshCw, TriangleAlert, X } from "lucide-react";
-import type { CalBlock, CalBooking, CalendarData } from "@/lib/admin/control-calendar";
-import { reopenBlock, syncNow } from "@/app/admin/(protected)/calendar/actions";
+import { CheckCircle2, ChevronLeft, ChevronRight, Eye, EyeOff, Loader2, Phone, RefreshCw, TriangleAlert, X } from "lucide-react";
+import type { CalBlock, CalBooking, CalendarData, CalRoom } from "@/lib/admin/control-calendar";
+import { applyChanges, reopenBlock, syncNow } from "@/app/admin/(protected)/calendar/actions";
+import { bedLabel, paymentLabel, sourceLabel } from "@/lib/admin/labels";
 import { cn } from "@/lib/utils";
 import { ActionDrawer, type Selection } from "./ActionDrawer";
 import { ChannelMark, PLATFORM_COLORS, PlatformIcon } from "./PlatformIcon";
@@ -30,6 +31,9 @@ const statusName: Partial<Record<BookingStatus, string>> = {
 };
 
 type Filter = "all" | "airbnb" | "booking" | "direct";
+type PriceKey = "site" | "booking" | "airbnb" | "min";
+type Editing = { roomId: string; iso: string; k: PriceKey; d: number };
+const editLimits: Record<PriceKey, [number, number]> = { site: [10, 10_000], booking: [20, 5000], airbnb: [100, 50_000], min: [1, 30] };
 type Layers = { site: boolean; booking: boolean; airbnb: boolean; min: boolean };
 const DEFAULT_LAYERS: Layers = { site: true, booking: true, airbnb: true, min: false };
 
@@ -60,6 +64,15 @@ export function ControlCalendar({
   const [onlyRoom, setOnlyRoom] = useState<string>("all");
   const [sel, setSel] = useState<{ a: { r: number; d: number }; b: { r: number; d: number } } | null>(null);
   const dragging = useRef(false);
+  /** which row the press started on: a single click on a price cell edits it in place instead of opening the drawer */
+  const pressKind = useRef<PriceKey | "bookings">("bookings");
+  const [editing, setEditing] = useState<Editing | null>(null);
+  /** values just typed, shown until the refreshed data arrives */
+  const [pending, setPending] = useState<Record<string, number>>({});
+  useEffect(() => setPending({}), [data]);
+  const [hover, setHover] = useState<{ r: number; d: number } | null>(null);
+  const [card, setCard] = useState<{ b: CalBooking; x: number; y: number } | null>(null);
+  const [compact, setCompact] = useState(false);
   // the grid scrolls inside its own box (dates and room names stay visible); arrows and the wheel move it sideways
   const scroller = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({ start: true, end: false });
@@ -74,6 +87,19 @@ export function ControlCalendar({
     const col = (el.querySelector("[data-day]") as HTMLElement | null)?.offsetWidth ?? 90;
     el.scrollBy({ left: dir * col * 7, behavior: "smooth" });
   };
+  // the box takes the rest of the screen below the toolbar, so its sideways scrollbar is always in view
+  const [boxHeight, setBoxHeight] = useState<string>("calc(100dvh - 260px)");
+  useEffect(() => {
+    const fit = () => {
+      const el = scroller.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      setBoxHeight(`calc(100dvh - ${Math.round(Math.min(top, window.innerHeight * 0.45))}px - 16px)`);
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [data.beds24Error]);
   // open on today (first visible column after the room names)
   useEffect(() => {
     const el = scroller.current;
@@ -107,8 +133,16 @@ export function ControlCalendar({
     try {
       const saved = localStorage.getItem("rbt-cal-layers");
       if (saved) setLayers({ ...DEFAULT_LAYERS, ...JSON.parse(saved) });
+      setCompact(localStorage.getItem("rbt-cal-compact") === "1");
     } catch {}
   }, []);
+  const toggleCompact = () =>
+    setCompact((c) => {
+      try {
+        localStorage.setItem("rbt-cal-compact", c ? "0" : "1");
+      } catch {}
+      return !c;
+    });
   const toggleLayer = (k: keyof Layers) =>
     setLayers((l) => {
       const next = { ...l, [k]: !l[k] };
@@ -119,7 +153,7 @@ export function ControlCalendar({
     });
 
   const rooms = onlyRoom === "all" ? data.rooms : data.rooms.filter((r) => r.id === onlyRoom);
-  const priceRows = (["site", "booking", "airbnb", "min"] as const).filter((k) => layers[k]);
+  const priceRows = compact ? [] : (["site", "booking", "airbnb", "min"] as const).filter((k) => layers[k]);
 
   // nights already sold or closed, for dimming prices and the occupancy row
   const taken = useMemo(() => {
@@ -150,6 +184,12 @@ export function ControlCalendar({
   const finish = useCallback(() => {
     if (!dragging.current || !sel) return;
     dragging.current = false;
+    if (sel.a.r === sel.b.r && sel.a.d === sel.b.d && pressKind.current !== "bookings") {
+      const room = rooms[sel.a.r];
+      setSel(null);
+      if (room && (pressKind.current === "site" || pressKind.current === "min" || room.beds24)) setEditing({ roomId: room.id, iso: data.days[sel.a.d], k: pressKind.current, d: sel.a.d });
+      return;
+    }
     const r0 = Math.min(sel.a.r, sel.b.r);
     const r1 = Math.max(sel.a.r, sel.b.r);
     const d0 = Math.min(sel.a.d, sel.b.d);
@@ -164,7 +204,7 @@ export function ControlCalendar({
     if (!sel) return false;
     return r >= Math.min(sel.a.r, sel.b.r) && r <= Math.max(sel.a.r, sel.b.r) && d >= Math.min(sel.a.d, sel.b.d) && d <= Math.max(sel.a.d, sel.b.d);
   };
-  const cellHandlers = (r: number, d: number) =>
+  const cellHandlers = (r: number, d: number, kind: PriceKey | "bookings" = "bookings") =>
     canEdit
       ? {
           onPointerDown: (e: React.PointerEvent) => {
@@ -172,13 +212,67 @@ export function ControlCalendar({
             e.preventDefault();
             (e.target as Element).releasePointerCapture?.(e.pointerId);
             dragging.current = true;
+            pressKind.current = kind;
+            // a price being typed is saved before moving on (preventDefault above keeps the focus, so blur it ourselves)
+            (document.activeElement as HTMLElement | null)?.blur?.();
+            setEditing(null);
             setSel({ a: { r, d }, b: { r, d } });
           },
           onPointerEnter: () => {
+            setHover({ r, d });
             if (dragging.current) setSel((s) => (s ? { ...s, b: { r, d } } : s));
           },
         }
-      : {};
+      : { onPointerEnter: () => setHover({ r, d }) };
+
+  // ── in-place price editing ──
+  const pendingKey = (roomId: string, iso: string, k: PriceKey) => `${roomId}|${iso}|${k}`;
+  const currentValue = (room: CalRoom, d: number, k: PriceKey): number | null => {
+    const night = data.nights[room.id]?.[d];
+    if (!night) return null;
+    if (k === "site") return night.site;
+    if (k === "min") return Math.max(night.minNights, night.channelMin ?? 1);
+    return night[k];
+  };
+  const saveCell = (room: CalRoom, ed: Editing, raw: string, next?: 1 | -1) => {
+    const move = () => {
+      const nd = ed.d + (next ?? 0);
+      setEditing(next && nd >= 0 && nd < n ? { ...ed, d: nd, iso: data.days[nd] } : null);
+    };
+    const value = Number(raw.replace(",", "."));
+    const before = currentValue(room, ed.d, ed.k);
+    if (!raw.trim() || !Number.isFinite(value) || value === before) return move();
+    const [lo, hi] = editLimits[ed.k];
+    if (value < lo || value > hi) {
+      setToast({ ok: false, text: `Valeur refusée : entre ${nf.format(lo)} et ${nf.format(hi)}.` });
+      return;
+    }
+    const key = pendingKey(room.id, ed.iso, ed.k);
+    setPending((p) => ({ ...p, [key]: value }));
+    move();
+    const base = { rooms: [room.id], from: ed.iso, to: ed.iso };
+    const input =
+      ed.k === "site"
+        ? { ...base, site: value }
+        : ed.k === "min"
+          ? { ...base, minStay: Math.round(value) }
+          : ed.k === "booking"
+            ? { ...base, booking: value, ...(before == null ? { bookingState: "open" as const } : {}) }
+            : { ...base, airbnb: value, ...(before == null ? { airbnbState: "open" as const } : {}) };
+    applyChanges(input)
+      .then((r) => {
+        if (!r.ok) {
+          setPending((p) => {
+            const { [key]: _drop, ...rest } = p;
+            void _drop;
+            return rest;
+          });
+          setToast({ ok: false, text: r.error });
+        }
+        router.refresh();
+      })
+      .catch(() => setToast({ ok: false, text: "Enregistrement impossible : vérifiez la connexion." }));
+  };
 
   const closeDrawer = () => {
     setDrawer(null);
@@ -211,7 +305,7 @@ export function ControlCalendar({
   };
 
   return (
-    <div className="grid gap-4">
+    <div className="grid min-w-0 gap-4">
       {/* toolbar */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -268,7 +362,17 @@ export function ControlCalendar({
             </button>
           ))}
           <span className="mx-1 hidden h-5 w-px bg-rule sm:inline-block" />
-          {(
+          <button
+            type="button"
+            onClick={toggleCompact}
+            aria-pressed={compact}
+            className={cn("hidden shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 sm:inline-flex", compact ? "border-ink bg-ink text-snow" : "border-rule hover:border-earth")}
+            title="Afficher seulement les réservations, toutes les chambres sur un écran"
+          >
+            {compact ? <Eye className="h-4 w-4" aria-hidden="true" /> : <EyeOff className="h-4 w-4" aria-hidden="true" />}
+            {compact ? "Afficher les prix" : "Masquer les prix"}
+          </button>
+          {!compact && (
             [
               ["site", "Prix site"],
               ["booking", "Prix Booking"],
@@ -291,7 +395,7 @@ export function ControlCalendar({
           </select>
         </div>
         <div className="flex items-center gap-3">
-          <span className={cn("text-xs", data.sync && !data.sync.ok ? "text-rose-800" : "text-muted")}>Beds24 : {when(data.sync?.at)}</span>
+          <span suppressHydrationWarning className={cn("text-xs", data.sync && !data.sync.ok ? "text-rose-800" : "text-muted")}>Beds24 : {when(data.sync?.at)}</span>
           <button
             type="button"
             disabled={syncing}
@@ -335,19 +439,20 @@ export function ControlCalendar({
       <MobileAgenda data={data} canEdit={canEdit} today={today} filter={filter} pageUrl={pageUrl} onEdit={setDrawer} onBlock={setBlockMenu} />
 
       {/* grid (tablet and desktop) */}
-      <div className="relative hidden sm:block">
+      <div className="relative hidden min-w-0 sm:block">
       <div
         ref={scroller}
         onScroll={updateEdges}
-        className="max-h-[calc(100dvh-230px)] min-h-[420px] overflow-auto overscroll-contain rounded-[12px] border border-rule bg-snow"
+        style={{ maxHeight: boxHeight }}
+        className="min-h-[420px] overflow-auto overscroll-contain rounded-[12px] border border-rule bg-snow"
       >
-        <div className={cn("grid select-none text-[13px]", view > 20 ? "min-w-[2800px]" : "min-w-[1600px]")} style={grid}>
+        <div className={cn("grid select-none text-[13px]", view > 20 ? "min-w-[2800px]" : "min-w-[1600px]")} style={grid} onPointerLeave={() => setHover(null)}>
           <div data-corner className="sticky start-0 top-0 z-40 border-b border-e border-rule bg-snow p-2 font-medium">Chambre</div>
           {data.days.map((iso, d) => {
             const dt = new Date(`${iso}T00:00:00Z`);
             const wd = dt.getUTCDay();
             return (
-              <div key={iso} data-day={iso} className={cn("sticky top-0 z-30 grid cursor-ew-resize place-items-center border-b border-rule bg-snow py-2 text-center", (wd === 0 || wd === 6) && "bg-paper", iso === today && "bg-earth text-snow")} style={{ gridColumn: d + 2 }}>
+              <div key={iso} data-day={iso} className={cn("sticky top-0 z-30 grid cursor-ew-resize place-items-center border-b border-rule bg-snow py-2 text-center", (wd === 0 || wd === 6) && "bg-paper", hover?.d === d && "bg-paper text-earth shadow-[inset_0_-3px_0_var(--earth)]", iso === today && "bg-earth text-snow")} style={{ gridColumn: d + 2 }}>
                 <span className="uppercase opacity-70">{new Intl.DateTimeFormat("fr-FR", { weekday: "short", timeZone: "UTC" }).format(dt).replace(".", "")}</span>
                 <span className="text-base font-medium">{dt.getUTCDate()}</span>
               </div>
@@ -363,7 +468,7 @@ export function ControlCalendar({
             return (
               <div key={room.id} className="contents">
                 {/* labels: room name on the bookings row, one label per price row */}
-                <div className={cn("sticky start-0 z-20 flex h-16 items-center border-e border-rule bg-snow px-2 text-sm font-medium", priceRows.length === 0 && "border-b")} style={{ gridRow: base, gridColumn: 1 }}>
+                <div className={cn("sticky start-0 z-20 flex h-16 items-center border-e border-rule bg-snow px-2 text-sm font-medium", priceRows.length === 0 && "border-b", hover?.r === r && "text-earth shadow-[inset_3px_0_0_var(--earth)]")} style={{ gridRow: base, gridColumn: 1 }}>
                   {room.short}
                 </div>
                 {priceRows.map((k, j) => (
@@ -419,7 +524,10 @@ export function ControlCalendar({
                       href={`${pageUrl}${pageUrl.includes("?") ? "&" : "?"}b=${encodeURIComponent(b.id)}`}
                       style={{ gridRow: base, gridColumn: `${s + 2} / ${e + 2}`, ...look.style }}
                       className={cn("z-10 my-1.5 flex min-w-0 items-center gap-2 rounded-[8px] px-2 shadow-sm hover:brightness-95", look.className, clashes.has(b.id) && "ring-2 ring-rose-600")}
-                      title={`${b.guest} · arrivée ${b.checkIn} · départ ${b.checkOut} · ${b.nights} nuit(s) · ${b.adults} pers. · ${nf.format(b.total)} ${b.currency}${b.ota ? "" : ` · ${statusName[b.status] ?? ""}`}`}
+                      onPointerEnter={(ev) => setCard({ b, x: ev.clientX, y: ev.clientY })}
+                      onPointerMove={(ev) => setCard((c) => (c && c.b.id === b.id ? { ...c, x: ev.clientX, y: ev.clientY } : c))}
+                      onPointerLeave={() => setCard(null)}
+                      onClick={() => setCard(null)}
                     >
                       <PlatformIcon source={b.source} className="h-5 w-5 shrink-0 rounded-[4px] ring-1 ring-white/60" />
                       {/* two lines: guest, then nights and departure, so short stays stay readable */}
@@ -433,11 +541,12 @@ export function ControlCalendar({
                   );
                 })}
 
-                {/* price rows */}
+                {/* price rows: one click on a price edits it in place (Enter or Tab saves, Échap cancels) */}
                 {priceRows.map((k, j) =>
                   data.days.map((iso, d) => {
                     const night = nights[d];
                     const sold = used.has(d);
+                    const waiting = pending[pendingKey(room.id, iso, k)];
                     let text = "";
                     let tone = "";
                     if (k === "site") {
@@ -452,22 +561,58 @@ export function ControlCalendar({
                       text = m > 1 ? String(m) : "";
                       tone = "text-muted";
                     }
+                    if (waiting != null) {
+                      text = nf.format(waiting);
+                      tone = "font-semibold text-earth animate-pulse";
+                    }
+                    const isEditing = editing?.roomId === room.id && editing.d === d && editing.k === k;
+                    const editable = canEdit && (k === "site" || k === "min" || room.beds24);
                     return (
                       <div
                         key={`${k}-${iso}`}
-                        {...cellHandlers(r, d)}
+                        {...cellHandlers(r, d, k)}
                         style={{ gridRow: base + 1 + j, gridColumn: d + 2 }}
-                        title={k === "booking" || k === "airbnb" ? (text === "×" ? "Fermée sur cette plateforme (pas de prix)" : undefined) : undefined}
+                        title={isEditing ? undefined : text === "×" ? "Fermée sur cette plateforme : tapez un prix pour la rouvrir" : editable ? "Cliquez pour modifier" : undefined}
                         className={cn(
                           "flex h-8 items-center justify-end border-e border-rule/40 px-2 tabular-nums",
                           j === priceRows.length - 1 && "border-b border-b-rule",
-                          sold && "opacity-40",
+                          sold && !isEditing && waiting == null && "opacity-40",
                           inSel(r, d) && "bg-earth/20",
-                          canEdit && "cursor-cell hover:bg-earth/10",
+                          editable && "cursor-text hover:bg-earth/10 hover:ring-1 hover:ring-inset hover:ring-earth/40",
+                          isEditing && "relative z-20 p-0",
                           tone,
                         )}
                       >
-                        {text}
+                        {isEditing ? (
+                          <input
+                            autoFocus
+                            inputMode="decimal"
+                            defaultValue={waiting ?? currentValue(room, d, k) ?? ""}
+                            aria-label={`Nouveau prix ${k} ${iso}`}
+                            onFocus={(e) => e.currentTarget.select()}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => {
+                              const el = e.currentTarget;
+                              if (e.key === "Enter" || e.key === "Tab") {
+                                e.preventDefault();
+                                el.dataset.done = "1";
+                                saveCell(room, editing, el.value, e.key === "Tab" ? (e.shiftKey ? -1 : 1) : undefined);
+                              } else if (e.key === "Escape") {
+                                el.dataset.done = "1";
+                                setEditing(null);
+                              }
+                            }}
+                            onBlur={(e) => {
+                              // a click elsewhere saves too (Enter, Tab and Échap are handled above)
+                              if (e.currentTarget.dataset.done) return;
+                              e.currentTarget.dataset.done = "1";
+                              saveCell(room, editing, e.currentTarget.value);
+                            }}
+                            className="h-full w-full rounded-[4px] border-2 border-earth bg-snow px-1.5 text-end font-semibold text-ink outline-none"
+                          />
+                        ) : (
+                          text
+                        )}
                       </div>
                     );
                   }),
@@ -476,6 +621,22 @@ export function ControlCalendar({
               </div>
             );
           })}
+
+          {/* today: a line down every room */}
+          {data.days.indexOf(today) >= 0 && (
+            <div
+              aria-hidden="true"
+              style={{ gridColumn: data.days.indexOf(today) + 2, gridRow: `2 / ${2 + rooms.length * rowsPerRoom}` }}
+              className="pointer-events-none z-[11] border-x-2 border-earth/70 bg-earth/[0.05]"
+            />
+          )}
+          {/* hover: the day column and the room's rows, to read a price against its date and room */}
+          {hover && (
+            <>
+              <div aria-hidden="true" style={{ gridColumn: hover.d + 2, gridRow: `2 / ${2 + rooms.length * rowsPerRoom}` }} className="pointer-events-none z-[9] bg-ink/[0.045]" />
+              <div aria-hidden="true" style={{ gridColumn: `2 / ${n + 2}`, gridRow: `${2 + hover.r * rowsPerRoom} / ${2 + (hover.r + 1) * rowsPerRoom}` }} className="pointer-events-none z-[9] bg-ink/[0.03]" />
+            </>
+          )}
 
           {/* occupancy */}
           <div style={{ gridRow: 2 + rooms.length * rowsPerRoom, gridColumn: 1 }} className="sticky bottom-0 start-0 z-30 border-e border-t border-rule bg-snow p-2 text-muted">
@@ -537,8 +698,65 @@ export function ControlCalendar({
         <li>
           <span className="text-rose-700">×</span> fermée sur cette plateforme
         </li>
-        {canEdit && <li>Glissez sur les nuits (une ou plusieurs chambres) pour modifier prix et disponibilité.</li>}
+        {canEdit && <li>Cliquez sur un prix pour le changer (Entrée ou Tab pour enregistrer). Glissez sur plusieurs nuits ou chambres pour tout modifier d’un coup.</li>}
       </ul>
+
+      {/* booking hover card */}
+      {card && (
+        <div
+          role="tooltip"
+          style={{
+            left: Math.min(card.x + 16, (typeof window !== "undefined" ? window.innerWidth : 1600) - 300),
+            top: Math.min(card.y + 16, (typeof window !== "undefined" ? window.innerHeight : 900) - 260),
+          }}
+          className="pointer-events-none fixed z-[70] grid w-[280px] gap-2 rounded-[12px] border border-rule bg-snow p-4 text-sm shadow-2xl"
+        >
+          <div className="flex items-center gap-2">
+            <PlatformIcon source={card.b.source} className="h-5 w-5 rounded-[4px]" />
+            <span className="truncate font-semibold">{card.b.guest}</span>
+          </div>
+          <p className="text-xs text-muted">
+            {sourceLabel[card.b.source]}
+            {card.b.ota ? "" : ` · ${statusName[card.b.status] ?? card.b.status}`} · <span className="font-mono">{card.b.reference}</span>
+          </p>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[13px]">
+            <dt className="text-muted">Séjour</dt>
+            <dd>
+              {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${card.b.checkIn}T00:00:00Z`))} →{" "}
+              {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${card.b.checkOut}T00:00:00Z`))} · {card.b.nights} n.
+            </dd>
+            <dt className="text-muted">Personnes</dt>
+            <dd>
+              {card.b.adults} · {bedLabel[card.b.bedSetup]}
+            </dd>
+            {card.b.arrivalTime && (
+              <>
+                <dt className="text-muted">Arrivée</dt>
+                <dd>vers {card.b.arrivalTime}</dd>
+              </>
+            )}
+            <dt className="text-muted">Montant</dt>
+            <dd className="font-medium">
+              {nf.format(card.b.total)} {card.b.currency === "EUR" ? "€" : card.b.currency}
+            </dd>
+            <dt className="text-muted">Paiement</dt>
+            <dd className={card.b.paymentStatus === "UNPAID" ? "text-rose-700" : "text-emerald-800"}>
+              {paymentLabel[card.b.paymentStatus]}
+              {card.b.paymentStatus === "DEPOSIT_PAID" ? ` (${nf.format(card.b.deposit)} ${card.b.currency === "EUR" ? "€" : card.b.currency})` : ""}
+            </dd>
+            {(card.b.country || card.b.phone) && (
+              <>
+                <dt className="text-muted">Client</dt>
+                <dd className="flex items-center gap-1">
+                  {card.b.phone && <Phone className="h-3 w-3" aria-hidden="true" />}
+                  <span dir="ltr">{[card.b.phone, card.b.country].filter(Boolean).join(" · ")}</span>
+                </dd>
+              </>
+            )}
+          </dl>
+          <p className="text-xs text-muted">Cliquez pour ouvrir la réservation.</p>
+        </div>
+      )}
 
       {drawer && canEdit && <ActionDrawer selection={drawer} rooms={data.rooms} nights={data.nights} today={today} onClose={closeDrawer} onDone={done} />}
 

@@ -18,12 +18,14 @@ import {
   rejectProof,
   resendPaymentLink,
   restore,
+  setStatus,
   saveNotes,
   savePayment,
 } from "@/app/admin/(protected)/bookings/actions";
 import { payUrl } from "@/lib/email/booking";
 import { CASH_CURRENCIES, DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { bookingPayment } from "@/lib/booking/payment";
+import { groupMembers, groupPayment } from "@/lib/booking/group";
 import { cn } from "@/lib/utils";
 import { extraLines, extrasInclude } from "@/lib/booking/extra-names";
 
@@ -39,6 +41,7 @@ const doneText: Record<string, string> = {
   CHECKED_OUT: "Départ enregistré.",
   NO_SHOW: "Marquée comme non présentée.",
   payment: "Paiement enregistré.",
+  status: "Statut modifié.",
   notes: "Notes enregistrées.",
 };
 const emailText: Record<string, string> = {
@@ -117,17 +120,13 @@ export async function BookingDetail({
   });
   if (!b) notFound();
   // other rooms booked together (same guest, same dates): a family or a group entered as one reservation
-  const group = b.reference.startsWith("B24-")
-    ? []
-    : await db.booking.findMany({
-        where: { guestId: b.guestId, checkIn: b.checkIn, checkOut: b.checkOut, id: { not: b.id } },
-        orderBy: { room: { order: "asc" } },
-        select: { id: true, reference: true, status: true, room: { select: { name: true } } },
-      });
+  // the rooms of one reservation (same guest, same dates): shown and handled as one booking
+  const members = await groupMembers(b.id, { room: { select: { name: true } } });
+  const isGroup = members.length > 1;
 
   const nightly = (Array.isArray(b.nightlyRates) ? b.nightlyRates : []) as { date: string; price: number }[];
   const computed = nightly.reduce((s, n) => s + n.price, 0);
-  const pay = bookingPayment(b);
+  const pay = isGroup ? groupPayment(members) : bookingPayment(b);
   const extras = extraLines(b.extras, "fr", "Transfert depuis Marrakech", "Dîner au riad");
   const phoneDigits = b.guest.phone.replace(/\D/g, "");
   const actions = nextStatuses[b.status];
@@ -232,7 +231,7 @@ export async function BookingDetail({
         <div className="grid content-center gap-1.5 border-t border-rule bg-paper/60 p-4 text-sm sm:border-s sm:border-t-0">
           <span className="inline-flex items-center gap-2">
             <BedDouble className="h-4 w-4 text-earth" aria-hidden="true" />
-            <b className="font-medium">{b.room.name}</b>
+            <b className="font-medium">{isGroup ? `${members.length} chambres : ${members.map((m) => m.room.name).join(", ")}` : b.room.name}</b>
           </span>
           <span className="inline-flex items-center gap-2 text-muted">
             <Users className="h-4 w-4 text-earth" aria-hidden="true" />
@@ -244,24 +243,29 @@ export async function BookingDetail({
         </div>
       </div>
 
-      {group.length > 0 && (
-        <section className="grid gap-2 rounded-[12px] border border-rule bg-paper/60 p-4 text-sm">
-          <p className="font-medium">
-            Réservation de {group.length + 1} chambres : {b.room.name} et
-          </p>
-          <ul className="flex flex-wrap gap-2">
-            {group.map((g) => (
+      {isGroup && (
+        <section className="grid gap-3 rounded-[12px] border border-rule bg-snow p-4 text-sm">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <p className="text-base font-medium">Réservation de {members.length} chambres</p>
+            <p className="text-muted">
+              Total <b className="text-ink">{eur(pay.total, b.currency)}</b> · {members.reduce((n, m) => n + m.adults, 0)} pers.
+            </p>
+          </div>
+          <ul className="grid divide-y divide-rule overflow-hidden rounded-[10px] border border-rule">
+            {members.map((g) => (
               <li key={g.id}>
-                <a href={`/admin/bookings/${g.id}`} className="inline-flex items-center gap-2 rounded-full border border-rule bg-snow px-3 py-1.5 hover:border-earth">
+                <a href={`/admin/bookings/${g.id}`} className={cn("flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2.5 hover:bg-paper", g.id === b.id && "bg-paper/70")}>
                   <BedDouble className="h-4 w-4 text-earth" aria-hidden="true" />
-                  {g.room.name}
+                  <span className="font-medium">{g.room.name}</span>
                   <span className="font-mono text-xs text-muted">{g.reference}</span>
+                  <span className="text-muted">{g.adults} pers.</span>
+                  <span className="ms-auto">{eur(Number(g.total), g.currency)}</span>
                   <StatusBadge status={g.status} />
                 </a>
               </li>
             ))}
           </ul>
-          <p className="text-xs text-muted">Chaque chambre a son propre statut : confirmez, encaissez ou annulez chacune séparément.</p>
+          <p className="text-xs text-muted">Une seule réservation : les changements de statut et le paiement s’appliquent à toutes les chambres, et la fiche PDF les liste toutes. Pour changer une seule chambre (l’annuler, par exemple), ouvrez-la et utilisez « Changer le statut » avec « seulement cette chambre ».</p>
         </section>
       )}
 
@@ -369,6 +373,39 @@ export async function BookingDetail({
         </section>
       )}
 
+      {!ota && (
+        <details className="group rounded-[12px] border border-rule bg-snow" open={sp.error === "transition"}>
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm">
+            Changer le statut{isGroup ? ` (${members.length} chambres)` : ""}
+            <ChevronDown className="h-4 w-4 text-muted transition-transform group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <form action={setStatus.bind(null, b.id)} className="flex flex-wrap items-end gap-3 border-t border-rule p-4">
+            {R}
+            <label className="grid gap-1 text-sm">
+              Nouveau statut
+              <select name="status" defaultValue={b.status} className={field}>
+                {(Object.keys(statusLabel) as BookingStatus[]).map((st) => (
+                  <option key={st} value={st}>
+                    {statusLabel[st]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <SubmitButton variant="outline">Appliquer</SubmitButton>
+            {isGroup && (
+              <label className="flex items-center gap-1.5 text-xs text-muted">
+                <input type="checkbox" name="only" className="accent-[var(--earth)]" />
+                seulement {b.room.name} (pas les autres chambres)
+              </label>
+            )}
+            {b.guest.email && <Notify label="prévenir le client (en attente de paiement : envoie le lien de paiement)" />}
+            <p className="basis-full text-xs text-muted">
+              « En attente de paiement » crée la page de paiement du client (PayPal, Wise, virement). Remettre une réservation annulée vérifie d’abord que les nuits sont libres.
+            </p>
+          </form>
+        </details>
+      )}
+
       {/* money */}
       <Section title="Paiement" aside={<span className={cn("rounded-full px-2.5 py-0.5 text-xs ring-1", depositPaid ? "bg-emerald-100 text-emerald-900 ring-emerald-300" : "bg-stone-100 text-stone-700 ring-stone-300")}>{paymentLabel[b.paymentStatus]}</span>}>
         <div className="grid grid-cols-3 overflow-hidden rounded-[12px] border border-rule bg-snow text-center">
@@ -438,8 +475,8 @@ export async function BookingDetail({
                 </select>
               </label>
               <label className="grid gap-1 text-sm">
-                Acompte ({b.currency})
-                <input name="depositAmount" type="number" min={0} step="1" defaultValue={Number(b.depositAmount)} className={field} />
+                Acompte{isGroup ? " total" : ""} ({b.currency})
+                <input name="depositAmount" type="number" min={0} step="1" defaultValue={isGroup ? pay.deposit : Number(b.depositAmount)} className={field} />
               </label>
               <label className="grid gap-1 text-sm">
                 Moyen de paiement
