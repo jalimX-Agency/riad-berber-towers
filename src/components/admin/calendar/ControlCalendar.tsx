@@ -60,6 +60,42 @@ export function ControlCalendar({
   const [onlyRoom, setOnlyRoom] = useState<string>("all");
   const [sel, setSel] = useState<{ a: { r: number; d: number }; b: { r: number; d: number } } | null>(null);
   const dragging = useRef(false);
+  // the grid scrolls inside its own box (dates and room names stay visible); arrows and the wheel move it sideways
+  const scroller = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ start: true, end: false });
+  const updateEdges = useCallback(() => {
+    const el = scroller.current;
+    if (!el) return;
+    setEdges({ start: el.scrollLeft < 4, end: el.scrollLeft + el.clientWidth > el.scrollWidth - 4 });
+  }, []);
+  const slide = (dir: 1 | -1) => {
+    const el = scroller.current;
+    if (!el) return;
+    const col = (el.querySelector("[data-day]") as HTMLElement | null)?.offsetWidth ?? 90;
+    el.scrollBy({ left: dir * col * 7, behavior: "smooth" });
+  };
+  // open on today (first visible column after the room names)
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const cell = el.querySelector(`[data-day="${today}"]`) as HTMLElement | null;
+    const label = (el.querySelector("[data-corner]") as HTMLElement | null)?.offsetWidth ?? 0;
+    if (cell) el.scrollLeft = Math.max(0, cell.offsetLeft - label - cell.offsetWidth);
+    updateEdges();
+  }, [today, data.from, updateEdges]);
+  // a plain mouse wheel over the dates row scrolls the days sideways (native listener: it must cancel the vertical scroll)
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      if (!(e.target as HTMLElement).closest("[data-day]")) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
   const [drawer, setDrawer] = useState<Selection | null>(null);
   const [blockMenu, setBlockMenu] = useState<CalBlock | null>(null);
   const [toast, setToast] = useState<{ ok: boolean; text: string } | null>(null);
@@ -299,14 +335,19 @@ export function ControlCalendar({
       <MobileAgenda data={data} canEdit={canEdit} today={today} filter={filter} pageUrl={pageUrl} onEdit={setDrawer} onBlock={setBlockMenu} />
 
       {/* grid (tablet and desktop) */}
-      <div className="hidden overflow-x-auto rounded-[12px] border border-rule bg-snow sm:block">
+      <div className="relative hidden sm:block">
+      <div
+        ref={scroller}
+        onScroll={updateEdges}
+        className="max-h-[calc(100dvh-230px)] min-h-[420px] overflow-auto overscroll-contain rounded-[12px] border border-rule bg-snow"
+      >
         <div className={cn("grid select-none text-[13px]", view > 20 ? "min-w-[2800px]" : "min-w-[1600px]")} style={grid}>
-          <div className="sticky start-0 z-30 border-b border-e border-rule bg-snow p-2 font-medium">Chambre</div>
+          <div data-corner className="sticky start-0 top-0 z-40 border-b border-e border-rule bg-snow p-2 font-medium">Chambre</div>
           {data.days.map((iso, d) => {
             const dt = new Date(`${iso}T00:00:00Z`);
             const wd = dt.getUTCDay();
             return (
-              <div key={iso} className={cn("grid place-items-center border-b border-rule py-2 text-center", (wd === 0 || wd === 6) && "bg-paper/70", iso === today && "bg-earth text-snow")} style={{ gridColumn: d + 2 }}>
+              <div key={iso} data-day={iso} className={cn("sticky top-0 z-30 grid cursor-ew-resize place-items-center border-b border-rule bg-snow py-2 text-center", (wd === 0 || wd === 6) && "bg-paper", iso === today && "bg-earth text-snow")} style={{ gridColumn: d + 2 }}>
                 <span className="uppercase opacity-70">{new Intl.DateTimeFormat("fr-FR", { weekday: "short", timeZone: "UTC" }).format(dt).replace(".", "")}</span>
                 <span className="text-base font-medium">{dt.getUTCDate()}</span>
               </div>
@@ -437,18 +478,35 @@ export function ControlCalendar({
           })}
 
           {/* occupancy */}
-          <div style={{ gridRow: 2 + rooms.length * rowsPerRoom, gridColumn: 1 }} className="sticky start-0 z-20 border-e border-rule bg-snow p-2 text-muted">
+          <div style={{ gridRow: 2 + rooms.length * rowsPerRoom, gridColumn: 1 }} className="sticky bottom-0 start-0 z-30 border-e border-t border-rule bg-snow p-2 text-muted">
             Occupation
           </div>
           {data.days.map((iso, d) => {
             const count = data.rooms.filter((rm) => taken.get(rm.id)?.has(d)).length;
             return (
-              <div key={`occ-${iso}`} style={{ gridRow: 2 + rooms.length * rowsPerRoom, gridColumn: d + 2 }} className={cn("py-2 text-center", count === data.rooms.length ? "font-semibold text-earth" : "text-muted")}>
+              <div key={`occ-${iso}`} style={{ gridRow: 2 + rooms.length * rowsPerRoom, gridColumn: d + 2 }} className={cn("sticky bottom-0 z-20 border-t border-rule bg-snow py-2 text-center", count === data.rooms.length ? "font-semibold text-earth" : "text-muted")}>
                 {count}/{data.rooms.length}
               </div>
             );
           })}
         </div>
+      </div>
+      {/* arrows: one week back / forward inside the loaded dates */}
+      {(["start", "end"] as const).map((side) => (
+        <button
+          key={side}
+          type="button"
+          onClick={() => slide(side === "start" ? -1 : 1)}
+          disabled={edges[side]}
+          aria-label={side === "start" ? "Jours précédents" : "Jours suivants"}
+          className={cn(
+            "absolute top-1/2 z-50 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-rule bg-snow/95 shadow-lg transition hover:border-earth disabled:pointer-events-none disabled:opacity-0",
+            side === "start" ? "start-[190px]" : "end-3",
+          )}
+        >
+          {side === "start" ? <ChevronLeft className="h-5 w-5" aria-hidden="true" /> : <ChevronRight className="h-5 w-5" aria-hidden="true" />}
+        </button>
+      ))}
       </div>
 
       <ul className="hidden flex-wrap gap-x-4 gap-y-2 text-xs text-muted sm:flex">
