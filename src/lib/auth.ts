@@ -38,7 +38,9 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  session: { strategy: "jwt", maxAge: 60 * 60 * 12 },
+  // The admin works mostly from a phone: stay signed in for 30 days of inactivity. The session is renewed
+  // while the admin is used (KeepSession in the admin layout), so an active owner is never signed out mid-day.
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 30, updateAge: 60 * 60 * 6 },
   callbacks: {
     jwt({ token, user }) {
       if (user) {

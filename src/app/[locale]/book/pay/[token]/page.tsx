@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CircleCheck, Clock, Download, ExternalLink, XCircle } from "lucide-react";
+import { ChevronDown, CircleCheck, Clock, Download, ExternalLink, XCircle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
@@ -14,6 +14,7 @@ import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { StayPolicies } from "@/components/booking/StayPolicies";
 import { ProofUpload } from "@/components/booking/ProofUpload";
 import { CopyField } from "@/components/booking/CopyField";
+import { BankMark, PaypalMark, WiseMark } from "@/components/booking/PaymentMarks";
 import { WhatsAppIcon } from "@/components/site/icons";
 
 export const dynamic = "force-dynamic";
@@ -61,6 +62,8 @@ export default async function PayPage({ params }: Props) {
   const whatsapp = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(t("whatsappMessage", { reference: b.reference }))}`;
   const confirmed = ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"].includes(b.status);
   const open = b.status === "AWAITING_PAYMENT" || b.status === "PAYMENT_REVIEW";
+  const methodRow = "flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-4 hover:bg-paper/60 [&::-webkit-details-marker]:hidden";
+  const chevron = "h-5 w-5 shrink-0 text-muted transition-transform group-open:rotate-180";
 
   const summary = (
     <dl className="grid border-t border-rule text-sm">
@@ -123,44 +126,78 @@ export default async function PayPage({ params }: Props) {
             {paypal || settings.wiseLink || settings.bankIban ? (
               <>
                 <p className="text-sm text-muted">{t("payText", { reference: b.reference })}</p>
-                <div className="grid gap-3">
+                {/* one method open at a time (exclusive <details>): the list stays short and step 2 stays in view */}
+                <div className="grid overflow-hidden rounded-[10px] border border-rule bg-snow">
                   {paypal && (
-                    <div className="grid gap-3 rounded-[10px] border border-rule bg-snow p-4">
-                      <h3 className="text-lg">PayPal</h3>
-                      <a href={paypal} target="_blank" rel="noopener noreferrer" className="btn-primary w-fit">
-                        {t("payButton", { amount: money(pay.deposit) })}
-                        <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                      </a>
-                    </div>
-                  )}
-                  {settings.wiseLink && (
-                    <div className="grid gap-4 rounded-[10px] border border-rule bg-snow p-4 sm:grid-cols-[1fr_auto] sm:items-center">
-                      <div className="grid gap-3">
-                        <h3 className="text-lg">{t("wiseTitle")}</h3>
-                        <p className="text-sm text-muted">{t("wiseText", { amount: money(pay.deposit) })}</p>
-                        <a href={settings.wiseLink} target="_blank" rel="noopener noreferrer" className="btn-outline w-fit">
-                          {t("wiseButton")}
+                    <details name="pay-method" className="group border-b border-rule last:border-b-0">
+                      <summary className={methodRow}>
+                        <span className="flex min-w-0 items-center gap-3">
+                          <PaypalMark />
+                          <span className="grid min-w-0 gap-0.5">
+                            <span className="text-base font-medium">PayPal</span>
+                            <span className="text-xs text-muted">{t("paypalHint")}</span>
+                          </span>
+                        </span>
+                        <ChevronDown className={chevron} aria-hidden="true" />
+                      </summary>
+                      <div className="grid gap-3 px-4 pb-5">
+                        <a href={paypal} target="_blank" rel="noopener noreferrer" className="btn-primary w-fit">
+                          {t("payButton", { amount: money(pay.deposit) })}
                           <ExternalLink className="h-4 w-4" aria-hidden="true" />
                         </a>
                       </div>
-                      {settings.wiseLink === site.wiseLink && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src="/brand/wise-qr.jpg" alt={t("wiseQrAlt")} width={140} height={140} className="h-[140px] w-[140px] rounded-[10px] border border-rule" />
-                      )}
-                    </div>
+                    </details>
+                  )}
+                  {settings.wiseLink && (
+                    <details name="pay-method" className="group border-b border-rule last:border-b-0">
+                      <summary className={methodRow}>
+                        <span className="flex min-w-0 items-center gap-3">
+                          <WiseMark />
+                          <span className="grid min-w-0 gap-0.5">
+                            <span className="text-base font-medium">{t("wiseTitle")}</span>
+                            <span className="text-xs text-muted">{t("wiseHint")}</span>
+                          </span>
+                        </span>
+                        <ChevronDown className={chevron} aria-hidden="true" />
+                      </summary>
+                      <div className="grid gap-4 px-4 pb-5 sm:grid-cols-[1fr_auto] sm:items-center">
+                        <div className="grid gap-3">
+                          <p className="text-sm text-muted">{t("wiseText", { amount: money(pay.deposit) })}</p>
+                          <a href={settings.wiseLink} target="_blank" rel="noopener noreferrer" className="btn-outline w-fit">
+                            {t("wiseButton")}
+                            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                          </a>
+                        </div>
+                        {settings.wiseLink === site.wiseLink && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src="/brand/wise-qr.jpg" alt={t("wiseQrAlt")} width={140} height={140} loading="lazy" className="h-[140px] w-[140px] rounded-[10px] border border-rule" />
+                        )}
+                      </div>
+                    </details>
                   )}
                   {settings.bankIban && (
-                    <div className="grid gap-3 rounded-[10px] border border-rule bg-snow p-4">
-                      <h3 className="text-lg">{t("bankTitle")}</h3>
-                      <p className="text-sm text-muted">{t("bankText", { amount: money(pay.deposit), currency: settings.bankCurrency || "MAD" })}</p>
-                      <div className="grid">
-                        {settings.bankName && <CopyField label={t("bankName")} value={settings.bankName} />}
-                        {settings.bankHolder && <CopyField label={t("bankHolder")} value={settings.bankHolder} />}
-                        <CopyField label={t("bankIban")} value={settings.bankIban.replace(/(.{4})/g, "$1 ").trim()} mono />
-                        {settings.bankSwift && <CopyField label={t("bankSwift")} value={settings.bankSwift} mono />}
-                        <CopyField label={t("bankReference")} value={b.reference} mono />
+                    <details name="pay-method" className="group border-b border-rule last:border-b-0">
+                      <summary className={methodRow}>
+                        <span className="flex min-w-0 items-center gap-3">
+                          <BankMark />
+                          <span className="grid min-w-0 gap-0.5">
+                            <span className="text-base font-medium">{t("bankTitle")}</span>
+                            <span className="text-xs text-muted">{t("bankHint", { currency: settings.bankCurrency || "MAD" })}</span>
+                          </span>
+                        </span>
+                        <ChevronDown className={chevron} aria-hidden="true" />
+                      </summary>
+                      <div className="grid gap-3 px-4 pb-5">
+                        <p className="text-sm text-muted">{t("bankText", { amount: money(pay.deposit), currency: settings.bankCurrency || "MAD" })}</p>
+                        <div className="grid">
+                          {settings.bankName && <CopyField label={t("bankName")} value={settings.bankName} />}
+                          {settings.bankHolder && <CopyField label={t("bankHolder")} value={settings.bankHolder} />}
+                          <CopyField label={t("bankIban")} value={settings.bankIban.replace(/(.{4})/g, "$1 ").trim()} mono />
+                          {settings.bankSwift && <CopyField label={t("bankSwift")} value={settings.bankSwift} mono />}
+                          <CopyField label={t("bankReference")} value={b.reference} mono />
+                        </div>
                       </div>
-                    </div>
+                    </details>
                   )}
                 </div>
               </>
