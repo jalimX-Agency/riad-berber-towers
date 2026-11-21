@@ -8,6 +8,8 @@ import { parseStayQuery } from "@/lib/booking/availability";
 import { createBooking, guestSchema } from "@/lib/booking/create";
 import { confirmationPath, sendBookingEmails } from "@/lib/email/booking";
 import { pushBookingSafe } from "@/lib/beds24/push";
+import { beds24HasRoom } from "@/lib/beds24/live";
+import { pullFromBeds24 } from "@/lib/beds24/pull";
 import { parseExtras } from "@/lib/booking/extras";
 
 /** Pick-up place as the riad (French admin) reads it */
@@ -40,6 +42,12 @@ export async function requestBooking(_prev: BookState, form: FormData): Promise<
   const parsed = guestSchema.safeParse(values);
   if (!parsed.success) {
     return { error: "invalid", fields: [...new Set(parsed.error.issues.map((i) => String(i.path[0])))], values };
+  }
+
+  // a Booking.com / Airbnb reservation may have taken these nights since the last sync: ask Beds24 now
+  if ((await beds24HasRoom(str(form, "room"), query.checkIn, query.checkOut)) === false) {
+    after(() => pullFromBeds24());
+    return { error: "unavailable", reason: "booked", values };
   }
 
   let result;

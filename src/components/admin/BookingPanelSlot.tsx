@@ -4,7 +4,7 @@ import { BookingPanel } from "@/components/admin/BookingPanel";
 type SP = Record<string, string | undefined>;
 
 /** Params that belong to the panel (or to an action message), not to the page underneath. */
-const PANEL_KEYS = ["b", "done", "email", "error"];
+const PANEL_KEYS = ["b", "done", "email", "error", "detail"];
 
 /** The page URL without the panel: where "close" goes and where panel actions come back to. */
 export function pageHref(basePath: string, sp: SP) {

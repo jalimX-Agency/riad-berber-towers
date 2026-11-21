@@ -51,6 +51,7 @@ const errorText: Record<string, string> = {
   transition: "Cette action n’est plus possible : le statut a changé entre-temps.",
   restore: "Impossible de rétablir : la chambre est déjà prise ou fermée sur ces dates.",
   payment: "Montant invalide.",
+  conflict: "Impossible : ces nuits viennent d’être prises entre-temps. Rien n’a été modifié. Proposez d’autres dates au client ou annulez la demande.",
   ota: "Réservation Booking.com / Airbnb : son statut se change sur la plateforme, puis il arrive ici tout seul.",
 };
 const localeName: Record<string, string> = { en: "Anglais", fr: "Français", es: "Espagnol", de: "Allemand", ar: "Arabe" };
@@ -157,7 +158,12 @@ export async function BookingDetail({
         <div role="status" className={`grid gap-1 rounded-[10px] border p-4 text-sm ${sp.error ? "border-rose-300 bg-rose-50 text-rose-900" : "border-emerald-300 bg-emerald-50 text-emerald-900"}`}>
           {sp.done && <p>{doneText[sp.done] ?? "Enregistré."}</p>}
           {sp.email && <p className={sp.email === "sent" ? "" : "font-medium text-amber-900"}>{emailText[sp.email]}</p>}
-          {sp.error && <p>{errorText[sp.error] ?? "Une erreur est survenue."}</p>}
+          {sp.error && (
+            <p>
+              {errorText[sp.error] ?? "Une erreur est survenue."}
+              {sp.error === "conflict" && sp.detail && <strong className="block">Conflit : {sp.detail}</strong>}
+            </p>
+          )}
         </div>
       )}
 

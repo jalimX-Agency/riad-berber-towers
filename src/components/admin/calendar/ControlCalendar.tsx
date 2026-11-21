@@ -10,6 +10,7 @@ import { reopenBlock, syncNow } from "@/app/admin/(protected)/calendar/actions";
 import { cn } from "@/lib/utils";
 import { ActionDrawer, type Selection } from "./ActionDrawer";
 import { ChannelMark, PLATFORM_COLORS, PlatformIcon } from "./PlatformIcon";
+import { MobileAgenda } from "./MobileAgenda";
 
 const statusBar: Partial<Record<BookingStatus, string>> = {
   PENDING: "bg-amber-300 text-amber-950",
@@ -71,8 +72,7 @@ export function ControlCalendar({
       const saved = localStorage.getItem("rbt-cal-layers");
       if (saved) setLayers({ ...DEFAULT_LAYERS, ...JSON.parse(saved) });
     } catch {}
-    if (window.innerWidth < 640 && data.rooms[0]) setOnlyRoom(data.rooms[0].id);
-  }, [data.rooms]);
+  }, []);
   const toggleLayer = (k: keyof Layers) =>
     setLayers((l) => {
       const next = { ...l, [k]: !l[k] };
@@ -180,7 +180,7 @@ export function ControlCalendar({
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="label">Centre de contrôle · site, Booking.com, Airbnb</p>
-          <h1 className="text-3xl sm:text-4xl">{rangeTitle}</h1>
+          <h1 className="text-2xl sm:text-4xl">{rangeTitle}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link href={href(shift(-view))} className="grid h-9 w-9 place-items-center rounded-full border border-rule bg-snow hover:border-earth" aria-label="Période précédente">
@@ -198,7 +198,7 @@ export function ControlCalendar({
             className="rounded-full border border-rule bg-snow px-3 py-1.5 text-sm"
             onChange={(e) => e.target.value && router.push(href(e.target.value))}
           />
-          <div className="flex overflow-hidden rounded-full border border-rule bg-snow text-sm">
+          <div className="hidden overflow-hidden rounded-full border border-rule bg-snow text-sm sm:flex">
             {[14, 31].map((v) => (
               <Link key={v} href={href(data.from, v)} className={cn("px-3 py-1.5", v === view ? "bg-ink text-snow" : "hover:bg-paper")}>
                 {v} j
@@ -208,8 +208,8 @@ export function ControlCalendar({
         </div>
       </header>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-rule bg-snow px-4 py-3 text-sm">
-        <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-rule bg-snow px-3 py-3 text-sm sm:px-4">
+        <div className="-mx-1 flex max-w-full flex-nowrap items-center gap-1.5 overflow-x-auto px-1 sm:flex-wrap">
           {(
             [
               ["all", "Toutes"],
@@ -223,7 +223,7 @@ export function ControlCalendar({
               type="button"
               onClick={() => setFilter(k)}
               aria-pressed={filter === k}
-              className={cn("inline-flex items-center gap-1.5 rounded-full border px-3 py-1", filter === k ? "border-ink bg-ink text-snow" : "border-rule hover:border-earth")}
+              className={cn("inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1", filter === k ? "border-ink bg-ink text-snow" : "border-rule hover:border-earth")}
             >
               {k === "airbnb" && <PlatformIcon source="AIRBNB" />}
               {k === "booking" && <PlatformIcon source="BOOKING_COM" />}
@@ -240,12 +240,12 @@ export function ControlCalendar({
               ["min", "Séjour min."],
             ] as [keyof Layers, string][]
           ).map(([k, label]) => (
-            <label key={k} className="flex cursor-pointer items-center gap-1.5 rounded-full px-2 py-1 hover:bg-paper">
+            <label key={k} className="hidden cursor-pointer items-center gap-1.5 rounded-full px-2 py-1 hover:bg-paper sm:flex">
               <input type="checkbox" checked={layers[k]} onChange={() => toggleLayer(k)} className="accent-[var(--earth)]" />
               {label}
             </label>
           ))}
-          <select value={onlyRoom} onChange={(e) => setOnlyRoom(e.target.value)} className="rounded-full border border-rule bg-snow px-3 py-1" aria-label="Chambre affichée">
+          <select value={onlyRoom} onChange={(e) => setOnlyRoom(e.target.value)} className="hidden rounded-full border border-rule bg-snow px-3 py-1 sm:block" aria-label="Chambre affichée">
             <option value="all">Toutes les chambres</option>
             {data.rooms.map((r) => (
               <option key={r.id} value={r.id}>
@@ -296,8 +296,10 @@ export function ControlCalendar({
         </p>
       )}
 
-      {/* grid */}
-      <div className="overflow-x-auto rounded-[12px] border border-rule bg-snow">
+      <MobileAgenda data={data} canEdit={canEdit} today={today} filter={filter} pageUrl={pageUrl} onEdit={setDrawer} onBlock={setBlockMenu} />
+
+      {/* grid (tablet and desktop) */}
+      <div className="hidden overflow-x-auto rounded-[12px] border border-rule bg-snow sm:block">
         <div className={cn("grid select-none text-xs", view > 20 ? "min-w-[1500px]" : "min-w-[900px]")} style={grid}>
           <div className="sticky start-0 z-30 border-b border-e border-rule bg-snow p-2 font-medium">Chambre</div>
           {data.days.map((iso, d) => {
@@ -444,7 +446,7 @@ export function ControlCalendar({
         </div>
       </div>
 
-      <ul className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted">
+      <ul className="hidden flex-wrap gap-x-4 gap-y-2 text-xs text-muted sm:flex">
         <li className="flex items-center gap-1.5">
           <PlatformIcon source="AIRBNB" /> Airbnb
         </li>

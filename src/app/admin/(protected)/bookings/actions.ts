@@ -13,7 +13,32 @@ import { parseStayQuery } from "@/lib/booking/availability";
 import { adminGuestSchema, createBooking, restoreBooking } from "@/lib/booking/create";
 import { sendStatusEmail } from "@/lib/email/booking";
 import { cancelInBeds24, pushBookingSafe } from "@/lib/beds24/push";
+import { beds24Conflict, beds24HasRoom } from "@/lib/beds24/live";
+import { pullFromBeds24 } from "@/lib/beds24/pull";
 import { OTA_REF_PREFIX } from "@/lib/beds24/rooms";
+
+/**
+ * Last check before the riad accepts or confirms one of its own bookings: the nights may have been sold meanwhile on
+ * another channel (or closed). Checks the site's database (other bookings, closures) and Beds24 live.
+ * Returns the conflict to show, or null when the nights are still free.
+ */
+async function stillFree(id: string): Promise<string | null> {
+  const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { reference: true, roomId: true, checkIn: true, checkOut: true, room: { select: { slug: true } } } });
+  const overlap = { roomId: b.roomId, checkIn: { lt: b.checkOut }, checkOut: { gt: b.checkIn } };
+  const clash = await db.booking.findFirst({
+    where: { ...overlap, id: { not: id }, status: { notIn: ["CANCELLED", "NO_SHOW"] } },
+    select: { reference: true, source: true, guest: { select: { firstName: true, lastName: true } } },
+  });
+  if (clash) return `réservation ${clash.source === "AIRBNB" ? "Airbnb" : clash.source === "BOOKING_COM" ? "Booking.com" : clash.reference} de ${clash.guest.firstName} ${clash.guest.lastName}`.trim();
+  const block = await db.roomBlock.findFirst({ where: { roomId: b.roomId, startDate: { lt: b.checkOut }, endDate: { gt: b.checkIn } }, select: { reason: true } });
+  if (block) return `chambre fermée sur ces dates${block.reason ? ` (${block.reason})` : ""}`;
+  const live = await beds24Conflict(b.room.slug, b.checkIn, b.checkOut, b.reference);
+  if (live && live !== "unknown") {
+    after(() => pullFromBeds24());
+    return live;
+  }
+  return null;
+}
 
 /** Booking.com / Airbnb reservations mirrored from Beds24: their status changes on the platform, never here. */
 async function isOta(id: string) {
@@ -47,6 +72,10 @@ export async function changeStatus(id: string, to: BookingStatus, form: FormData
   if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (!nextStatuses[b.status].includes(to)) return back(id, { error: "transition" }, form);
+  if (to === "CONFIRMED") {
+    const conflict = await stillFree(id);
+    if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
+  }
 
   await db.booking.update({
     where: { id },
@@ -72,6 +101,8 @@ export async function acceptBooking(id: string, form: FormData) {
   if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true, payToken: true } });
   if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
+  const conflict = await stillFree(id);
+  if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
   await db.booking.update({
     where: { id },
     data: { status: "AWAITING_PAYMENT", acceptedAt: new Date(), payToken: b.payToken ?? randomBytes(24).toString("base64url") },
@@ -98,6 +129,8 @@ export async function approvePayment(id: string, form: FormData) {
   if (await isOta(id)) return back(id, { error: "ota" }, form);
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PAYMENT_REVIEW") return back(id, { error: "transition" }, form);
+  const conflict = await stillFree(id);
+  if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
   await db.booking.update({ where: { id }, data: { status: "CONFIRMED", paymentStatus: "DEPOSIT_PAID" } });
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "confirmed") : "";
   return back(id, { done: "CONFIRMED", ...(email ? { email } : {}) }, form);
@@ -127,6 +160,9 @@ export async function resendPaymentLink(id: string, form?: FormData) {
 export async function restore(id: string, form?: FormData) {
   await requireUser();
   if (await isOta(id)) return back(id, { error: "ota" }, form);
+  // re-opening a cancelled stay: the nights may have been sold on another channel since
+  const conflict = await stillFree(id);
+  if (conflict) return back(id, { error: "conflict", detail: conflict }, form);
   const ok = await restoreBooking(id);
   if (ok) after(() => pushBookingSafe(id));
   return back(id, ok ? { done: "CONFIRMED" } : { error: "restore" }, form);
@@ -178,6 +214,12 @@ export async function createManualBooking(_prev: NewBookingState, form: FormData
   const locale = LOCALES.includes(values.locale as Locale) ? (values.locale as Locale) : "fr";
   const total = values.total ? Number(values.total) : undefined;
   if (total !== undefined && (!Number.isFinite(total) || total < 0)) return { error: "total", values };
+
+  // same live check as the website: the nights may just have been sold on Booking.com or Airbnb
+  if ((await beds24HasRoom(values.room, query.checkIn, query.checkOut)) === false) {
+    after(() => pullFromBeds24());
+    return { error: "unavailable_booked", values };
+  }
 
   const result = await createBooking({
     roomSlug: values.room,
