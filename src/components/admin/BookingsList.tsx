@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "@/components/admin/Toaster";
 import { useDeferredValue, useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -89,7 +90,10 @@ export function BookingsList({ rows, rooms, statuses, sources, payments, initial
   }));
   const [shown, setShown] = useState(PAGE);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  // results of bulk actions show as toasts
+  const setMessage = (m: { ok: boolean; text: string } | null) => {
+    if (m) toast(m.ok ? "success" : "error", m.text);
+  };
   const [busy, startBusy] = useTransition();
   const [ask, setAsk] = useState<"cancel" | "delete" | null>(null);
   // rows deleted here disappear at once, before the refreshed list arrives
@@ -320,12 +324,6 @@ export function BookingsList({ rows, rooms, statuses, sources, payments, initial
             Tout effacer
           </button>
         </div>
-      )}
-
-      {message && (
-        <p role="status" className={`rounded-[10px] border p-3 text-sm ${message.ok ? "border-emerald-300 bg-emerald-50 text-emerald-900" : "border-rose-300 bg-rose-50 text-rose-900"}`}>
-          {message.text}
-        </p>
       )}
 
       <p className="text-sm text-muted" aria-live="polite">

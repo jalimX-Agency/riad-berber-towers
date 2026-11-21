@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { SubmitButton } from "@/components/admin/SubmitButton";
 import { CopyField } from "@/components/admin/CopyField";
 import { PanelClose } from "@/components/admin/BookingPanel";
+import { Flash } from "@/components/admin/Toaster";
 import {
   acceptBooking,
   approvePayment,
@@ -161,18 +162,14 @@ export async function BookingDetail({
         </div>
       </div>
 
-      {(sp.done || sp.error) && (
-        <div role="status" className={`grid gap-1 rounded-[10px] border p-4 text-sm ${sp.error ? "border-rose-300 bg-rose-50 text-rose-900" : "border-emerald-300 bg-emerald-50 text-emerald-900"}`}>
-          {sp.done && <p>{doneText[sp.done] ?? "Enregistré."}</p>}
-          {sp.email && <p className={sp.email === "sent" ? "" : "font-medium text-amber-900"}>{emailText[sp.email]}</p>}
-          {sp.error && (
-            <p>
-              {errorText[sp.error] ?? "Une erreur est survenue."}
-              {sp.error === "conflict" && sp.detail && <strong className="block">Conflit : {sp.detail}</strong>}
-            </p>
-          )}
-        </div>
-      )}
+      {/* result of the last action, shown as a toast */}
+      <Flash
+        messages={[
+          ...(sp.done ? [{ kind: "success" as const, text: doneText[sp.done] ?? "Enregistré." }] : []),
+          ...(sp.email && emailText[sp.email] ? [{ kind: sp.email === "sent" ? ("success" as const) : ("error" as const), text: emailText[sp.email] }] : []),
+          ...(sp.error ? [{ kind: "error" as const, text: errorText[sp.error] ?? "Une erreur est survenue.", detail: sp.error === "conflict" && sp.detail ? `Conflit : ${sp.detail}` : undefined }] : []),
+        ]}
+      />
 
       {/* who */}
       <header className="grid gap-3">

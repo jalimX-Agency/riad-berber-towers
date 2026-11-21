@@ -4,12 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { BookingSource, BookingStatus } from "@prisma/client";
-import { CheckCircle2, ChevronLeft, ChevronRight, Eye, EyeOff, Loader2, Phone, RefreshCw, TriangleAlert, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, EyeOff, Loader2, Phone, RefreshCw, TriangleAlert } from "lucide-react";
 import type { CalBlock, CalBooking, CalendarData, CalRoom } from "@/lib/admin/control-calendar";
 import { applyChanges, reopenBlock, syncNow } from "@/app/admin/(protected)/calendar/actions";
 import { bedLabel, paymentLabel, sourceLabel } from "@/lib/admin/labels";
 import { cn } from "@/lib/utils";
 import { ActionDrawer, type Selection } from "./ActionDrawer";
+import { toast as notify } from "@/components/admin/Toaster";
 import { ChannelMark, PLATFORM_COLORS, PlatformIcon } from "./PlatformIcon";
 import { MobileAgenda } from "./MobileAgenda";
 
@@ -124,7 +125,10 @@ export function ControlCalendar({
   }, []);
   const [drawer, setDrawer] = useState<Selection | null>(null);
   const [blockMenu, setBlockMenu] = useState<CalBlock | null>(null);
-  const [toast, setToast] = useState<{ ok: boolean; text: string } | null>(null);
+  // every result shows as a toast in the corner of the screen (components/admin/Toaster.tsx)
+  const setToast = (m: { ok: boolean; text: string } | null) => {
+    if (m) notify(m.ok ? "success" : "error", m.text);
+  };
   const [syncing, startSync] = useTransition();
   const [reopening, startReopen] = useTransition();
 
@@ -424,15 +428,6 @@ export function ControlCalendar({
         <p role="alert" className="flex items-center gap-2 rounded-[10px] border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">
           <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
           Conflit : deux séjours ou une fermeture se chevauchent (encadrés en rouge). Vérifiez avant de vendre ces nuits.
-        </p>
-      )}
-      {toast && (
-        <p role="status" className={cn("flex items-start gap-2 rounded-[10px] border p-3 text-sm", toast.ok ? "border-emerald-300 bg-emerald-50 text-emerald-950" : "border-rose-300 bg-rose-50 text-rose-900")}>
-          {toast.ok ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> : <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" />}
-          <span className="flex-1">{toast.text}</span>
-          <button type="button" onClick={() => setToast(null)} aria-label="Fermer" className="opacity-60 hover:opacity-100">
-            <X className="h-4 w-4" />
-          </button>
         </p>
       )}
 

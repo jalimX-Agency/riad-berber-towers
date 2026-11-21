@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Flash } from "@/components/admin/Toaster";
 import type { BookingStatus, Prisma } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { db } from "@/lib/db";
@@ -130,11 +131,7 @@ export default async function BookingsPage({ searchParams }: Props) {
         </Link>
       </header>
 
-      {sp.deleted && (
-        <p role="status" className="rounded-[10px] border border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-900">
-          Réservation supprimée définitivement.
-        </p>
-      )}
+      <Flash messages={sp.deleted ? [{ kind: "success", text: "Réservation supprimée définitivement." }] : []} />
 
       <div className="flex flex-wrap items-center gap-1">
         {tab("upcoming", "Séjours à venir et en cours")}

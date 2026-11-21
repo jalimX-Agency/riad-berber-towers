@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { createManualBooking, type NewBookingState } from "@/app/admin/(protected)/bookings/actions";
 import { ARRIVAL_TIMES } from "@/lib/booking/arrival";
 import { eur, sourceLabel } from "@/lib/admin/labels";
+import { toast } from "@/components/admin/Toaster";
 
 type Room = { slug: string; name: string; maxAdults: number };
 type Quote = { slug: string; available: boolean; reason: string | null; minNights: number; total: number };
@@ -48,6 +49,10 @@ export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today
   const [checkOut, setOut] = useState(v.checkOut ?? initial?.checkOut ?? "");
   const [adults, setAdults] = useState(v.adults ?? "2");
   const [quotes, setQuotes] = useState<Record<string, Quote>>({});
+  // a refused form shows its reason as a toast (each new submission can show it again)
+  useEffect(() => {
+    if (state.error) toast("error", errors[state.error] ?? "Une erreur est survenue.", state.detail);
+  }, [state]);
 
   // one call prices every room for these dates
   useEffect(() => {
@@ -69,13 +74,6 @@ export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today
 
   return (
     <form action={action} className="grid gap-6">
-      {state.error && (
-        <p role="alert" className="rounded-[10px] border border-rose-300 bg-rose-50 p-4 text-sm text-rose-900">
-          {errors[state.error] ?? "Une erreur est survenue."}
-          {state.detail ? ` (${state.detail})` : ""}
-        </p>
-      )}
-
       <section className="grid gap-4 rounded-[10px] border border-rule bg-snow p-5">
         <h2 className="text-xl">Séjour</h2>
 

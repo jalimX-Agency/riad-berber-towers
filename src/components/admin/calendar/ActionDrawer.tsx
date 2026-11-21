@@ -6,6 +6,7 @@ import { Loader2, Plus, X } from "lucide-react";
 import { applyChanges } from "@/app/admin/(protected)/calendar/actions";
 import type { CalNight, CalRoom } from "@/lib/admin/control-calendar";
 import { cn } from "@/lib/utils";
+import { toast } from "@/components/admin/Toaster";
 import { ChannelMark } from "./PlatformIcon";
 
 export type Selection = { roomIds: string[]; from: string; to: string };
@@ -56,7 +57,10 @@ export function ActionDrawer({
   const [bookingState, setBookingState] = useState<Avail>("keep");
   const [airbnbState, setAirbnbState] = useState<Avail>("keep");
   const [note, setNote] = useState("");
-  const [error, setError] = useState("");
+  // a refused change shows as a toast
+  const setError = (text: string) => {
+    if (text) toast("error", text);
+  };
   const [pending, start] = useTransition();
 
   // current values, shown as placeholders when one room and one night are selected
@@ -230,12 +234,6 @@ export function ActionDrawer({
               </label>
             )}
           </fieldset>
-
-          {error && (
-            <p role="alert" className="rounded-[10px] border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">
-              {error}
-            </p>
-          )}
 
           <div className="flex flex-wrap items-center gap-3">
             <button type="submit" disabled={pending} className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2 text-sm font-medium text-snow hover:bg-earth disabled:opacity-60">

@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react";
 import { canManage, requireUser } from "@/lib/admin/guard";
 import { getSettings } from "@/lib/settings";
 import { SubmitButton } from "@/components/admin/SubmitButton";
+import { Flash } from "@/components/admin/Toaster";
 import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { db } from "@/lib/db";
 import { saveBasePrices, updateSettings } from "./actions";
@@ -35,11 +36,15 @@ export default async function SettingsPage({ searchParams }: Props) {
         <p className="text-muted">Prix de base des chambres, moyens de paiement de l’acompte (PayPal, Wise, virement) et adresse des notifications.</p>
       </header>
 
-      {(sp.done || sp.error) && (
-        <p role="status" className={`rounded-[10px] border p-4 text-sm ${sp.error ? "border-rose-300 bg-rose-50 text-rose-900" : "border-emerald-300 bg-emerald-50 text-emerald-900"}`}>
-          {sp.error ? (errorText[sp.error] ?? "Une erreur est survenue.") : sp.done === "prices" ? "Prix de base enregistrés." : "Paramètres enregistrés."}
-        </p>
-      )}
+      <Flash
+        messages={
+          sp.error
+            ? [{ kind: "error", text: errorText[sp.error] ?? "Une erreur est survenue." }]
+            : sp.done
+              ? [{ kind: "success", text: sp.done === "prices" ? "Prix de base enregistrés." : "Paramètres enregistrés." }]
+              : []
+        }
+      />
 
       <form action={saveBasePrices} className="grid gap-4 rounded-[10px] border border-rule bg-snow p-5">
         <div>
