@@ -163,7 +163,7 @@ export function ControlCalendar({
   const href = (start: string, v = view) => `/admin/calendar?start=${start}&view=${v}`;
   const rangeTitle = `${new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${data.from}T00:00:00Z`))} – ${new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(new Date(`${data.days[n - 1]}T00:00:00Z`))}`;
 
-  const grid = { gridTemplateColumns: `minmax(132px, 170px) repeat(${n}, minmax(${view > 20 ? 54 : 74}px, 1fr))` };
+  const grid = { gridTemplateColumns: `minmax(140px, 180px) repeat(${n}, minmax(${view > 20 ? 84 : 104}px, 1fr))` };
   const rowsPerRoom = 1 + priceRows.length;
 
   const bar = (b: CalBooking) => {
@@ -300,15 +300,15 @@ export function ControlCalendar({
 
       {/* grid (tablet and desktop) */}
       <div className="hidden overflow-x-auto rounded-[12px] border border-rule bg-snow sm:block">
-        <div className={cn("grid select-none text-xs", view > 20 ? "min-w-[1500px]" : "min-w-[900px]")} style={grid}>
+        <div className={cn("grid select-none text-[13px]", view > 20 ? "min-w-[2800px]" : "min-w-[1600px]")} style={grid}>
           <div className="sticky start-0 z-30 border-b border-e border-rule bg-snow p-2 font-medium">Chambre</div>
           {data.days.map((iso, d) => {
             const dt = new Date(`${iso}T00:00:00Z`);
             const wd = dt.getUTCDay();
             return (
-              <div key={iso} className={cn("grid place-items-center border-b border-rule py-1.5 text-center", (wd === 0 || wd === 6) && "bg-paper/70", iso === today && "bg-earth text-snow")} style={{ gridColumn: d + 2 }}>
+              <div key={iso} className={cn("grid place-items-center border-b border-rule py-2 text-center", (wd === 0 || wd === 6) && "bg-paper/70", iso === today && "bg-earth text-snow")} style={{ gridColumn: d + 2 }}>
                 <span className="uppercase opacity-70">{new Intl.DateTimeFormat("fr-FR", { weekday: "short", timeZone: "UTC" }).format(dt).replace(".", "")}</span>
-                <span className="text-sm font-medium">{dt.getUTCDate()}</span>
+                <span className="text-base font-medium">{dt.getUTCDate()}</span>
               </div>
             );
           })}
@@ -322,14 +322,14 @@ export function ControlCalendar({
             return (
               <div key={room.id} className="contents">
                 {/* labels: room name on the bookings row, one label per price row */}
-                <div className={cn("sticky start-0 z-20 flex h-11 items-center border-e border-rule bg-snow px-2 text-sm font-medium", priceRows.length === 0 && "border-b")} style={{ gridRow: base, gridColumn: 1 }}>
+                <div className={cn("sticky start-0 z-20 flex h-16 items-center border-e border-rule bg-snow px-2 text-sm font-medium", priceRows.length === 0 && "border-b")} style={{ gridRow: base, gridColumn: 1 }}>
                   {room.short}
                 </div>
                 {priceRows.map((k, j) => (
                   <div
                     key={`label-${k}`}
                     style={{ gridRow: base + 1 + j, gridColumn: 1 }}
-                    className={cn("sticky start-0 z-20 flex h-[25px] items-center gap-1.5 border-e border-rule bg-snow px-2 text-[11px] text-muted", j === priceRows.length - 1 && "border-b")}
+                    className={cn("sticky start-0 z-20 flex h-8 items-center gap-1.5 border-e border-rule bg-snow px-2 text-xs text-muted", j === priceRows.length - 1 && "border-b")}
                   >
                     {k === "min" ? <span className="w-3.5 text-center">↔</span> : <ChannelMark channel={k} className="h-3.5 w-3.5" />}
                     {k === "site" ? "Site €" : k === "booking" ? "Booking €" : k === "airbnb" ? "Airbnb DH" : "Séjour min."}
@@ -344,7 +344,7 @@ export function ControlCalendar({
                       key={`bg-${iso}`}
                       {...cellHandlers(r, d)}
                       style={{ gridRow: base, gridColumn: d + 2 }}
-                      className={cn("h-11 border-e border-rule/50", (wd === 0 || wd === 6) && "bg-paper/40", inSel(r, d) && "bg-earth/20", canEdit && "cursor-cell")}
+                      className={cn("h-16 border-e border-rule/50", (wd === 0 || wd === 6) && "bg-paper/40", inSel(r, d) && "bg-earth/20", canEdit && "cursor-cell")}
                     />
                   );
                 })}
@@ -358,7 +358,7 @@ export function ControlCalendar({
                       type="button"
                       onClick={() => setBlockMenu(k)}
                       style={{ gridRow: base, gridColumn: `${s + 2} / ${e + 2}`, backgroundImage: "repeating-linear-gradient(45deg, rgba(0,0,0,.09) 0 6px, transparent 6px 12px)" }}
-                      className={cn("z-10 my-1.5 truncate rounded-[6px] bg-stone-200 px-2 text-start text-stone-800", clashes.has(k.id) && "ring-2 ring-rose-600")}
+                      className={cn("z-10 my-2 truncate rounded-[8px] bg-stone-200 px-2 text-start text-stone-800", clashes.has(k.id) && "ring-2 ring-rose-600")}
                       title={k.reason || "Fermée"}
                     >
                       {k.kind === "maintenance" ? "Travaux" : k.kind === "beds24" ? "Fermée" : k.reason || "Fermée"}
@@ -377,12 +377,17 @@ export function ControlCalendar({
                       scroll={false}
                       href={`${pageUrl}${pageUrl.includes("?") ? "&" : "?"}b=${encodeURIComponent(b.id)}`}
                       style={{ gridRow: base, gridColumn: `${s + 2} / ${e + 2}`, ...look.style }}
-                      className={cn("z-10 my-1.5 flex min-w-0 items-center gap-1.5 rounded-[6px] px-1.5 font-medium shadow-sm hover:brightness-95", look.className, clashes.has(b.id) && "ring-2 ring-rose-600")}
+                      className={cn("z-10 my-1.5 flex min-w-0 items-center gap-2 rounded-[8px] px-2 shadow-sm hover:brightness-95", look.className, clashes.has(b.id) && "ring-2 ring-rose-600")}
                       title={`${b.guest} · arrivée ${b.checkIn} · départ ${b.checkOut} · ${b.nights} nuit(s) · ${b.adults} pers. · ${nf.format(b.total)} ${b.currency}${b.ota ? "" : ` · ${statusName[b.status] ?? ""}`}`}
                     >
-                      <PlatformIcon source={b.source} className="h-4 w-4 rounded-[3px] ring-1 ring-white/60" />
-                      <span className="truncate">{b.guest}</span>
-                      <span className="ms-auto shrink-0 opacity-80">{b.nights} n. · → {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${b.checkOut}T00:00:00Z`)).replace(".", "")}</span>
+                      <PlatformIcon source={b.source} className="h-5 w-5 shrink-0 rounded-[4px] ring-1 ring-white/60" />
+                      {/* two lines: guest, then nights and departure, so short stays stay readable */}
+                      <span className="grid min-w-0 leading-tight">
+                        <span className="truncate text-sm font-semibold">{b.guest}</span>
+                        <span className="truncate text-xs opacity-85">
+                          {b.nights} n. · {b.adults} pers. · → {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${b.checkOut}T00:00:00Z`)).replace(".", "")}
+                        </span>
+                      </span>
                     </Link>
                   );
                 })}
@@ -413,7 +418,7 @@ export function ControlCalendar({
                         style={{ gridRow: base + 1 + j, gridColumn: d + 2 }}
                         title={k === "booking" || k === "airbnb" ? (text === "×" ? "Fermée sur cette plateforme (pas de prix)" : undefined) : undefined}
                         className={cn(
-                          "flex h-[25px] items-center justify-end border-e border-rule/40 px-1.5 tabular-nums",
+                          "flex h-8 items-center justify-end border-e border-rule/40 px-2 tabular-nums",
                           j === priceRows.length - 1 && "border-b border-b-rule",
                           sold && "opacity-40",
                           inSel(r, d) && "bg-earth/20",

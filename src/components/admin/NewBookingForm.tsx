@@ -7,7 +7,7 @@ import { ARRIVAL_TIMES } from "@/lib/booking/arrival";
 import { eur, sourceLabel } from "@/lib/admin/labels";
 
 type Room = { slug: string; name: string; maxAdults: number };
-type Quote = { available: boolean; reason: string | null; minNights: number; total: number };
+type Quote = { slug: string; available: boolean; reason: string | null; minNights: number; total: number };
 
 const errors: Record<string, string> = {
   dates_missing: "Choisissez les dates d’arrivée et de départ.",
@@ -20,8 +20,9 @@ const errors: Record<string, string> = {
   guest_email: "Email invalide.",
   guest_phone: "Téléphone invalide.",
   total: "Prix invalide.",
-  unavailable_booked: "La chambre est déjà réservée sur ces dates.",
-  unavailable_blocked: "La chambre est fermée sur ces dates.",
+  rooms_missing: "Choisissez au moins une chambre.",
+  unavailable_booked: "Une chambre est déjà réservée sur ces dates.",
+  unavailable_blocked: "Une chambre est fermée sur ces dates.",
   unavailable_: "Chambre indisponible.",
 };
 const reasonText: Record<string, string> = {
@@ -33,50 +34,75 @@ const reasonText: Record<string, string> = {
 // Booking.com and Airbnb reservations arrive by themselves through Beds24: entering them here would sell the nights twice
 const SOURCES = ["WHATSAPP", "PHONE", "EMAIL", "AGENCY", "WALK_IN"] as const;
 
+const isBlocked = (q?: Quote) => Boolean(q && (q.reason === "booked" || q.reason === "blocked"));
+
 export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today: string; initial?: { room?: string; checkIn?: string; checkOut?: string } }) {
   const [state, action, pending] = useActionState<NewBookingState, FormData>(createManualBooking, {});
   const v = state.values ?? {};
-  const [room, setRoom] = useState(v.room ?? initial?.room ?? rooms[0]?.slug ?? "");
+  const order = rooms.map((r) => r.slug);
+  const [selected, setSelected] = useState<string[]>(() => {
+    const start = v.rooms ? v.rooms.split(",") : [initial?.room ?? rooms[0]?.slug ?? ""];
+    return order.filter((s) => start.includes(s));
+  });
   const [checkIn, setIn] = useState(v.checkIn ?? initial?.checkIn ?? "");
   const [checkOut, setOut] = useState(v.checkOut ?? initial?.checkOut ?? "");
   const [adults, setAdults] = useState(v.adults ?? "2");
-  const [quote, setQuote] = useState<Quote | null>(null);
+  const [quotes, setQuotes] = useState<Record<string, Quote>>({});
 
+  // one call prices every room for these dates
   useEffect(() => {
-    if (!room || !checkIn || !checkOut || checkOut <= checkIn) return setQuote(null);
+    if (!checkIn || !checkOut || checkOut <= checkIn) return setQuotes({});
     const ctrl = new AbortController();
-    fetch(`/api/availability?room=${room}&checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}`, { signal: ctrl.signal })
+    fetch(`/api/availability?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}`, { signal: ctrl.signal })
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => setQuote(d?.rooms?.[0] ?? null))
+      .then((d) => setQuotes(Object.fromEntries(((d?.rooms ?? []) as Quote[]).map((q) => [q.slug, q]))))
       .catch(() => {});
     return () => ctrl.abort();
-  }, [room, checkIn, checkOut, adults]);
+  }, [checkIn, checkOut, adults]);
 
+  const toggle = (slug: string) => setSelected((cur) => order.filter((x) => (x === slug ? !cur.includes(slug) : cur.includes(x))));
   const field = "w-full rounded-[8px] border border-rule bg-snow px-3 py-2 text-sm";
   const label = "grid gap-1 text-sm";
-  const blocked = quote && (quote.reason === "booked" || quote.reason === "blocked");
+  const blocked = selected.some((slug) => isBlocked(quotes[slug]));
+  const multi = selected.length > 1;
+  const sum = selected.reduce((t, slug) => t + (quotes[slug]?.total ?? 0), 0);
 
   return (
     <form action={action} className="grid gap-6">
       {state.error && (
         <p role="alert" className="rounded-[10px] border border-rose-300 bg-rose-50 p-4 text-sm text-rose-900">
           {errors[state.error] ?? "Une erreur est survenue."}
+          {state.detail ? ` (${state.detail})` : ""}
         </p>
       )}
 
       <section className="grid gap-4 rounded-[10px] border border-rule bg-snow p-5">
         <h2 className="text-xl">Séjour</h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <label className={label}>
-            Chambre
-            <select name="room" value={room} onChange={(e) => setRoom(e.target.value)} className={field}>
-              {rooms.map((r) => (
-                <option key={r.slug} value={r.slug}>
+
+        <div className="grid gap-2">
+          <span className="text-sm">Chambres : une ou plusieurs, pour les mêmes dates</span>
+          <input type="hidden" name="rooms" value={selected.join(",")} />
+          <div className="flex flex-wrap gap-2">
+            {rooms.map((r) => {
+              const on = selected.includes(r.slug);
+              const q = quotes[r.slug];
+              return (
+                <button
+                  key={r.slug}
+                  type="button"
+                  onClick={() => toggle(r.slug)}
+                  aria-pressed={on}
+                  title={isBlocked(q) ? reasonText[q!.reason!] : undefined}
+                  className={`rounded-full border px-4 py-2 text-sm ${on ? "border-ink bg-ink text-snow" : "border-rule bg-snow"} ${isBlocked(q) ? "line-through opacity-60" : ""}`}
+                >
                   {r.name}
-                </option>
-              ))}
-            </select>
-          </label>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
           <label className={label}>
             Arrivée
             <input
@@ -101,7 +127,7 @@ export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today
             <input type="date" name="checkOut" required min={checkIn || today} value={checkOut} onChange={(e) => setOut(e.target.value)} className={field} />
           </label>
           <label className={label}>
-            Adultes
+            {multi ? "Adultes par chambre" : "Adultes"}
             <select name="adults" value={adults} onChange={(e) => setAdults(e.target.value)} className={field}>
               {[1, 2, 3, 4, 5, 6].map((n) => (
                 <option key={n} value={n}>
@@ -112,17 +138,41 @@ export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today
           </label>
         </div>
 
-        {quote && (
-          <div className={`rounded-[8px] p-3 text-sm ${blocked ? "bg-rose-50 text-rose-900" : quote.reason ? "bg-amber-50 text-amber-900" : "bg-emerald-50 text-emerald-900"}`}>
-            {quote.reason ? reasonText[quote.reason] : "Disponible."} Tarif calculé : <strong>{eur(quote.total)}</strong>
-          </div>
+        {selected.length > 0 && Object.keys(quotes).length > 0 && (
+          <ul className="grid gap-2">
+            {selected.map((slug) => {
+              const q = quotes[slug];
+              if (!q) return null;
+              return (
+                <li key={slug} className={`flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[8px] p-3 text-sm ${isBlocked(q) ? "bg-rose-50 text-rose-900" : q.reason ? "bg-amber-50 text-amber-900" : "bg-emerald-50 text-emerald-900"}`}>
+                  <span className="min-w-[8rem] font-medium">{rooms.find((r) => r.slug === slug)?.name ?? slug}</span>
+                  <span className="flex-1">
+                    {q.reason ? reasonText[q.reason] : "Disponible."} Tarif calculé : <strong>{eur(q.total)}</strong>
+                  </span>
+                  {multi && (
+                    <label className="flex items-center gap-2 text-xs text-ink">
+                      Prix convenu €
+                      <input type="number" name={`total_${slug}`} min={0} step="1" defaultValue={v[`total_${slug}`]} placeholder={String(q.total)} className="w-24 rounded-[8px] border border-rule bg-snow px-2 py-1 text-sm" />
+                    </label>
+                  )}
+                </li>
+              );
+            })}
+            {multi && (
+              <li className="px-3 text-sm">
+                {selected.length} chambres · total calculé <strong>{eur(sum)}</strong>
+              </li>
+            )}
+          </ul>
         )}
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <label className={label}>
-            Prix convenu (optionnel, €)
-            <input type="number" name="total" min={0} step="1" defaultValue={v.total} placeholder={quote ? String(quote.total) : ""} className={field} />
-          </label>
+          {!multi && (
+            <label className={label}>
+              Prix convenu (optionnel, €)
+              <input type="number" name="total" min={0} step="1" defaultValue={v.total} placeholder={selected[0] && quotes[selected[0]] ? String(quotes[selected[0]].total) : ""} className={field} />
+            </label>
+          )}
           <label className={label}>
             Origine
             <select name="source" defaultValue={v.source ?? "WHATSAPP"} className={field}>
@@ -204,9 +254,9 @@ export function NewBookingForm({ rooms, today, initial }: { rooms: Room[]; today
         </label>
       </section>
 
-      <button type="submit" disabled={pending || !!blocked} className="btn-primary w-fit disabled:opacity-60">
+      <button type="submit" disabled={pending || blocked || selected.length === 0} className="btn-primary w-fit disabled:opacity-60">
         {pending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-        Créer la réservation
+        {multi ? `Créer la réservation (${selected.length} chambres)` : "Créer la réservation"}
       </button>
     </form>
   );

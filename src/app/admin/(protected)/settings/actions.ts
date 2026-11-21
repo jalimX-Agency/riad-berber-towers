@@ -6,7 +6,7 @@ import { z } from "zod";
 import { canManage, requireUser } from "@/lib/admin/guard";
 import { ROOMS_TAG } from "@/lib/admin/rooms";
 import { db } from "@/lib/db";
-import { normalizePaypalMe, saveSettings } from "@/lib/settings";
+import { normalizeIban, normalizePaypalMe, normalizeWiseLink, saveSettings } from "@/lib/settings";
 
 const back = (params: Record<string, string>): never => {
   revalidatePath("/admin/settings");
@@ -16,6 +16,12 @@ const back = (params: Record<string, string>): never => {
 const schema = z.object({
   paypalMe: z.string().trim().max(200),
   adminEmail: z.string().trim().toLowerCase().pipe(z.email()).pipe(z.string().max(160)),
+  wiseLink: z.string().trim().max(200).default(""),
+  bankName: z.string().trim().max(120).default(""),
+  bankHolder: z.string().trim().max(120).default(""),
+  bankCurrency: z.string().trim().toUpperCase().max(3).default(""),
+  bankIban: z.string().trim().max(60).default(""),
+  bankSwift: z.string().trim().toUpperCase().max(11).default(""),
 });
 
 /** Owner and admins only: these settings decide where money and notifications go. */
@@ -24,10 +30,15 @@ export async function updateSettings(form: FormData) {
   if (!canManage(user.role)) back({ error: "role" });
   const p = schema.safeParse(Object.fromEntries(form));
   if (!p.success) back({ error: "email" });
-  const { paypalMe: raw, adminEmail } = p.data!;
+  const { paypalMe: raw, adminEmail, wiseLink: rawWise, bankIban: rawIban, ...bank } = p.data!;
   const paypalMe = normalizePaypalMe(raw);
   if (raw && !paypalMe) back({ error: "paypal" });
-  await saveSettings({ paypalMe, adminEmail });
+  const wiseLink = normalizeWiseLink(rawWise);
+  if (rawWise && !wiseLink) back({ error: "wise" });
+  const bankIban = normalizeIban(rawIban);
+  if (rawIban && !bankIban) back({ error: "iban" });
+  if (bank.bankSwift && !/^[A-Z0-9]{8}([A-Z0-9]{3})?$/.test(bank.bankSwift)) back({ error: "swift" });
+  await saveSettings({ paypalMe, adminEmail, wiseLink, bankIban, ...bank });
   back({ done: "1" });
 }
 

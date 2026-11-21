@@ -16,6 +16,9 @@ const errorText: Record<string, string> = {
   paypal: "Nom PayPal.me invalide. Exemple : riadberbertowers (ou le lien paypal.me/riadberbertowers).",
   role: "Seuls le propriétaire et les administrateurs peuvent modifier les paramètres.",
   price: "Prix invalide : entre 1 et 10 000 € par nuit.",
+  wise: "Lien Wise invalide. Exemple : https://wise.com/pay/me/omara1819",
+  iban: "IBAN invalide (2 lettres, 2 chiffres, puis le numéro de compte).",
+  swift: "Code SWIFT / BIC invalide (8 ou 11 caractères).",
 };
 
 export default async function SettingsPage({ searchParams }: Props) {
@@ -29,7 +32,7 @@ export default async function SettingsPage({ searchParams }: Props) {
     <div className="grid max-w-2xl gap-6">
       <header className="grid gap-1">
         <h1 className="text-4xl">Paramètres</h1>
-        <p className="text-muted">Prix de base des chambres, lien de paiement de l’acompte et adresse des notifications.</p>
+        <p className="text-muted">Prix de base des chambres, moyens de paiement de l’acompte (PayPal, Wise, virement) et adresse des notifications.</p>
       </header>
 
       {(sp.done || sp.error) && (
@@ -74,6 +77,39 @@ export default async function SettingsPage({ searchParams }: Props) {
               </a>
             )}
           </label>
+
+          <label className="grid gap-1.5 text-sm">
+            <span className="font-medium">Lien Wise</span>
+            <input name="wiseLink" defaultValue={s.wiseLink} placeholder="https://wise.com/pay/me/…" maxLength={200} dir="ltr" className={field} />
+            <span className="text-xs text-muted">Affiche un bouton « Payer avec Wise » et le QR code. Laissez vide pour le masquer.</span>
+          </label>
+
+          <fieldset className="grid gap-3 rounded-[8px] border border-rule p-4">
+            <legend className="px-1 text-sm font-medium">Virement bancaire</legend>
+            <p className="text-xs text-muted">Coordonnées affichées au client sur sa page de paiement. Laissez l’IBAN vide pour masquer le virement.</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="grid gap-1 text-sm">
+                Banque
+                <input name="bankName" defaultValue={s.bankName} maxLength={120} className={field} />
+              </label>
+              <label className="grid gap-1 text-sm">
+                Titulaire du compte
+                <input name="bankHolder" defaultValue={s.bankHolder} maxLength={120} className={field} />
+              </label>
+              <label className="grid gap-1 text-sm sm:col-span-2">
+                IBAN
+                <input name="bankIban" defaultValue={s.bankIban} maxLength={60} dir="ltr" className={`${field} font-mono`} />
+              </label>
+              <label className="grid gap-1 text-sm">
+                SWIFT / BIC
+                <input name="bankSwift" defaultValue={s.bankSwift} maxLength={11} dir="ltr" className={`${field} font-mono`} />
+              </label>
+              <label className="grid gap-1 text-sm">
+                Devise du compte
+                <input name="bankCurrency" defaultValue={s.bankCurrency} maxLength={3} dir="ltr" className={field} />
+              </label>
+            </div>
+          </fieldset>
 
           <label className="grid gap-1.5 text-sm">
             <span className="font-medium">Email des notifications</span>

@@ -12,6 +12,7 @@ import { bookingPayment } from "@/lib/booking/payment";
 import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { StayPolicies } from "@/components/booking/StayPolicies";
 import { ProofUpload } from "@/components/booking/ProofUpload";
+import { CopyField } from "@/components/booking/CopyField";
 import { WhatsAppIcon } from "@/components/site/icons";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 /**
  * The guest's payment page, reached from the "accepted" email. The token is a 32-character random secret.
- * Step 1: pay the deposit with PayPal. Step 2: upload the proof. Then the riad checks it and confirms.
+ * Step 1: pay the deposit (PayPal, Wise or bank transfer). Step 2: upload the proof. Then the riad checks it and confirms.
  */
 export default async function PayPage({ params }: Props) {
   const { locale, token } = await params;
@@ -49,7 +50,8 @@ export default async function PayPage({ params }: Props) {
   const roomName = b.room.translations.find((x) => x.locale === locale)?.name || b.room.name;
   const pay = bookingPayment(b);
   const money = (n: number) => formatPrice(n, b.currency, locale);
-  const { paypalMe } = await getSettings();
+  const settings = await getSettings();
+  const { paypalMe } = settings;
   const paypal = paypalMe ? `https://paypal.me/${paypalMe}/${pay.deposit}${b.currency}` : null;
   const whatsapp = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(t("whatsappMessage", { reference: b.reference }))}`;
   const confirmed = ["CONFIRMED", "CHECKED_IN", "CHECKED_OUT"].includes(b.status);
@@ -113,13 +115,49 @@ export default async function PayPage({ params }: Props) {
           <li className="grid gap-4 rounded-[10px] border border-rule bg-paper p-6">
             <p className="label">{t("step1")}</p>
             <h2 className="text-2xl">{t("payTitle", { amount: money(pay.deposit) })}</h2>
-            {paypal ? (
+            {paypal || settings.wiseLink || settings.bankIban ? (
               <>
                 <p className="text-sm text-muted">{t("payText", { reference: b.reference })}</p>
-                <a href={paypal} target="_blank" rel="noopener noreferrer" className="btn-primary w-fit">
-                  {t("payButton", { amount: money(pay.deposit) })}
-                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                </a>
+                <div className="grid gap-3">
+                  {paypal && (
+                    <div className="grid gap-3 rounded-[10px] border border-rule bg-snow p-4">
+                      <h3 className="text-lg">PayPal</h3>
+                      <a href={paypal} target="_blank" rel="noopener noreferrer" className="btn-primary w-fit">
+                        {t("payButton", { amount: money(pay.deposit) })}
+                        <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                      </a>
+                    </div>
+                  )}
+                  {settings.wiseLink && (
+                    <div className="grid gap-4 rounded-[10px] border border-rule bg-snow p-4 sm:grid-cols-[1fr_auto] sm:items-center">
+                      <div className="grid gap-3">
+                        <h3 className="text-lg">{t("wiseTitle")}</h3>
+                        <p className="text-sm text-muted">{t("wiseText", { amount: money(pay.deposit) })}</p>
+                        <a href={settings.wiseLink} target="_blank" rel="noopener noreferrer" className="btn-outline w-fit">
+                          {t("wiseButton")}
+                          <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                        </a>
+                      </div>
+                      {settings.wiseLink === site.wiseLink && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src="/brand/wise-qr.jpg" alt={t("wiseQrAlt")} width={140} height={140} className="h-[140px] w-[140px] rounded-[10px] border border-rule" />
+                      )}
+                    </div>
+                  )}
+                  {settings.bankIban && (
+                    <div className="grid gap-3 rounded-[10px] border border-rule bg-snow p-4">
+                      <h3 className="text-lg">{t("bankTitle")}</h3>
+                      <p className="text-sm text-muted">{t("bankText", { amount: money(pay.deposit), currency: settings.bankCurrency || "MAD" })}</p>
+                      <div className="grid">
+                        {settings.bankName && <CopyField label={t("bankName")} value={settings.bankName} />}
+                        {settings.bankHolder && <CopyField label={t("bankHolder")} value={settings.bankHolder} />}
+                        <CopyField label={t("bankIban")} value={settings.bankIban.replace(/(.{4})/g, "$1 ").trim()} mono />
+                        {settings.bankSwift && <CopyField label={t("bankSwift")} value={settings.bankSwift} mono />}
+                        <CopyField label={t("bankReference")} value={b.reference} mono />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <p className="text-sm text-muted">{t("payContact")}</p>

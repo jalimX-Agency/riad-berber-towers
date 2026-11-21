@@ -116,6 +116,14 @@ export async function BookingDetail({
     },
   });
   if (!b) notFound();
+  // other rooms booked together (same guest, same dates): a family or a group entered as one reservation
+  const group = b.reference.startsWith("B24-")
+    ? []
+    : await db.booking.findMany({
+        where: { guestId: b.guestId, checkIn: b.checkIn, checkOut: b.checkOut, id: { not: b.id } },
+        orderBy: { room: { order: "asc" } },
+        select: { id: true, reference: true, status: true, room: { select: { name: true } } },
+      });
 
   const nightly = (Array.isArray(b.nightlyRates) ? b.nightlyRates : []) as { date: string; price: number }[];
   const computed = nightly.reduce((s, n) => s + n.price, 0);
@@ -236,6 +244,27 @@ export async function BookingDetail({
         </div>
       </div>
 
+      {group.length > 0 && (
+        <section className="grid gap-2 rounded-[12px] border border-rule bg-paper/60 p-4 text-sm">
+          <p className="font-medium">
+            Réservation de {group.length + 1} chambres : {b.room.name} et
+          </p>
+          <ul className="flex flex-wrap gap-2">
+            {group.map((g) => (
+              <li key={g.id}>
+                <a href={`/admin/bookings/${g.id}`} className="inline-flex items-center gap-2 rounded-full border border-rule bg-snow px-3 py-1.5 hover:border-earth">
+                  <BedDouble className="h-4 w-4 text-earth" aria-hidden="true" />
+                  {g.room.name}
+                  <span className="font-mono text-xs text-muted">{g.reference}</span>
+                  <StatusBadge status={g.status} />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs text-muted">Chaque chambre a son propre statut : confirmez, encaissez ou annulez chacune séparément.</p>
+        </section>
+      )}
+
       {ota && (
         <section className="grid gap-1 rounded-[12px] border border-sky-200 bg-sky-50 p-5 text-sm">
           <h2 className="text-lg font-medium">Réservation {sourceLabel[b.source]}</h2>
@@ -253,7 +282,7 @@ export async function BookingDetail({
           {b.status === "PENDING" && (
             <>
               <p className="text-sm">
-                Si la chambre est libre, acceptez : le client reçoit un lien pour payer l’acompte de {DEPOSIT_PERCENT} % (<b>{eur(pay.deposit, b.currency)}</b>) par PayPal et envoyer la preuve.
+                Si la chambre est libre, acceptez : le client reçoit un lien pour payer l’acompte de {DEPOSIT_PERCENT} % (<b>{eur(pay.deposit, b.currency)}</b>) par PayPal, Wise ou virement, et envoyer la preuve.
               </p>
               <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
                 <form action={acceptBooking.bind(null, b.id)} className="flex flex-wrap items-center gap-3">
@@ -414,7 +443,7 @@ export async function BookingDetail({
               </label>
               <label className="grid gap-1 text-sm">
                 Moyen de paiement
-                <input name="paymentMethod" defaultValue={b.paymentMethod ?? ""} placeholder="PayPal, espèces…" maxLength={40} className={field} />
+                <input name="paymentMethod" defaultValue={b.paymentMethod ?? ""} placeholder="PayPal, Wise, virement, espèces…" maxLength={40} className={field} />
               </label>
               <SubmitButton variant="outline" className="w-fit sm:col-span-3">
                 Enregistrer

@@ -9,6 +9,16 @@ export const site = {
     .trim()
     .replace(/^https?:\/\/(www\.)?paypal\.me\//i, "")
     .replace(/\/.*$/, ""),
+  /** Wise "pay me" link for the deposit (editable in /admin/settings) */
+  wiseLink: "https://wise.com/pay/me/omara1819",
+  /** Bank transfer details shown on the guest payment page (editable in /admin/settings) */
+  bank: {
+    name: "Société Générale & Saham Maroc",
+    holder: "OMAR AIT LMOUDEN",
+    currency: "MAD",
+    iban: "MA64022450000384002886031553",
+    swift: "SGMBMAMC",
+  },
   address: {
     street: "Imlil Centre",
     locality: "Imlil, Asni",

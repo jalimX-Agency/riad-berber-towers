@@ -194,12 +194,16 @@ export async function saveNotes(id: string, form: FormData) {
   return back(id, { done: "notes" }, form);
 }
 
-export type NewBookingState = { error?: string; values?: Record<string, string> };
+export type NewBookingState = { error?: string; detail?: string; values?: Record<string, string> };
 
 const SOURCES: BookingSource[] = ["WHATSAPP", "PHONE", "EMAIL", "BOOKING_COM", "AIRBNB", "AGENCY", "WALK_IN", "WEBSITE"];
 const LOCALES: Locale[] = ["en", "fr", "es", "de", "ar"];
 
-/** A booking taken by the riad itself (phone, WhatsApp, agencies…). */
+/**
+ * A booking taken by the riad itself (phone, WhatsApp, agencies…), for one room or several rooms on the same dates
+ * (a family or a group). Several rooms = one booking per room, same guest, linked by a note listing the references:
+ * each room keeps its own status, and each is closed on Booking.com / Airbnb on its own.
+ */
 export async function createManualBooking(_prev: NewBookingState, form: FormData): Promise<NewBookingState> {
   await requireUser();
   const values = Object.fromEntries([...form.entries()].map(([k, v]) => [k, String(v)]));
@@ -210,30 +214,58 @@ export async function createManualBooking(_prev: NewBookingState, form: FormData
   const guest = adminGuestSchema.safeParse({ ...values, arrivalTime: values.arrivalTime || "unknown" });
   if (!guest.success) return { error: `guest_${String(guest.error.issues[0]?.path[0] ?? "")}`, values };
 
+  const wanted = [...new Set((values.rooms ?? values.room ?? "").split(",").map((x) => x.trim()).filter(Boolean))].slice(0, 10);
+  const rooms = await db.room.findMany({ where: { slug: { in: wanted }, active: true }, orderBy: { order: "asc" }, select: { slug: true, name: true } });
+  if (!rooms.length) return { error: "rooms_missing", values };
+  const multi = rooms.length > 1;
+
   const source = SOURCES.includes(values.source as BookingSource) ? (values.source as BookingSource) : "PHONE";
   const locale = LOCALES.includes(values.locale as Locale) ? (values.locale as Locale) : "fr";
-  const total = values.total ? Number(values.total) : undefined;
-  if (total !== undefined && (!Number.isFinite(total) || total < 0)) return { error: "total", values };
-
-  // same live check as the website: the nights may just have been sold on Booking.com or Airbnb
-  if ((await beds24HasRoom(values.room, query.checkIn, query.checkOut)) === false) {
-    after(() => pullFromBeds24());
-    return { error: "unavailable_booked", values };
+  const totals = new Map<string, number | undefined>();
+  for (const r of rooms) {
+    const raw = multi ? values[`total_${r.slug}`] : values.total;
+    const total = raw ? Number(raw) : undefined;
+    if (total !== undefined && (!Number.isFinite(total) || total < 0)) return { error: "total", detail: r.name, values };
+    totals.set(r.slug, total);
   }
 
-  const result = await createBooking({
-    roomSlug: values.room,
-    query,
-    guest: guest.data,
-    locale,
-    admin: { source, status: values.status === "PENDING" ? "PENDING" : "CONFIRMED", total, internalNotes: values.internalNotes?.slice(0, 4000) },
-  });
-  if (!result.ok) return { error: result.error === "unavailable" ? `unavailable_${result.reason ?? ""}` : result.error, values };
+  // same live check as the website: the nights may just have been sold on Booking.com or Airbnb
+  const live = await Promise.all(rooms.map((r) => beds24HasRoom(r.slug, query.checkIn, query.checkOut)));
+  const sold = rooms.filter((_, i) => live[i] === false);
+  if (sold.length) {
+    after(() => pullFromBeds24());
+    return { error: "unavailable_booked", detail: sold.map((r) => r.name).join(", "), values };
+  }
 
-  const createdId = result.id;
-  after(() => pushBookingSafe(createdId));
+  const notes = values.internalNotes?.slice(0, 3500) ?? "";
+  const created: { id: string; reference: string; name: string }[] = [];
+  for (const r of rooms) {
+    const result = await createBooking({
+      roomSlug: r.slug,
+      query,
+      guest: guest.data,
+      locale,
+      admin: { source, status: values.status === "PENDING" ? "PENDING" : "CONFIRMED", total: totals.get(r.slug), internalNotes: notes },
+    });
+    if (!result.ok) {
+      // all or nothing: the rooms already created for this group are removed (they were not sent to Beds24 yet)
+      if (created.length) await db.booking.deleteMany({ where: { id: { in: created.map((c) => c.id) } } });
+      return { error: result.error === "unavailable" ? `unavailable_${result.reason ?? ""}` : result.error, detail: multi ? r.name : undefined, values };
+    }
+    created.push({ id: result.id, reference: result.reference, name: r.name });
+  }
+
+  if (multi) {
+    const group = `Groupe de ${created.length} chambres : ${created.map((c) => `${c.reference} (${c.name})`).join(" · ")}`;
+    await db.$transaction(created.map((c) => db.booking.update({ where: { id: c.id }, data: { internalNotes: notes ? `${group}\n\n${notes}` : group } })));
+  }
+
+  const ids = created.map((c) => c.id);
+  after(async () => {
+    for (const id of ids) await pushBookingSafe(id);
+  });
   revalidatePath("/admin", "layout");
-  redirect(`/admin/bookings/${result.id}?done=created`);
+  redirect(`/admin/bookings/${created[0].id}?done=created`);
 }
 
 // ───────────── Bulk actions (selection in the bookings list) ─────────────
