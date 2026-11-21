@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
+import { after } from "next/server";
+import { setClosureSafe } from "@/lib/beds24/push";
 import { ROOMS_TAG } from "@/lib/admin/rooms";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -101,12 +103,25 @@ export async function createBlock(form: FormData) {
     { maxWait: 10_000, timeout: 15_000 },
   );
   if (result) return done({ error: "block_booked", ref: result }, "#closures");
+  // Beds24 closes the same nights on Booking.com and Airbnb
+  after(() => setClosureSafe(slug, range.start, range.end, true));
   done({ done: "block" }, "#closures");
 }
 
 export async function deleteBlock(id: string) {
   await requireUser();
-  // iCal blocks belong to Booking.com/Airbnb and come back at the next sync: remove them there
-  await db.roomBlock.deleteMany({ where: { id, source: { not: "ICAL" } } });
+  const block = await db.roomBlock.findUnique({
+    where: { id },
+    select: { source: true, externalUid: true, startDate: true, endDate: true, room: { select: { slug: true } } },
+  });
+  if (block) {
+    // iCal blocks belong to Booking.com/Airbnb and come back at the next sync: remove them there.
+    // Nights closed in Beds24 ("b24:cl:…") are the owner's own closures: deleting one reopens them everywhere.
+    const reopen = block.externalUid?.startsWith("b24:cl:") || block.source !== "ICAL";
+    if (reopen) {
+      await db.roomBlock.deleteMany({ where: { id } });
+      after(() => setClosureSafe(block.room.slug, block.startDate, block.endDate, false));
+    }
+  }
   done({ done: "block_deleted" }, "#closures");
 }

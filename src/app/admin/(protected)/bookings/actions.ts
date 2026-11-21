@@ -2,6 +2,7 @@
 
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { redirect } from "next/navigation";
 import type { BookingSource, BookingStatus, Locale, PaymentStatus } from "@prisma/client";
 import { z } from "zod";
@@ -11,6 +12,7 @@ import { nextStatuses } from "@/lib/admin/labels";
 import { parseStayQuery } from "@/lib/booking/availability";
 import { adminGuestSchema, createBooking, restoreBooking } from "@/lib/booking/create";
 import { sendStatusEmail } from "@/lib/email/booking";
+import { cancelInBeds24, pushBookingSafe } from "@/lib/beds24/push";
 
 /** A same-site admin path sent back by the panel forms (never an open redirect). */
 function safeReturn(form?: FormData) {
@@ -47,6 +49,7 @@ export async function changeStatus(id: string, to: BookingStatus, form: FormData
       ...(to === "CONFIRMED" && b.status === "AWAITING_PAYMENT" ? { paymentStatus: "DEPOSIT_PAID" as PaymentStatus } : {}),
     },
   });
+  after(() => pushBookingSafe(id)); // Booking.com / Airbnb reopen or close the nights
 
   let email = "";
   if ((to === "CONFIRMED" || to === "CANCELLED") && form.get("notify") === "on") {
@@ -74,6 +77,7 @@ export async function declineBooking(id: string, form: FormData) {
   const b = await db.booking.findUniqueOrThrow({ where: { id }, select: { status: true } });
   if (b.status !== "PENDING") return back(id, { error: "transition" }, form);
   await db.booking.update({ where: { id }, data: { status: "CANCELLED", cancelledAt: new Date() } });
+  after(() => pushBookingSafe(id));
   const email = form.get("notify") === "on" ? await sendStatusEmail(id, "declined") : "";
   return back(id, { done: "declined", ...(email ? { email } : {}) }, form);
 }
@@ -110,6 +114,7 @@ export async function resendPaymentLink(id: string, form?: FormData) {
 export async function restore(id: string, form?: FormData) {
   await requireUser();
   const ok = await restoreBooking(id);
+  if (ok) after(() => pushBookingSafe(id));
   return back(id, ok ? { done: "CONFIRMED" } : { error: "restore" }, form);
 }
 
@@ -169,6 +174,8 @@ export async function createManualBooking(_prev: NewBookingState, form: FormData
   });
   if (!result.ok) return { error: result.error === "unavailable" ? `unavailable_${result.reason ?? ""}` : result.error, values };
 
+  const createdId = result.id;
+  after(() => pushBookingSafe(createdId));
   revalidatePath("/admin", "layout");
   redirect(`/admin/bookings/${result.id}?done=created`);
 }
@@ -187,6 +194,10 @@ export async function bulkCancel(ids: string[]): Promise<BulkResult> {
     where: { id: { in: p.data }, status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED"] } },
     data: { status: "CANCELLED", cancelledAt: new Date() },
   });
+  const cancelIds = p.data;
+  after(async () => {
+    for (const id of cancelIds) await pushBookingSafe(id);
+  });
   revalidatePath("/admin", "layout");
   return { ok: true, count: r.count };
 }
@@ -196,13 +207,16 @@ export async function bulkCancel(ids: string[]): Promise<BulkResult> {
  * Their payment proofs and extras go with them (cascade); a guest left without any booking is deleted too.
  */
 async function hardDelete(ids: string[]) {
-  return db.$transaction(async (tx) => {
-    const rows = await tx.booking.findMany({ where: { id: { in: ids } }, select: { guestId: true } });
+  const { count, refs } = await db.$transaction(async (tx) => {
+    const rows = await tx.booking.findMany({ where: { id: { in: ids } }, select: { guestId: true, reference: true, checkIn: true } });
     const guestIds = [...new Set(rows.map((r) => r.guestId))];
     const { count } = await tx.booking.deleteMany({ where: { id: { in: ids } } });
     await tx.guest.deleteMany({ where: { id: { in: guestIds }, bookings: { none: {} } } });
-    return count;
+    return { count, refs: rows.map((r) => ({ reference: r.reference, checkIn: r.checkIn })) };
   });
+  // the nights must reopen on Booking.com / Airbnb too
+  after(() => cancelInBeds24(refs));
+  return count;
 }
 
 export async function bulkDelete(ids: string[]): Promise<BulkResult> {

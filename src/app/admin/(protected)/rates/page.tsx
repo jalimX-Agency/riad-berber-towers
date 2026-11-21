@@ -170,24 +170,36 @@ export default async function RatesPage({ searchParams }: Props) {
         </div>
         {blocks.length > 0 ? (
           <ul className="divide-y divide-rule rounded-[8px] border border-rule">
-            {blocks.map((b) => (
+            {blocks.map((b) => {
+              const beds24Booking = b.externalUid?.startsWith("b24:bk:");
+              const beds24Closure = b.externalUid?.startsWith("b24:cl:");
+              return (
               <li key={b.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
                 <span className="font-medium">{b.room.name}</span>
                 <span>{range(b.startDate, b.endDate)}</span>
                 <span className="text-muted">
-                  {b.source === "ICAL" ? `Réservé sur ${b.feed?.channel ?? "iCal"}` : b.source === "MAINTENANCE" ? `Travaux${b.reason ? ` · ${b.reason}` : ""}` : b.reason || "Fermée"}
+                  {beds24Booking
+                    ? `Réservé · ${b.reason}`
+                    : beds24Closure
+                      ? "Fermée sur toutes les plateformes (Beds24)"
+                      : b.source === "ICAL"
+                        ? `Réservé sur ${b.feed?.channel ?? "iCal"}`
+                        : b.source === "MAINTENANCE"
+                          ? `Travaux${b.reason ? ` · ${b.reason}` : ""}`
+                          : b.reason || "Fermée"}
                 </span>
-                {b.source !== "ICAL" ? (
+                {b.source !== "ICAL" || beds24Closure ? (
                   <form action={deleteBlock.bind(null, b.id)} className="ms-auto">
                     <SubmitButton variant="danger" confirmLabel="Rouvrir" confirm="Rouvrir la chambre sur ces dates ?" className="px-3 py-1.5">
                       <Trash2 className="h-4 w-4" aria-label="Supprimer" />
                     </SubmitButton>
                   </form>
                 ) : (
-                  <span className="ms-auto text-xs text-muted">à modifier sur {b.feed?.channel ?? "la plateforme"}</span>
+                  <span className="ms-auto text-xs text-muted">à modifier sur {beds24Booking ? "la plateforme" : (b.feed?.channel ?? "la plateforme")}</span>
                 )}
               </li>
-            ))}
+              );
+            })}
           </ul>
         ) : (
           <p className="text-sm text-muted">Aucune fermeture à venir.</p>

@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import { parseStayQuery } from "@/lib/booking/availability";
 import { createBooking, guestSchema } from "@/lib/booking/create";
 import { confirmationPath, sendBookingEmails } from "@/lib/email/booking";
+import { pushBookingSafe } from "@/lib/beds24/push";
 import { parseExtras } from "@/lib/booking/extras";
 
 /** Pick-up place as the riad (French admin) reads it */
@@ -59,5 +60,7 @@ export async function requestBooking(_prev: BookState, form: FormData): Promise<
 
   const id = result.id;
   after(() => sendBookingEmails(id));
+  // close the nights on Booking.com and Airbnb at once (a failure is retried by the daily reconcile)
+  after(() => pushBookingSafe(id));
   redirect(confirmationPath(locale, id));
 }

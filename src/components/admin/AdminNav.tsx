@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { BedDouble, CalendarDays, ExternalLink, LayoutDashboard, LogOut, Menu, Plus, RefreshCw, Settings, Tags, X } from "lucide-react";
+import { BedDouble, CalendarDays, Coins, ExternalLink, LayoutDashboard, LogOut, Menu, Plus, RefreshCw, Settings, Tags, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavPending } from "@/components/admin/NavPending";
 
@@ -17,7 +17,8 @@ const items = [
   { href: "/admin/bookings", label: "Réservations", icon: BedDouble },
   { href: "/admin/calendar", label: "Calendrier", icon: CalendarDays },
   { href: "/admin/rates", label: "Tarifs et fermetures", icon: Tags },
-  { href: "/admin/channels", label: "Booking.com / Airbnb", icon: RefreshCw },
+  { href: "/admin/channel-rates", label: "Prix par canal", icon: Coins },
+  { href: "/admin/channels", label: "Calendriers iCal", icon: RefreshCw },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ] as { href: string; label: string; icon: typeof BedDouble; exact?: boolean; soon?: boolean }[];
 
