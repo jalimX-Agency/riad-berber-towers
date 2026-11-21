@@ -23,6 +23,7 @@ export type BookingRow = {
   email: string;
   phone: string;
   room: string;
+  /** slugs of the rooms, space-separated (several for a multi-room reservation) */
   roomSlug: string;
   stay: string;
   details: string;
@@ -111,7 +112,7 @@ export function BookingsList({ rows, rooms, statuses, sources, payments, initial
       (r) =>
         !gone.has(r.id) &&
         (!st || st.has(r.status)) &&
-        (!f.room || r.roomSlug === f.room) &&
+        (!f.room || r.roomSlug.split(" ").includes(f.room)) &&
         (!f.source || r.sourceKey === f.source) &&
         (!f.payment || r.paymentKey === f.payment) &&
         (!f.bed || r.bed === f.bed) &&

@@ -359,11 +359,12 @@ export async function bulkCancel(ids: string[]): Promise<BulkResult> {
   await requireUser();
   const p = idsSchema.safeParse(ids);
   if (!p.success) return { ok: false, error: "Sélection invalide." };
+  const all = await withGroups(p.data);
   const r = await db.booking.updateMany({
-    where: { id: { in: p.data }, status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED"] }, reference: { not: { startsWith: OTA_REF_PREFIX } } },
+    where: { id: { in: all }, status: { in: ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED"] }, reference: { not: { startsWith: OTA_REF_PREFIX } } },
     data: { status: "CANCELLED", cancelledAt: new Date() },
   });
-  const cancelIds = p.data;
+  const cancelIds = all;
   after(async () => {
     for (const id of cancelIds) await pushBookingSafe(id);
   });
@@ -375,7 +376,15 @@ export async function bulkCancel(ids: string[]): Promise<BulkResult> {
  * Delete bookings for good (test bookings, duplicates, spam). Owner and admins only.
  * Their payment proofs and extras go with them (cascade); a guest left without any booking is deleted too.
  */
-async function hardDelete(ids: string[]) {
+/** A row of the list can be a reservation of several rooms: the action covers all its rooms. */
+async function withGroups(ids: string[]) {
+  const out = new Set<string>();
+  for (const id of ids) for (const gid of await groupIds(id)) out.add(gid);
+  return [...out];
+}
+
+async function hardDelete(selection: string[]) {
+  const ids = await withGroups(selection);
   const { count, refs } = await db.$transaction(async (tx) => {
     // mirrored Booking.com / Airbnb reservations are never deleted here: they would come back at the next sync
     const rows = await tx.booking.findMany({ where: { id: { in: ids }, reference: { not: { startsWith: OTA_REF_PREFIX } } }, select: { id: true, guestId: true, reference: true, checkIn: true } });

@@ -7,7 +7,9 @@ export const dynamic = "force-dynamic";
 
 export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const pending = await db.booking.count({ where: { status: { in: ["PENDING", "PAYMENT_REVIEW"] } } });
+  // one count per reservation: several rooms booked together (same guest, same dates) are one request
+  const open = await db.booking.findMany({ where: { status: { in: ["PENDING", "PAYMENT_REVIEW"] } }, select: { guestId: true, checkIn: true, checkOut: true } });
+  const pending = new Set(open.map((b) => `${b.guestId}|${b.checkIn.toISOString()}|${b.checkOut.toISOString()}`)).size;
   return (
     <div className="min-h-dvh bg-paper lg:flex">
       <AdminNav user={user.email} pending={pending} />

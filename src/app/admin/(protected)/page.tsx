@@ -31,14 +31,30 @@ export default async function AdminDashboard({ searchParams }: Props) {
     db.room.count({ where: { active: true } }),
   ]);
 
+  // a reservation of several rooms (same guest, same dates) is one line, with its rooms listed and amounts summed
+  type Booking = (typeof arrivals)[number];
+  const merge = (list: Booking[]) => {
+    const groups = new Map<string, Booking[]>();
+    for (const b of list) {
+      const key = b.reference.startsWith("B24-") ? b.id : `${b.guestId}|${b.checkIn.toISOString()}|${b.checkOut.toISOString()}`;
+      groups.set(key, [...(groups.get(key) ?? []), b]);
+    }
+    return [...groups.values()].map((m) => ({
+      ...m[0],
+      roomLabel: m.length > 1 ? `${m.length} chambres : ${m.map((x) => x.room.name.replace(/^Suite /, "")).join(", ")}` : m[0].room.name,
+      sum: m.reduce((t, x) => t + Number(x.total), 0),
+    }));
+  };
+  const lists = { arrivals: merge(arrivals), departures: merge(departures), pending: merge(pending), upcoming: merge(upcoming) };
+
   const tiles = [
-    { label: "Arrivées aujourd’hui", value: arrivals.length, icon: LogIn },
-    { label: "Départs aujourd’hui", value: departures.length, icon: LogOut },
+    { label: "Arrivées aujourd’hui", value: lists.arrivals.length, icon: LogIn },
+    { label: "Départs aujourd’hui", value: lists.departures.length, icon: LogOut },
     { label: "Chambres occupées ce soir", value: `${inHouse} / ${roomCount}`, icon: Moon },
-    { label: "À traiter (demandes, paiements)", value: pending.length, icon: Hourglass, alert: pending.length > 0 },
+    { label: "À traiter (demandes, paiements)", value: lists.pending.length, icon: Hourglass, alert: lists.pending.length > 0 },
   ];
 
-  type Row = (typeof arrivals)[number];
+  type Row = (typeof lists.arrivals)[number];
   const List = ({ title, rows, empty, show }: { title: string; rows: Row[]; empty: string; show: "in" | "out" | "created" }) => (
     <section className="grid content-start gap-3 rounded-[10px] border border-rule bg-snow p-5">
       <h2 className="text-xl">{title}</h2>
@@ -52,13 +68,13 @@ export default async function AdminDashboard({ searchParams }: Props) {
                 <span className="font-medium">
                   {b.guest.firstName} {b.guest.lastName}
                 </span>
-                <span className="text-muted">{b.room.name}</span>
+                <span className="text-muted">{b.roomLabel}</span>
                 <span className="text-muted">
                   {show === "created"
                     ? `${frDate(b.checkIn, { day: "numeric", month: "short" })} → ${frDate(b.checkOut, { day: "numeric", month: "short" })} · ${sourceLabel[b.source]}`
                     : show === "in"
                       ? `${b.nights} nuit${b.nights > 1 ? "s" : ""}${b.arrivalTime ? ` · arrivée ${b.arrivalTime}` : ""}`
-                      : eur(Number(b.total), b.currency)}
+                      : eur(b.sum, b.currency)}
                 </span>
                 <StatusBadge status={b.status} className="ms-auto" />
                 <PendingPanel />
@@ -89,11 +105,11 @@ export default async function AdminDashboard({ searchParams }: Props) {
         ))}
       </div>
 
-      {pending.length > 0 && <List title="Demandes à traiter" rows={pending} empty="" show="created" />}
+      {lists.pending.length > 0 && <List title="Demandes à traiter" rows={lists.pending} empty="" show="created" />}
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <List title="Arrivées aujourd’hui" rows={arrivals} empty="Aucune arrivée aujourd’hui." show="in" />
-        <List title="Départs aujourd’hui" rows={departures} empty="Aucun départ aujourd’hui." show="out" />
+        <List title="Arrivées aujourd’hui" rows={lists.arrivals} empty="Aucune arrivée aujourd’hui." show="in" />
+        <List title="Départs aujourd’hui" rows={lists.departures} empty="Aucun départ aujourd’hui." show="out" />
       </div>
 
       <section className="grid gap-3">
@@ -103,7 +119,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
             Toutes les réservations <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
-        <List title="Prochaines arrivées" rows={upcoming} empty="Aucune arrivée prévue cette semaine." show="created" />
+        <List title="Prochaines arrivées" rows={lists.upcoming} empty="Aucune arrivée prévue cette semaine." show="created" />
       </section>
 
       <BookingPanelSlot basePath="/admin" sp={sp} />

@@ -70,8 +70,9 @@ export default async function BookingsPage({ searchParams }: Props) {
         currency: true,
         paymentStatus: true,
         createdAt: true,
+        guestId: true,
         guest: { select: { firstName: true, lastName: true, email: true, phone: true } },
-        room: { select: { name: true, slug: true } },
+        room: { select: { name: true, slug: true, order: true } },
       },
       orderBy: { createdAt: "desc" }, // newest reservations first (index on createdAt)
       take: limit + 1, // one extra row tells whether the list is capped, without a count query
@@ -80,7 +81,22 @@ export default async function BookingsPage({ searchParams }: Props) {
   ]);
   const truncated = found.length > limit;
 
-  const rows: BookingRow[] = found.slice(0, limit).map((b) => {
+  // a reservation of several rooms (same guest, same dates) is one row: rooms listed, amounts summed
+  const INACTIVE = new Set(["CANCELLED", "NO_SHOW"]);
+  const groups = new Map<string, typeof found>();
+  for (const b of found.slice(0, limit)) {
+    const key = b.reference.startsWith("B24-")
+      ? b.id
+      : `${b.guestId}|${b.checkIn.toISOString()}|${b.checkOut.toISOString()}|${INACTIVE.has(b.status) ? "x" : "a"}`;
+    groups.set(key, [...(groups.get(key) ?? []), b]);
+  }
+
+  const rows: BookingRow[] = [...groups.values()].map((members) => {
+    members.sort((x, y) => x.room.order - y.room.order);
+    const b = members[0];
+    const multi = members.length > 1;
+    const sum = members.reduce((t, m) => t + Number(m.total), 0);
+    const adults = members.reduce((t, m) => t + m.adults, 0);
     const guest = `${b.guest.firstName} ${b.guest.lastName}`;
     return {
       id: b.id,
@@ -90,12 +106,14 @@ export default async function BookingsPage({ searchParams }: Props) {
       guest,
       email: b.guest.email,
       phone: b.guest.phone,
-      room: b.room.name,
-      roomSlug: b.room.slug,
+      room: multi ? `${members.length} chambres : ${members.map((m) => m.room.name.replace(/^Suite /, "")).join(", ")}` : b.room.name,
+      roomSlug: members.map((m) => m.room.slug).join(" "),
       stay: `${frDate(b.checkIn, { day: "numeric", month: "short", year: "numeric" })} → ${frDate(b.checkOut, { day: "numeric", month: "short" })}`,
-      details: `${b.nights} nuit${b.nights > 1 ? "s" : ""} · ${b.adults} adulte${b.adults > 1 ? "s" : ""} · ${b.bedSetup === "TWIN" ? "lits séparés" : "grand lit"}`,
-      total: eur(Number(b.total), b.currency),
-      totalValue: Number(b.total),
+      details: multi
+        ? `${b.nights} nuit${b.nights > 1 ? "s" : ""} · ${adults} adultes · ${members.length} chambres`
+        : `${b.nights} nuit${b.nights > 1 ? "s" : ""} · ${b.adults} adulte${b.adults > 1 ? "s" : ""} · ${b.bedSetup === "TWIN" ? "lits séparés" : "grand lit"}`,
+      total: eur(sum, b.currency),
+      totalValue: sum,
       payment: paymentLabel[b.paymentStatus],
       paymentKey: b.paymentStatus,
       bed: b.bedSetup,
@@ -104,7 +122,7 @@ export default async function BookingsPage({ searchParams }: Props) {
       booked: imlilDay.format(b.createdAt),
       bookedTs: b.createdAt.getTime(),
       bookedLabel: bookedFmt.format(b.createdAt),
-      haystack: norm([b.reference, guest, b.guest.email, b.guest.phone].join(" ")),
+      haystack: norm([...members.map((m) => m.reference), guest, b.guest.email, b.guest.phone].join(" ")),
     };
   });
 
