@@ -73,7 +73,7 @@ export function MobileAgenda({
       >
         <PlatformIcon source={b.source} className="h-4 w-4 rounded-[3px] ring-1 ring-white/60" />
         <span className="truncate">{first ? b.guest : `↳ ${b.guest}`}</span>
-        {first && <span className="ms-auto shrink-0 text-xs opacity-80">{b.nights} n.</span>}
+        <span className="ms-auto shrink-0 text-xs opacity-80">{first ? `${b.nights} n. · ` : ""}départ {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${b.checkOut}T00:00:00Z`)).replace(".", "")}</span>
       </Link>
     );
   };

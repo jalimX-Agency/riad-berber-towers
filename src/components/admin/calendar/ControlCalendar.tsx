@@ -378,11 +378,11 @@ export function ControlCalendar({
                       href={`${pageUrl}${pageUrl.includes("?") ? "&" : "?"}b=${encodeURIComponent(b.id)}`}
                       style={{ gridRow: base, gridColumn: `${s + 2} / ${e + 2}`, ...look.style }}
                       className={cn("z-10 my-1.5 flex min-w-0 items-center gap-1.5 rounded-[6px] px-1.5 font-medium shadow-sm hover:brightness-95", look.className, clashes.has(b.id) && "ring-2 ring-rose-600")}
-                      title={`${b.guest} · ${b.nights} nuit(s) · ${b.adults} pers. · ${nf.format(b.total)} ${b.currency}${b.ota ? "" : ` · ${statusName[b.status] ?? ""}`}`}
+                      title={`${b.guest} · arrivée ${b.checkIn} · départ ${b.checkOut} · ${b.nights} nuit(s) · ${b.adults} pers. · ${nf.format(b.total)} ${b.currency}${b.ota ? "" : ` · ${statusName[b.status] ?? ""}`}`}
                     >
                       <PlatformIcon source={b.source} className="h-4 w-4 rounded-[3px] ring-1 ring-white/60" />
                       <span className="truncate">{b.guest}</span>
-                      <span className="ms-auto shrink-0 opacity-80">{b.nights} n.</span>
+                      <span className="ms-auto shrink-0 opacity-80">{b.nights} n. · → {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${b.checkOut}T00:00:00Z`)).replace(".", "")}</span>
                     </Link>
                   );
                 })}
