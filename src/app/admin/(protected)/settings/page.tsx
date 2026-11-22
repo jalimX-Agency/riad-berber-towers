@@ -5,7 +5,10 @@ import { SubmitButton } from "@/components/admin/SubmitButton";
 import { Flash } from "@/components/admin/Toaster";
 import { DEPOSIT_PERCENT } from "@/lib/booking/policy";
 import { db } from "@/lib/db";
-import { saveBasePrices, updateSettings } from "./actions";
+import { saveBasePrices, saveChannelBasePrices, updateSettings } from "./actions";
+import { typicalChannelPrices } from "@/lib/beds24/calendar";
+import { BEDS24_ROOMS } from "@/lib/beds24/rooms";
+import { addDays, todayInImlil } from "@/lib/booking/dates";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Paramètres" };
@@ -20,12 +23,19 @@ const errorText: Record<string, string> = {
   wise: "Lien Wise invalide. Exemple : https://wise.com/pay/me/omara1819",
   iban: "IBAN invalide (2 lettres, 2 chiffres, puis le numéro de compte).",
   swift: "Code SWIFT / BIC invalide (8 ou 11 caractères).",
+  channelPrice: "Prix Booking.com / Airbnb invalide : entre 20 et 5 000 € par nuit.",
+  channelEmpty: "Indiquez au moins un prix.",
+  beds24: "Beds24 ne répond pas : rien n’a été modifié. Réessayez dans un instant.",
 };
 
 export default async function SettingsPage({ searchParams }: Props) {
   const user = await requireUser();
   const sp = await searchParams;
-  const [s, rooms] = await Promise.all([getSettings(), db.room.findMany({ where: { active: true }, orderBy: { order: "asc" }, select: { id: true, name: true, basePrice: true } })]);
+  const [s, rooms] = await Promise.all([getSettings(), db.room.findMany({ where: { active: true }, orderBy: { order: "asc" }, select: { id: true, slug: true, name: true, basePrice: true } })]);
+  // current price on each platform = the most frequent nightly price over the next 12 months
+  const today = todayInImlil();
+  const linked = rooms.filter((r) => r.slug in BEDS24_ROOMS);
+  const typical = await typicalChannelPrices(linked.map((r) => r.slug), today, addDays(today, 365)).catch(() => null);
   const canEdit = canManage(user.role);
   const field = "w-full rounded-[8px] border border-rule bg-snow px-3 py-2 text-sm disabled:opacity-60";
 
@@ -41,7 +51,7 @@ export default async function SettingsPage({ searchParams }: Props) {
           sp.error
             ? [{ kind: "error", text: errorText[sp.error] ?? "Une erreur est survenue." }]
             : sp.done
-              ? [{ kind: "success", text: sp.done === "prices" ? "Prix de base enregistrés." : "Paramètres enregistrés." }]
+              ? [{ kind: "success", text: sp.done === "prices" ? "Prix de base enregistrés." : sp.done === "airbnbPrices" ? "Prix Airbnb envoyés pour les 12 prochains mois. Airbnb les affiche d’ici quelques minutes." : sp.done === "bookingPrices" ? "Prix Booking.com envoyés pour les 12 prochains mois." : "Paramètres enregistrés." }]
               : []
         }
       />
@@ -66,6 +76,44 @@ export default async function SettingsPage({ searchParams }: Props) {
           {canEdit && <SubmitButton className="w-fit">Enregistrer les prix</SubmitButton>}
         </fieldset>
       </form>
+
+      {linked.length > 0 &&
+        (["airbnb", "booking"] as const).map((ch) => (
+          <form key={ch} action={saveChannelBasePrices} className="grid gap-4 rounded-[10px] border border-rule bg-snow p-5">
+            <input type="hidden" name="channel" value={ch} />
+            <div>
+              <h2 className="text-2xl">Prix de base {ch === "airbnb" ? "Airbnb" : "Booking.com"} (€ par nuit)</h2>
+              <p className="text-sm text-muted">
+                Un prix par chambre, appliqué à toutes les nuits des 12 prochains mois en une fois (il remplace les prix nuit par nuit). Les nuits fermées sur {ch === "airbnb" ? "Airbnb" : "Booking.com"} restent fermées. Laissez une case vide pour ne pas changer cette chambre. Pour un prix spécial (fêtes, week-end), modifiez ensuite ces nuits dans le Calendrier.
+              </p>
+              {!typical && <p className="mt-2 text-sm text-amber-800">Beds24 ne répond pas : prix actuels indisponibles.</p>}
+            </div>
+            <fieldset disabled={!canEdit} className="grid gap-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {linked.map((r) => {
+                  const now = typical?.[r.slug]?.[ch];
+                  return (
+                    <label key={r.id} className="grid gap-1 text-sm">
+                      <span className="flex items-baseline justify-between gap-2">
+                        {r.name}
+                        {now != null && <span className="text-xs text-muted">actuel : {now} €</span>}
+                      </span>
+                      <span className="relative">
+                        <input name={`cp_${r.slug}`} type="number" min={20} max={5000} step={1} placeholder={now != null ? String(now) : ""} className={`${field} pe-8`} />
+                        <span className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-muted">€</span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+              {canEdit && (
+                <SubmitButton className="w-fit" confirm={`Remplacer le prix ${ch === "airbnb" ? "Airbnb" : "Booking.com"} de toutes les nuits des 12 prochains mois pour les chambres remplies ?`} confirmLabel="Appliquer">
+                  Appliquer à toutes les dates
+                </SubmitButton>
+              )}
+            </fieldset>
+          </form>
+        ))}
 
       <form action={updateSettings} className="grid gap-6 rounded-[10px] border border-rule bg-snow p-5">
         <fieldset disabled={!canEdit} className="grid gap-6">

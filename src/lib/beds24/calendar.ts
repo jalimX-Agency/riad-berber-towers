@@ -163,3 +163,54 @@ export async function applyBulk(change: BulkChange): Promise<{ nights: number; r
   }
   return { nights: days.length, rooms: body.length };
 }
+
+/**
+ * One base price per room for a channel, written to every night of the period in one go (Paramètres).
+ * Nights closed on that channel (no price) stay closed: only nights that already have a price get the new one.
+ * Returns the number of nights written per room.
+ */
+export async function setChannelBasePrices(channel: ChannelDef["key"], prices: Record<string, number>, from: Date, toInclusive: Date): Promise<Record<string, number>> {
+  const def = CHANNELS.find((c) => c.key === channel);
+  if (!def) throw new Error("Canal inconnu");
+  const slugs = Object.keys(prices).filter((s) => beds24RoomId(s) !== null);
+  if (!slugs.length) return {};
+  const cal = await readCalendarMany(slugs, from, toInclusive);
+  const written: Record<string, number> = {};
+  const body: { roomId: number; calendar: Record<string, unknown>[] }[] = [];
+  for (const slug of slugs) {
+    const open = (cal.get(slug) ?? []).filter((c) => c.prices[channel] != null).map((c) => c.date);
+    const runs: { from: string; to: string }[] = [];
+    for (const d of open) {
+      const last = runs[runs.length - 1];
+      if (last && toISO(addDays(parseDay(last.to)!, 1)) === d) last.to = d;
+      else runs.push({ from: d, to: d });
+    }
+    written[slug] = open.length;
+    if (runs.length) body.push({ roomId: beds24RoomId(slug)!, calendar: runs.map((r) => ({ ...r, [def.priceField]: prices[slug] })) });
+  }
+  for (let i = 0; i < body.length; i += 3) {
+    const res = await b24<{ success?: boolean; errors?: unknown }[]>("POST", "/inventory/rooms/calendar", body.slice(i, i + 3));
+    const bad = res.find((r) => !r.success);
+    if (bad) throw new Error(`Beds24: ${JSON.stringify(bad.errors ?? bad).slice(0, 300)}`);
+  }
+  return written;
+}
+
+/** The most frequent price of each room on a channel over a period (shown as the current "base" price). */
+export async function typicalChannelPrices(slugs: string[], from: Date, toInclusive: Date): Promise<Record<string, Partial<Record<ChannelDef["key"], number>>>> {
+  const cal = await readCalendarMany(slugs, from, toInclusive);
+  const out: Record<string, Partial<Record<ChannelDef["key"], number>>> = {};
+  for (const slug of slugs) {
+    out[slug] = {};
+    for (const ch of CHANNELS) {
+      const count = new Map<number, number>();
+      for (const c of cal.get(slug) ?? []) {
+        const v = c.prices[ch.key];
+        if (v != null) count.set(v, (count.get(v) ?? 0) + 1);
+      }
+      const top = [...count.entries()].sort((a, b) => b[1] - a[1])[0];
+      if (top) out[slug][ch.key] = top[0];
+    }
+  }
+  return out;
+}

@@ -6,6 +6,8 @@ import { z } from "zod";
 import { canManage, requireUser } from "@/lib/admin/guard";
 import { ROOMS_TAG } from "@/lib/admin/rooms";
 import { db } from "@/lib/db";
+import { setChannelBasePrices } from "@/lib/beds24/calendar";
+import { addDays, todayInImlil } from "@/lib/booking/dates";
 import { normalizeIban, normalizePaypalMe, normalizeWiseLink, saveSettings } from "@/lib/settings";
 
 const back = (params: Record<string, string>): never => {
@@ -60,4 +62,31 @@ export async function saveBasePrices(form: FormData) {
   revalidatePath("/", "layout");
   revalidateTag(ROOMS_TAG);
   back({ done: "prices" });
+}
+
+/**
+ * Base nightly price of each room on Booking.com or Airbnb, written to Beds24 for every night of the next 12 months
+ * (nights closed on that platform stay closed). Beds24 forwards the prices to the platform within minutes.
+ */
+export async function saveChannelBasePrices(form: FormData) {
+  const user = await requireUser();
+  if (!canManage(user.role)) back({ error: "role" });
+  const channel = form.get("channel") === "booking" ? "booking" : "airbnb";
+  const prices: Record<string, number> = {};
+  for (const [k, v] of form.entries()) {
+    if (!k.startsWith("cp_") || String(v).trim() === "") continue;
+    const price = Number(String(v).replace(",", "."));
+    if (!Number.isFinite(price) || price < 20 || price > 5000) back({ error: "channelPrice" });
+    prices[k.slice(3)] = Math.round(price);
+  }
+  if (!Object.keys(prices).length) back({ error: "channelEmpty" });
+  const today = todayInImlil();
+  try {
+    await setChannelBasePrices(channel, prices, today, addDays(today, 365));
+  } catch (e) {
+    console.error("[settings] channel base prices", e);
+    back({ error: "beds24" });
+  }
+  revalidatePath("/admin/calendar");
+  back({ done: channel === "booking" ? "bookingPrices" : "airbnbPrices" });
 }
