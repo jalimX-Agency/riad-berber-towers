@@ -72,14 +72,19 @@ export function MobileAgenda({
         className={cn("flex min-w-0 items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-sm font-medium", !ota && (statusTone[b.status] ?? "bg-stone-300"), !first && "opacity-70")}
       >
         <PlatformIcon source={b.source} className="h-4 w-4 rounded-[3px] ring-1 ring-white/60" />
-        <span className="truncate">{first ? b.guest : `↳ ${b.guest}`}</span>
-        <span className="ms-auto shrink-0 text-xs opacity-80">{first ? `${b.nights} n. · ` : ""}départ {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${b.checkOut}T00:00:00Z`)).replace(".", "")}</span>
+        {/* two lines on the phone: the name keeps the full width */}
+        <span className="grid min-w-0 leading-tight">
+          <span className="truncate">{first ? b.guest : `↳ ${b.guest}`}</span>
+          <span className="truncate text-xs font-normal opacity-85">
+            {first ? `${b.nights} n. · ` : ""}départ {new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${b.checkOut}T00:00:00Z`)).replace(".", "")}
+          </span>
+        </span>
       </Link>
     );
   };
 
   return (
-    <div className="grid gap-3 sm:hidden">
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 sm:hidden">
       {/* rooms */}
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
         {data.rooms.map((r) => (

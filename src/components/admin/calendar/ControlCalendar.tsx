@@ -321,7 +321,7 @@ export function ControlCalendar({
   };
 
   return (
-    <div className="grid min-w-0 gap-4">
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-4">
       {/* toolbar */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
