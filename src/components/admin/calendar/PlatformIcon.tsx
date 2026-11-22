@@ -2,11 +2,16 @@ import type { BookingSource } from "@prisma/client";
 import { Briefcase, DoorOpen, Globe, Mail, MessageCircle, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// Small marks for the admin only (who sold the stay). Airbnb and Booking.com are drawn as simple brand-coloured tiles.
+// Small marks for the admin only (who sold the stay). Airbnb, Booking.com and Expedia are drawn as simple brand-coloured tiles.
+// Expedia has no booking source of its own in the database: its reservations are AGENCY bookings recognised by their note.
+
+/** Who sold the stay, as shown in the admin (the database source, plus Expedia). */
+export type Platform = BookingSource | "EXPEDIA";
 
 export const PLATFORM_COLORS = {
   AIRBNB: { bg: "#FF385C", fg: "#ffffff", label: "Airbnb" },
   BOOKING_COM: { bg: "#003580", fg: "#ffffff", label: "Booking.com" },
+  EXPEDIA: { bg: "#191E3B", fg: "#ffffff", label: "Expedia" },
 } as const;
 
 function AirbnbMark({ className }: { className?: string }) {
@@ -38,6 +43,17 @@ function BookingMark({ className }: { className?: string }) {
   );
 }
 
+function ExpediaMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="#191E3B" />
+      <text x="9" y="23" fontFamily="Arial, Helvetica, sans-serif" fontWeight="700" fontSize="18" fill="#FDDB32">
+        e
+      </text>
+    </svg>
+  );
+}
+
 function SiteMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
@@ -58,8 +74,9 @@ const lucideTone: Partial<Record<BookingSource, string>> = {
 };
 
 /** The icon of the platform or channel a booking came from. */
-export function PlatformIcon({ source, className }: { source: BookingSource; className?: string }) {
+export function PlatformIcon({ source, className }: { source: Platform; className?: string }) {
   const size = cn("h-4 w-4 shrink-0", className);
+  if (source === "EXPEDIA") return <ExpediaMark className={size} />;
   if (source === "AIRBNB") return <AirbnbMark className={size} />;
   if (source === "BOOKING_COM") return <BookingMark className={size} />;
   if (source === "WEBSITE") return <SiteMark className={size} />;
@@ -71,9 +88,10 @@ export function PlatformIcon({ source, className }: { source: BookingSource; cla
   );
 }
 
-/** Channel marks used in the price rows (Booking.com / Airbnb / site). */
-export function ChannelMark({ channel, className }: { channel: "site" | "booking" | "airbnb"; className?: string }) {
+/** Channel marks used in the price rows (Booking.com / Airbnb / Expedia / site). */
+export function ChannelMark({ channel, className }: { channel: "site" | "booking" | "airbnb" | "expedia"; className?: string }) {
   const size = cn("h-4 w-4 shrink-0", className);
+  if (channel === "expedia") return <ExpediaMark className={size} />;
   if (channel === "airbnb") return <AirbnbMark className={size} />;
   if (channel === "booking") return <BookingMark className={size} />;
   return <SiteMark className={size} />;

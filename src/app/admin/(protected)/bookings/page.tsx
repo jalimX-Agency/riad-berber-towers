@@ -23,6 +23,7 @@ const LIMIT = { upcoming: 1000, past: 300, all: 500 } as const;
 const STATUSES = Object.keys(statusLabel) as BookingStatus[];
 type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
+const isExpedia = (b: { source: string; reference: string; internalNotes: string }) => b.source === "AGENCY" && b.reference.startsWith("B24-") && b.internalNotes.startsWith("Expedia n°");
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 // the reservation day as seen in Imlil (for the "reserved between" filter)
 const imlilDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Casablanca", year: "numeric", month: "2-digit", day: "2-digit" });
@@ -72,6 +73,7 @@ export default async function BookingsPage({ searchParams }: Props) {
         paymentStatus: true,
         createdAt: true,
         guestId: true,
+        internalNotes: true,
         guest: { select: { firstName: true, lastName: true, email: true, phone: true } },
         room: { select: { name: true, slug: true, order: true } },
       },
@@ -100,8 +102,9 @@ export default async function BookingsPage({ searchParams }: Props) {
     return {
       id: b.id,
       reference: b.reference,
-      source: sourceLabel[b.source],
-      sourceKey: b.source,
+      source: isExpedia(b) ? "Expedia" : sourceLabel[b.source],
+      // Expedia reservations are stored as agency bookings noted "Expedia n° …"
+      sourceKey: isExpedia(b) ? "EXPEDIA" : b.source,
       guest,
       email: b.guest.email,
       phone: b.guest.phone,
@@ -161,7 +164,7 @@ export default async function BookingsPage({ searchParams }: Props) {
         rows={rows}
         rooms={rooms.map((r) => ({ slug: r.slug, name: r.name }))}
         statuses={STATUSES.map((s) => ({ value: s, label: statusLabel[s] }))}
-        sources={Object.entries(sourceLabel).map(([value, label]) => ({ value, label }))}
+        sources={[...Object.entries(sourceLabel).map(([value, label]) => ({ value, label })), { value: "EXPEDIA", label: "Expedia" }]}
         payments={Object.entries(paymentLabel).map(([value, label]) => ({ value, label }))}
         initial={filters}
         truncated={truncated}

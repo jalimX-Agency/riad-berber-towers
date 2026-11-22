@@ -10,6 +10,7 @@ type Segment = {
   override?: string;
   price1?: number;
   price2?: number;
+  price3?: number;
   channels?: Record<string, { maxBookings?: number | null }>;
 };
 type CalendarRow = { roomId: number; calendar?: Segment[] };
@@ -27,6 +28,18 @@ export type DayCell = {
   channelOff: Record<ChannelDef["key"], boolean>;
 };
 
+// one entry per channel, read from that channel's price row (a night without a price is not offered on it)
+const pricesOf = (seg: Segment) => Object.fromEntries(CHANNELS.map((c) => [c.key, seg[c.priceField] ?? null])) as DayCell["prices"];
+const offOf = (seg: Segment) => Object.fromEntries(CHANNELS.map((c) => [c.key, seg[c.priceField] == null])) as DayCell["channelOff"];
+const emptyCell = (date: string, off: boolean): DayCell => ({
+  date,
+  prices: Object.fromEntries(CHANNELS.map((c) => [c.key, null])) as DayCell["prices"],
+  avail: 0,
+  blackout: false,
+  minStay: null,
+  channelOff: Object.fromEntries(CHANNELS.map((c) => [c.key, off])) as DayCell["channelOff"],
+});
+
 const INCLUDE = "includePrices=true&includeNumAvail=true&includeMinStay=true&includeOverride=true&includeChannels=true";
 
 /** One room, one range, expanded to one cell per night. */
@@ -43,18 +56,18 @@ export async function readCalendar(slug: string, from: Date, toInclusive: Date):
     for (let d = s; d <= e; d = addDays(d, 1)) {
       cells.set(toISO(d), {
         date: toISO(d),
-        prices: { booking: seg.price1 ?? null, airbnb: seg.price2 ?? null },
+        prices: pricesOf(seg),
         avail: seg.numAvail ?? 0,
         blackout: seg.override === "blackout",
         minStay: seg.minStay ?? null,
         // a night without a price for a channel is not offered on that channel
-        channelOff: { booking: seg.price1 == null, airbnb: seg.price2 == null },
+        channelOff: offOf(seg),
       });
     }
   }
   const out: DayCell[] = [];
   for (let d = from; d <= toInclusive; d = addDays(d, 1)) {
-    out.push(cells.get(toISO(d)) ?? { date: toISO(d), prices: { booking: null, airbnb: null }, avail: 0, blackout: false, minStay: null, channelOff: { booking: false, airbnb: false } });
+    out.push(cells.get(toISO(d)) ?? emptyCell(toISO(d), false));
   }
   return out;
 }
@@ -90,17 +103,17 @@ function expand(segments: Segment[], from: Date, toInclusive: Date): DayCell[] {
     for (let d = s; d <= e; d = addDays(d, 1)) {
       cells.set(toISO(d), {
         date: toISO(d),
-        prices: { booking: seg.price1 ?? null, airbnb: seg.price2 ?? null },
+        prices: pricesOf(seg),
         avail: seg.numAvail ?? 0,
         blackout: seg.override === "blackout",
         minStay: seg.minStay ?? null,
-        channelOff: { booking: seg.price1 == null, airbnb: seg.price2 == null },
+        channelOff: offOf(seg),
       });
     }
   }
   const out: DayCell[] = [];
   for (let d = from; d <= toInclusive; d = addDays(d, 1)) {
-    out.push(cells.get(toISO(d)) ?? { date: toISO(d), prices: { booking: null, airbnb: null }, avail: 0, blackout: false, minStay: null, channelOff: { booking: true, airbnb: true } });
+    out.push(cells.get(toISO(d)) ?? emptyCell(toISO(d), true));
   }
   return out;
 }

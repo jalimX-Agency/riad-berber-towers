@@ -26,10 +26,12 @@ const inputSchema = z.object({
   site: money(10, 10_000),
   booking: money(20, 5000),
   airbnb: money(20, 5000),
+  expedia: money(20, 5000),
   minStay: z.number().int().min(1).max(30).optional(),
   all: state,
   bookingState: state,
   airbnbState: state,
+  expediaState: state,
   note: z.string().trim().max(120).default(""),
 });
 export type ApplyInput = z.input<typeof inputSchema>;
@@ -61,7 +63,7 @@ export async function applyChanges(raw: ApplyInput): Promise<ActionResult> {
   const user = await requireUser();
   if (!canManage(user.role)) return { ok: false, error: "Modification réservée au propriétaire et aux administrateurs." };
   const p = inputSchema.safeParse(raw);
-  if (!p.success) return { ok: false, error: "Valeurs refusées : vérifiez les prix (site 10–10 000 €, Booking 20–5 000 €, Airbnb 20–5 000 €) et le séjour minimum (1–30)." };
+  if (!p.success) return { ok: false, error: "Valeurs refusées : vérifiez les prix (site 10–10 000 €, Booking 20–5 000 €, Airbnb 20–5 000 €, Expedia 20–5 000 €) et le séjour minimum (1–30)." };
   const input = p.data;
 
   const from = parseDay(input.from);
@@ -79,10 +81,16 @@ export async function applyChanges(raw: ApplyInput): Promise<ActionResult> {
   const rooms = await db.room.findMany({ where: { id: { in: input.rooms }, active: true }, select: { id: true, slug: true, name: true } });
   if (!rooms.length) return { ok: false, error: "Chambre inconnue." };
 
-  const touchesChannels = input.booking !== undefined || input.airbnb !== undefined || input.minStay !== undefined || input.bookingState !== "keep" || input.airbnbState !== "keep";
+  const touchesChannels =
+    input.booking !== undefined || input.airbnb !== undefined || input.expedia !== undefined || input.minStay !== undefined ||
+    input.bookingState !== "keep" || input.airbnbState !== "keep" || input.expediaState !== "keep";
   const touchesSite = input.site !== undefined || input.minStay !== undefined;
   if (!touchesChannels && !touchesSite && input.all === "keep") return { ok: false, error: "Rien à modifier : indiquez un prix, un séjour minimum ou une ouverture/fermeture." };
-  if ((input.bookingState === "open" && input.booking === undefined) || (input.airbnbState === "open" && input.airbnb === undefined)) {
+  if (
+    (input.bookingState === "open" && input.booking === undefined) ||
+    (input.airbnbState === "open" && input.airbnb === undefined) ||
+    (input.expediaState === "open" && input.expedia === undefined)
+  ) {
     return { ok: false, error: "Pour rouvrir une plateforme, indiquez aussi son prix par nuit." };
   }
 
@@ -157,16 +165,23 @@ export async function applyChanges(raw: ApplyInput): Promise<ActionResult> {
           from,
           to,
           weekdays: input.weekdays,
-          prices: { ...(input.booking !== undefined ? { booking: input.booking } : {}), ...(input.airbnb !== undefined ? { airbnb: input.airbnb } : {}) },
+          prices: {
+            ...(input.booking !== undefined ? { booking: input.booking } : {}),
+            ...(input.airbnb !== undefined ? { airbnb: input.airbnb } : {}),
+            ...(input.expedia !== undefined ? { expedia: input.expedia } : {}),
+          },
           minStay: input.minStay,
-          channelState: { booking: input.bookingState, airbnb: input.airbnbState },
+          channelState: { booking: input.bookingState, airbnb: input.airbnbState, expedia: input.expediaState },
         });
         if (input.booking !== undefined) done.push(`Booking ${input.booking} €`);
         if (input.airbnb !== undefined) done.push(`Airbnb ${input.airbnb} €`);
+        if (input.expedia !== undefined) done.push(`Expedia ${input.expedia} €`);
         if (input.bookingState === "close") done.push("fermée sur Booking.com");
         if (input.airbnbState === "close") done.push("fermée sur Airbnb");
+        if (input.expediaState === "close") done.push("fermée sur Expedia");
         if (input.bookingState === "open") done.push("rouverte sur Booking.com");
         if (input.airbnbState === "open") done.push("rouverte sur Airbnb");
+        if (input.expediaState === "open") done.push("rouverte sur Expedia");
       } catch (e) {
         channelError = `Beds24 a refusé le changement : ${e instanceof Error ? e.message.slice(0, 160) : "erreur"}`;
       }

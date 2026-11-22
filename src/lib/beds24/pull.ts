@@ -58,7 +58,7 @@ function ranges(days: string[]): { start: Date; end: Date }[] {
   return out;
 }
 
-/** Beds24 channel → site booking source. Anything else that Beds24 imports (Expedia later…) counts as an agency. */
+/** Beds24 channel → site booking source. Expedia (no source of its own in the database) and anything else count as an agency; the note says which. */
 function sourceOf(b: B24Booking): BookingSource {
   if (b.channel === "booking") return "BOOKING_COM";
   if (b.channel === "airbnb" || b.channel === "airbnbical") return "AIRBNB";
@@ -249,7 +249,7 @@ async function upsertOtaBooking(b: B24Booking, roomId: string, checkIn: Date, ch
     phone: (b.mobile || b.phone || "").slice(0, 30),
     country: (b.country2 || b.country || "").slice(0, 60),
   };
-  const notes = [`${source === "AIRBNB" ? "Airbnb" : source === "BOOKING_COM" ? "Booking.com" : (b.apiSource ?? "Beds24")} n° ${b.apiReference || b.id}`, b.comments?.trim()].filter(Boolean).join("\n").slice(0, 4000);
+  const notes = [`${source === "AIRBNB" ? "Airbnb" : source === "BOOKING_COM" ? "Booking.com" : b.channel === "expedia" ? "Expedia" : (b.apiSource ?? "Beds24")} n° ${b.apiReference || b.id}`, b.comments?.trim()].filter(Boolean).join("\n").slice(0, 4000);
 
   const existing = await db.booking.findUnique({
     where: { reference },

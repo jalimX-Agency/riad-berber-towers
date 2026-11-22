@@ -20,11 +20,13 @@ export type CalBooking = {
   nights: number;
   status: BookingStatus;
   source: BookingSource;
+  /** who sold it, for icons and colours: the source, or EXPEDIA (stored as an agency booking noted "Expedia n° …") */
+  platform: BookingSource | "EXPEDIA";
   guest: string;
   adults: number;
   total: number;
   currency: string;
-  /** mirrored from Booking.com / Airbnb: read-only on the site */
+  /** mirrored from Booking.com / Airbnb / Expedia: read-only on the site */
   ota: boolean;
   /** for the hover card */
   phone: string;
@@ -51,6 +53,7 @@ export type CalNight = {
   minNights: number;
   booking: number | null;
   airbnb: number | null;
+  expedia: number | null;
   /** Beds24 minimum stay (applies to Booking.com and Airbnb) */
   channelMin: number | null;
 };
@@ -77,7 +80,7 @@ export async function loadCalendar(from: Date, to: Date): Promise<CalendarData> 
       where: { ...overlap, status: { notIn: ["CANCELLED", "NO_SHOW"] } },
       select: {
         id: true, reference: true, roomId: true, checkIn: true, checkOut: true, nights: true, status: true, source: true, adults: true, total: true, currency: true,
-        paymentStatus: true, depositAmount: true, arrivalTime: true, bedSetup: true,
+        paymentStatus: true, depositAmount: true, arrivalTime: true, bedSetup: true, internalNotes: true,
         guest: { select: { firstName: true, lastName: true, phone: true, country: true } },
       },
     }),
@@ -117,7 +120,7 @@ export async function loadCalendar(from: Date, to: Date): Promise<CalendarData> 
     nights[room.id] = dayDates.map((d, i) => {
       const s = siteNight(room, d, overrides);
       const c = ch?.[i];
-      return { date: toISO(d), site: s.price, siteCustom: s.custom, minNights: s.minNights, booking: c?.prices.booking ?? null, airbnb: c?.prices.airbnb ?? null, channelMin: c?.minStay ?? null };
+      return { date: toISO(d), site: s.price, siteCustom: s.custom, minNights: s.minNights, booking: c?.prices.booking ?? null, airbnb: c?.prices.airbnb ?? null, expedia: c?.prices.expedia ?? null, channelMin: c?.minStay ?? null };
     });
   }
 
@@ -135,6 +138,7 @@ export async function loadCalendar(from: Date, to: Date): Promise<CalendarData> 
       nights: b.nights,
       status: b.status,
       source: b.source,
+      platform: b.reference.startsWith(OTA_REF_PREFIX) && b.source === "AGENCY" && b.internalNotes.startsWith("Expedia n°") ? "EXPEDIA" : b.source,
       guest: `${b.guest.firstName} ${b.guest.lastName}`.trim(),
       adults: b.adults,
       total: Number(b.total),

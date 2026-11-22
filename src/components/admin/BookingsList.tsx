@@ -4,7 +4,7 @@ import { toast } from "@/components/admin/Toaster";
 import { useDeferredValue, useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { BookingSource, BookingStatus } from "@prisma/client";
+import type { BookingStatus } from "@prisma/client";
 import { ArrowDownUp, Ban, Download, Loader2, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { PendingPanel } from "@/components/admin/BookingPanel";
@@ -12,7 +12,7 @@ import { bulkCancel, bulkDelete, type BulkResult } from "@/app/admin/(protected)
 import { DEFAULT_SORT, SORTS, filterParams, type Filters, type SortKey } from "@/lib/admin/booking-filters";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
-import { PlatformIcon } from "@/components/admin/calendar/PlatformIcon";
+import { PlatformIcon, type Platform } from "@/components/admin/calendar/PlatformIcon";
 
 export type BookingRow = {
   id: string;
@@ -373,7 +373,7 @@ export function BookingsList({ rows, rooms, statuses, sources, payments, initial
               >
                 <span className="min-w-0">
                   <span className="flex min-w-0 items-center gap-1.5 font-medium">
-                    <PlatformIcon source={b.sourceKey as BookingSource} className="h-4 w-4 rounded-[3px]" />
+                    <PlatformIcon source={b.sourceKey as Platform} className="h-4 w-4 rounded-[3px]" />
                     <span className="truncate">{b.guest}</span>
                   </span>
                   <span className="block truncate font-mono text-xs text-muted">

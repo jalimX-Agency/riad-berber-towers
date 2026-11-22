@@ -50,7 +50,7 @@ export async function beds24Conflict(slug: string, checkIn: Date, checkOut: Date
     );
     if (other) {
       const who = [other.firstName, other.lastName].filter(Boolean).join(" ");
-      const where = other.channel === "booking" ? "Booking.com" : other.channel === "airbnb" ? "Airbnb" : (other.apiSource ?? "Beds24");
+      const where = other.channel === "booking" ? "Booking.com" : other.channel === "airbnb" ? "Airbnb" : other.channel === "expedia" ? "Expedia" : (other.apiSource ?? "Beds24");
       return `réservation ${where}${who ? ` de ${who}` : ""} (${other.arrival} → ${other.departure})`;
     }
     if ((cal.data?.[0]?.calendar ?? []).some((s) => s.override === "blackout")) return "nuits fermées dans Beds24";

@@ -65,13 +65,14 @@ export async function saveBasePrices(form: FormData) {
 }
 
 /**
- * Base nightly price of each room on Booking.com or Airbnb, written to Beds24 for every night of the next 12 months
+ * Base nightly price of each room on Booking.com, Airbnb or Expedia, written to Beds24 for every night of the next 12 months
  * (nights closed on that platform stay closed). Beds24 forwards the prices to the platform within minutes.
  */
 export async function saveChannelBasePrices(form: FormData) {
   const user = await requireUser();
   if (!canManage(user.role)) back({ error: "role" });
-  const channel = form.get("channel") === "booking" ? "booking" : "airbnb";
+  const raw = form.get("channel");
+  const channel = raw === "booking" ? "booking" : raw === "expedia" ? "expedia" : "airbnb";
   const prices: Record<string, number> = {};
   for (const [k, v] of form.entries()) {
     if (!k.startsWith("cp_") || String(v).trim() === "") continue;
@@ -88,5 +89,5 @@ export async function saveChannelBasePrices(form: FormData) {
     back({ error: "beds24" });
   }
   revalidatePath("/admin/calendar");
-  back({ done: channel === "booking" ? "bookingPrices" : "airbnbPrices" });
+  back({ done: `${channel}Prices` });
 }

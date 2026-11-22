@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { BookingSource, BookingStatus } from "@prisma/client";
+import type { BookingStatus } from "@prisma/client";
 import { ChevronLeft, ChevronRight, Eye, EyeOff, Loader2, Phone, RefreshCw, TriangleAlert } from "lucide-react";
 import type { CalBlock, CalBooking, CalendarData, CalRoom } from "@/lib/admin/control-calendar";
 import { applyChanges, reopenBlock, syncNow } from "@/app/admin/(protected)/calendar/actions";
@@ -11,7 +11,7 @@ import { bedLabel, paymentLabel, sourceLabel } from "@/lib/admin/labels";
 import { cn } from "@/lib/utils";
 import { ActionDrawer, type Selection } from "./ActionDrawer";
 import { toast as notify } from "@/components/admin/Toaster";
-import { ChannelMark, PLATFORM_COLORS, PlatformIcon } from "./PlatformIcon";
+import { ChannelMark, PLATFORM_COLORS, PlatformIcon, type Platform } from "./PlatformIcon";
 import { MobileAgenda } from "./MobileAgenda";
 
 const statusBar: Partial<Record<BookingStatus, string>> = {
@@ -31,16 +31,16 @@ const statusName: Partial<Record<BookingStatus, string>> = {
   CHECKED_OUT: "Partie",
 };
 
-type Filter = "all" | "airbnb" | "booking" | "direct";
-type PriceKey = "site" | "booking" | "airbnb" | "min";
+type Filter = "all" | "airbnb" | "booking" | "expedia" | "direct";
+type PriceKey = "site" | "booking" | "airbnb" | "expedia" | "min";
 type Editing = { roomId: string; iso: string; k: PriceKey; d: number };
-const editLimits: Record<PriceKey, [number, number]> = { site: [10, 10_000], booking: [20, 5000], airbnb: [20, 5000], min: [1, 30] };
-type Layers = { site: boolean; booking: boolean; airbnb: boolean; min: boolean };
-const DEFAULT_LAYERS: Layers = { site: true, booking: true, airbnb: true, min: false };
+const editLimits: Record<PriceKey, [number, number]> = { site: [10, 10_000], booking: [20, 5000], airbnb: [20, 5000], expedia: [20, 5000], min: [1, 30] };
+type Layers = { site: boolean; booking: boolean; airbnb: boolean; expedia: boolean; min: boolean };
+const DEFAULT_LAYERS: Layers = { site: true, booking: true, airbnb: true, expedia: true, min: false };
 
 const DAY = 86_400_000;
 const idx = (from: string, iso: string) => Math.round((Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY);
-const groupOf = (s: BookingSource): Filter => (s === "AIRBNB" ? "airbnb" : s === "BOOKING_COM" ? "booking" : "direct");
+const groupOf = (s: Platform): Filter => (s === "AIRBNB" ? "airbnb" : s === "BOOKING_COM" ? "booking" : s === "EXPEDIA" ? "expedia" : "direct");
 const nf = new Intl.NumberFormat("fr-FR");
 const when = (iso?: string) => (iso ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short", timeZone: "Africa/Casablanca" }).format(new Date(iso)) : "jamais");
 
@@ -157,7 +157,7 @@ export function ControlCalendar({
     });
 
   const rooms = onlyRoom === "all" ? data.rooms : data.rooms.filter((r) => r.id === onlyRoom);
-  const priceRows = compact ? [] : (["site", "booking", "airbnb", "min"] as const).filter((k) => layers[k]);
+  const priceRows = compact ? [] : (["site", "booking", "airbnb", "expedia", "min"] as const).filter((k) => layers[k]);
 
   // nights already sold or closed, for dimming prices and the occupancy row
   const taken = useMemo(() => {
@@ -177,7 +177,7 @@ export function ControlCalendar({
     const out = new Set<string>();
     type Item = { id: string; roomId: string; s: string; e: string; label: string; bookingId?: string };
     const items: Item[] = [
-      ...data.bookings.map((b) => ({ id: b.id, roomId: b.roomId, s: b.checkIn, e: b.checkOut, bookingId: b.id, label: `${b.guest || "Sans nom"} (${b.ota ? (b.source === "AIRBNB" ? "Airbnb" : "Booking.com") : b.reference})` })),
+      ...data.bookings.map((b) => ({ id: b.id, roomId: b.roomId, s: b.checkIn, e: b.checkOut, bookingId: b.id, label: `${b.guest || "Sans nom"} (${b.ota ? (b.platform === "AIRBNB" ? "Airbnb" : b.platform === "EXPEDIA" ? "Expedia" : "Booking.com") : b.reference})` })),
       ...data.blocks.map((k) => ({ id: k.id, roomId: k.roomId, s: k.start, e: k.end, label: k.kind === "maintenance" ? "Travaux" : k.kind === "beds24" ? "Fermée dans Beds24" : `Fermée${k.reason ? ` · ${k.reason}` : ""}` })),
     ];
     const pairs: { room: string; a: Item; b: Item; from: string; to: string }[] = [];
@@ -274,7 +274,9 @@ export function ControlCalendar({
           ? { ...base, minStay: Math.round(value) }
           : ed.k === "booking"
             ? { ...base, booking: value, ...(before == null ? { bookingState: "open" as const } : {}) }
-            : { ...base, airbnb: value, ...(before == null ? { airbnbState: "open" as const } : {}) };
+            : ed.k === "airbnb"
+              ? { ...base, airbnb: value, ...(before == null ? { airbnbState: "open" as const } : {}) }
+              : { ...base, expedia: value, ...(before == null ? { expediaState: "open" as const } : {}) };
     applyChanges(input)
       .then((r) => {
         if (!r.ok) {
@@ -313,8 +315,8 @@ export function ControlCalendar({
   const rowsPerRoom = 1 + priceRows.length;
 
   const bar = (b: CalBooking) => {
-    if (b.source === "AIRBNB" || b.source === "BOOKING_COM") {
-      const c = PLATFORM_COLORS[b.source];
+    if (b.platform === "AIRBNB" || b.platform === "BOOKING_COM" || b.platform === "EXPEDIA") {
+      const c = PLATFORM_COLORS[b.platform];
       return { className: "", style: { backgroundColor: c.bg, color: c.fg } };
     }
     return { className: statusBar[b.status] ?? "bg-stone-300", style: {} };
@@ -361,6 +363,7 @@ export function ControlCalendar({
               ["all", "Toutes"],
               ["airbnb", "Airbnb"],
               ["booking", "Booking.com"],
+              ["expedia", "Expedia"],
               ["direct", "Site et direct"],
             ] as [Filter, string][]
           ).map(([k, label]) => (
@@ -373,6 +376,7 @@ export function ControlCalendar({
             >
               {k === "airbnb" && <PlatformIcon source="AIRBNB" />}
               {k === "booking" && <PlatformIcon source="BOOKING_COM" />}
+              {k === "expedia" && <PlatformIcon source="EXPEDIA" />}
               {k === "direct" && <PlatformIcon source="WEBSITE" />}
               {label}
             </button>
@@ -393,6 +397,7 @@ export function ControlCalendar({
               ["site", "Prix site"],
               ["booking", "Prix Booking"],
               ["airbnb", "Prix Airbnb"],
+              ["expedia", "Prix Expedia"],
               ["min", "Séjour min."],
             ] as [keyof Layers, string][]
           ).map(([k, label]) => (
@@ -494,7 +499,7 @@ export function ControlCalendar({
             const base = 2 + r * rowsPerRoom;
             const nights = data.nights[room.id] ?? [];
             const used = taken.get(room.id) ?? new Set<number>();
-            const bookings = data.bookings.filter((b) => b.roomId === room.id && (filter === "all" || groupOf(b.source) === filter));
+            const bookings = data.bookings.filter((b) => b.roomId === room.id && (filter === "all" || groupOf(b.platform) === filter));
             const blocks = filter === "all" || filter === "direct" ? data.blocks.filter((k) => k.roomId === room.id) : [];
             return (
               <div key={room.id} className="contents">
@@ -509,7 +514,7 @@ export function ControlCalendar({
                     className={cn("sticky start-0 z-20 flex h-8 items-center gap-1.5 border-e border-rule bg-snow px-2 text-xs text-muted", j === priceRows.length - 1 && "border-b")}
                   >
                     {k === "min" ? <span className="w-3.5 text-center">↔</span> : <ChannelMark channel={k} className="h-3.5 w-3.5" />}
-                    {k === "site" ? "Site €" : k === "booking" ? "Booking €" : k === "airbnb" ? "Airbnb €" : "Séjour min."}
+                    {k === "site" ? "Site €" : k === "booking" ? "Booking €" : k === "airbnb" ? "Airbnb €" : k === "expedia" ? "Expedia €" : "Séjour min."}
                   </div>
                 ))}
 
@@ -560,7 +565,7 @@ export function ControlCalendar({
                       onPointerLeave={() => setCard(null)}
                       onClick={() => setCard(null)}
                     >
-                      <PlatformIcon source={b.source} className="h-5 w-5 shrink-0 rounded-[4px] ring-1 ring-white/60" />
+                      <PlatformIcon source={b.platform} className="h-5 w-5 shrink-0 rounded-[4px] ring-1 ring-white/60" />
                       {/* two lines: guest, then nights and departure, so short stays stay readable */}
                       <span className="grid min-w-0 leading-tight">
                         <span className="truncate text-sm font-semibold">{b.guest}</span>
@@ -583,7 +588,7 @@ export function ControlCalendar({
                     if (k === "site") {
                       text = night ? nf.format(night.site) : "";
                       tone = night?.siteCustom ? "font-semibold text-ink" : "text-muted";
-                    } else if (k === "booking" || k === "airbnb") {
+                    } else if (k === "booking" || k === "airbnb" || k === "expedia") {
                       const v = room.beds24 ? night?.[k] : null;
                       text = v == null ? (data.beds24Error ? "–" : "×") : nf.format(v);
                       tone = v == null && !data.beds24Error ? "text-rose-700" : "text-ink";
@@ -709,6 +714,9 @@ export function ControlCalendar({
           <PlatformIcon source="BOOKING_COM" /> Booking.com
         </li>
         <li className="flex items-center gap-1.5">
+          <PlatformIcon source="EXPEDIA" /> Expedia
+        </li>
+        <li className="flex items-center gap-1.5">
           <PlatformIcon source="WEBSITE" /> Site
         </li>
         <li className="flex items-center gap-1.5">
@@ -743,11 +751,11 @@ export function ControlCalendar({
           className="pointer-events-none fixed z-[70] grid w-[280px] gap-2 rounded-[12px] border border-rule bg-snow p-4 text-sm shadow-2xl"
         >
           <div className="flex items-center gap-2">
-            <PlatformIcon source={card.b.source} className="h-5 w-5 rounded-[4px]" />
+            <PlatformIcon source={card.b.platform} className="h-5 w-5 rounded-[4px]" />
             <span className="truncate font-semibold">{card.b.guest}</span>
           </div>
           <p className="text-xs text-muted">
-            {sourceLabel[card.b.source]}
+            {card.b.platform === "EXPEDIA" ? "Expedia" : sourceLabel[card.b.source]}
             {card.b.ota ? "" : ` · ${statusName[card.b.status] ?? card.b.status}`} · <span className="font-mono">{card.b.reference}</span>
           </p>
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[13px]">

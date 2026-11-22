@@ -52,10 +52,12 @@ export function ActionDrawer({
   const [site, setSite] = useState("");
   const [booking, setBooking] = useState("");
   const [airbnb, setAirbnb] = useState("");
+  const [expedia, setExpedia] = useState("");
   const [minStay, setMinStay] = useState("");
   const [all, setAll] = useState<Avail>("keep");
   const [bookingState, setBookingState] = useState<Avail>("keep");
   const [airbnbState, setAirbnbState] = useState<Avail>("keep");
+  const [expediaState, setExpediaState] = useState<Avail>("keep");
   const [note, setNote] = useState("");
   // a refused change shows as a toast
   const setError = (text: string) => {
@@ -86,10 +88,12 @@ export function ActionDrawer({
         site: num(site),
         booking: num(booking),
         airbnb: num(airbnb),
+        expedia: num(expedia),
         minStay: num(minStay),
         all,
         bookingState,
         airbnbState,
+        expediaState,
         note,
       });
       if (r.ok) onDone(r.message, true);
@@ -189,6 +193,12 @@ export function ActionDrawer({
               <input inputMode="numeric" value={airbnb} onChange={(e) => setAirbnb(e.target.value)} placeholder={current ? fmt(current.airbnb) || "fermé" : "inchangé"} className={field} />
             </label>
             <label className={label}>
+              <span className="flex items-center gap-2">
+                <ChannelMark channel="expedia" /> Expedia · €
+              </span>
+              <input inputMode="decimal" value={expedia} onChange={(e) => setExpedia(e.target.value)} placeholder={current ? fmt(current.expedia) || "fermé" : "inchangé"} className={field} />
+            </label>
+            <label className={label}>
               Séjour minimum (toutes plateformes)
               <input inputMode="numeric" value={minStay} onChange={(e) => setMinStay(e.target.value)} placeholder={current ? String(Math.max(current.minNights, current.channelMin ?? 1)) : "inchangé"} className={field} />
             </label>
@@ -225,8 +235,18 @@ export function ActionDrawer({
                   <option value="open">Rouvrir</option>
                 </select>
               </label>
+              <label className={label}>
+                <span className="flex items-center gap-2">
+                  <ChannelMark channel="expedia" /> Expedia
+                </span>
+                <select value={expediaState} onChange={(e) => setExpediaState(e.target.value as Avail)} className={field}>
+                  <option value="keep">Inchangée</option>
+                  <option value="close">Fermer</option>
+                  <option value="open">Rouvrir</option>
+                </select>
+              </label>
             </div>
-            {(bookingState === "open" || airbnbState === "open") && <p className="text-xs text-muted">Pour rouvrir une plateforme, indiquez aussi son prix ci-dessus.</p>}
+            {(bookingState === "open" || airbnbState === "open" || expediaState === "open") && <p className="text-xs text-muted">Pour rouvrir une plateforme, indiquez aussi son prix ci-dessus.</p>}
             {all === "close" && (
               <label className={label}>
                 Motif (optionnel)

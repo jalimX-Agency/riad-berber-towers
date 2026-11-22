@@ -15,6 +15,8 @@ export const metadata = { title: "Paramètres" };
 
 type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
+const channelName = { airbnb: "Airbnb", booking: "Booking.com", expedia: "Expedia" } as const;
+
 const errorText: Record<string, string> = {
   email: "Adresse email invalide.",
   paypal: "Nom PayPal.me invalide. Exemple : riadberbertowers (ou le lien paypal.me/riadberbertowers).",
@@ -51,7 +53,7 @@ export default async function SettingsPage({ searchParams }: Props) {
           sp.error
             ? [{ kind: "error", text: errorText[sp.error] ?? "Une erreur est survenue." }]
             : sp.done
-              ? [{ kind: "success", text: sp.done === "prices" ? "Prix de base enregistrés." : sp.done === "airbnbPrices" ? "Prix Airbnb envoyés pour les 12 prochains mois. Airbnb les affiche d’ici quelques minutes." : sp.done === "bookingPrices" ? "Prix Booking.com envoyés pour les 12 prochains mois." : "Paramètres enregistrés." }]
+              ? [{ kind: "success", text: sp.done === "prices" ? "Prix de base enregistrés." : sp.done === "airbnbPrices" ? "Prix Airbnb envoyés pour les 12 prochains mois. Airbnb les affiche d’ici quelques minutes." : sp.done === "bookingPrices" ? "Prix Booking.com envoyés pour les 12 prochains mois." : sp.done === "expediaPrices" ? "Prix Expedia envoyés pour les 12 prochains mois." : "Paramètres enregistrés." }]
               : []
         }
       />
@@ -78,13 +80,13 @@ export default async function SettingsPage({ searchParams }: Props) {
       </form>
 
       {linked.length > 0 &&
-        (["airbnb", "booking"] as const).map((ch) => (
+        (["airbnb", "booking", "expedia"] as const).map((ch) => (
           <form key={ch} action={saveChannelBasePrices} className="grid gap-4 rounded-[10px] border border-rule bg-snow p-5">
             <input type="hidden" name="channel" value={ch} />
             <div>
-              <h2 className="text-2xl">Prix de base {ch === "airbnb" ? "Airbnb" : "Booking.com"} (€ par nuit)</h2>
+              <h2 className="text-2xl">Prix de base {channelName[ch]} (€ par nuit)</h2>
               <p className="text-sm text-muted">
-                Un prix par chambre, appliqué à toutes les nuits des 12 prochains mois en une fois (il remplace les prix nuit par nuit). Les nuits fermées sur {ch === "airbnb" ? "Airbnb" : "Booking.com"} restent fermées. Laissez une case vide pour ne pas changer cette chambre. Pour un prix spécial (fêtes, week-end), modifiez ensuite ces nuits dans le Calendrier.
+                Un prix par chambre, appliqué à toutes les nuits des 12 prochains mois en une fois (il remplace les prix nuit par nuit). Les nuits fermées sur {channelName[ch]} restent fermées. Laissez une case vide pour ne pas changer cette chambre. Pour un prix spécial (fêtes, week-end), modifiez ensuite ces nuits dans le Calendrier.
               </p>
               {!typical && <p className="mt-2 text-sm text-amber-800">Beds24 ne répond pas : prix actuels indisponibles.</p>}
             </div>
@@ -107,7 +109,7 @@ export default async function SettingsPage({ searchParams }: Props) {
                 })}
               </div>
               {canEdit && (
-                <SubmitButton className="w-fit" confirm={`Remplacer le prix ${ch === "airbnb" ? "Airbnb" : "Booking.com"} de toutes les nuits des 12 prochains mois pour les chambres remplies ?`} confirmLabel="Appliquer">
+                <SubmitButton className="w-fit" confirm={`Remplacer le prix ${channelName[ch]} de toutes les nuits des 12 prochains mois pour les chambres remplies ?`} confirmLabel="Appliquer">
                   Appliquer à toutes les dates
                 </SubmitButton>
               )}

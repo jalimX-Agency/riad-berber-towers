@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { BookingSource } from "@prisma/client";
 import { PencilLine, X } from "lucide-react";
 import type { CalBlock, CalBooking, CalendarData } from "@/lib/admin/control-calendar";
 import { cn } from "@/lib/utils";
 import type { Selection } from "./ActionDrawer";
-import { ChannelMark, PLATFORM_COLORS, PlatformIcon } from "./PlatformIcon";
+import { ChannelMark, PLATFORM_COLORS, PlatformIcon, type Platform } from "./PlatformIcon";
 
-type Filter = "all" | "airbnb" | "booking" | "direct";
-const groupOf = (s: BookingSource): Filter => (s === "AIRBNB" ? "airbnb" : s === "BOOKING_COM" ? "booking" : "direct");
+type Filter = "all" | "airbnb" | "booking" | "expedia" | "direct";
+const groupOf = (s: Platform): Filter => (s === "AIRBNB" ? "airbnb" : s === "BOOKING_COM" ? "booking" : s === "EXPEDIA" ? "expedia" : "direct");
 const nf = new Intl.NumberFormat("fr-FR");
 const statusTone: Record<string, string> = {
   PENDING: "bg-amber-300 text-amber-950",
@@ -47,7 +46,7 @@ export function MobileAgenda({
   const room = data.rooms.find((r) => r.id === roomId) ?? data.rooms[0];
   if (!room) return null;
   const nights = data.nights[room.id] ?? [];
-  const bookings = data.bookings.filter((b) => b.roomId === room.id && (filter === "all" || groupOf(b.source) === filter));
+  const bookings = data.bookings.filter((b) => b.roomId === room.id && (filter === "all" || groupOf(b.platform) === filter));
   const blocks = filter === "all" || filter === "direct" ? data.blocks.filter((k) => k.roomId === room.id) : [];
   const covering = <T extends { s: string; e: string }>(items: T[], iso: string) => items.find((x) => x.s <= iso && x.e > iso);
   const bk = bookings.map((b) => ({ ...b, s: b.checkIn, e: b.checkOut }));
@@ -61,17 +60,17 @@ export function MobileAgenda({
 
   const chip = (b: CalBooking & { s: string }, iso: string) => {
     const first = b.s === iso || iso === data.days[0];
-    const ota = b.source === "AIRBNB" || b.source === "BOOKING_COM";
+    const ota = b.platform === "AIRBNB" || b.platform === "BOOKING_COM" || b.platform === "EXPEDIA";
     return (
       <Link
         href={`${pageUrl}${pageUrl.includes("?") ? "&" : "?"}b=${encodeURIComponent(b.id)}`}
         scroll={false}
         prefetch={false}
         onClick={(e) => e.stopPropagation()}
-        style={ota ? { backgroundColor: PLATFORM_COLORS[b.source as "AIRBNB" | "BOOKING_COM"].bg, color: "#fff" } : undefined}
+        style={ota ? { backgroundColor: PLATFORM_COLORS[b.platform as "AIRBNB" | "BOOKING_COM" | "EXPEDIA"].bg, color: "#fff" } : undefined}
         className={cn("flex min-w-0 items-center gap-1.5 rounded-[8px] px-2 py-1.5 text-sm font-medium", !ota && (statusTone[b.status] ?? "bg-stone-300"), !first && "opacity-70")}
       >
-        <PlatformIcon source={b.source} className="h-4 w-4 rounded-[3px] ring-1 ring-white/60" />
+        <PlatformIcon source={b.platform} className="h-4 w-4 rounded-[3px] ring-1 ring-white/60" />
         {/* two lines on the phone: the name keeps the full width */}
         <span className="grid min-w-0 leading-tight">
           <span className="truncate">{first ? b.guest : `↳ ${b.guest}`}</span>
@@ -158,6 +157,9 @@ export function MobileAgenda({
                       </span>
                       <span className={cn("flex items-center gap-1", night?.airbnb == null && !data.beds24Error && "text-rose-700", data.beds24Error && "text-muted")}>
                         {data.beds24Error ? "–" : night?.airbnb == null ? "fermé" : `${nf.format(night.airbnb)} €`} <ChannelMark channel="airbnb" className="h-3.5 w-3.5" />
+                      </span>
+                      <span className={cn("flex items-center gap-1", night?.expedia == null && !data.beds24Error && "text-rose-700", data.beds24Error && "text-muted")}>
+                        {data.beds24Error ? "–" : night?.expedia == null ? "fermé" : `${nf.format(night.expedia)} €`} <ChannelMark channel="expedia" className="h-3.5 w-3.5" />
                       </span>
                     </>
                   )}

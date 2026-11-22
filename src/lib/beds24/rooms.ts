@@ -1,7 +1,8 @@
 // How the riad's rooms map to Beds24 (property 369451). Prices live in Beds24 rows, one row per sales channel:
 //   price1 = "Booking + site (EUR)"  → Booking.com   (euros)
 //   price2 = "Airbnb"                → Airbnb        (euros since 2026-11-22; dirhams before)
-// Add a channel later (Expedia…) by creating its price row in Beds24 and listing it here.
+//   price3 = "Expedia (EUR)"         → Expedia       (euros, connected 2026-11-22)
+// Add a channel by creating its price row in Beds24 (Daily Price Rules, ticked for that channel only) and listing it here.
 
 export const BEDS24_PROPERTY_ID = 369451;
 
@@ -16,10 +17,10 @@ export const BEDS24_ROOMS: Record<string, number> = {
   adrar: 760572,
 };
 
-export type PriceField = "price1" | "price2";
+export type PriceField = "price1" | "price2" | "price3";
 
 export type ChannelDef = {
-  key: "booking" | "airbnb";
+  key: "booking" | "airbnb" | "expedia";
   label: string;
   /** Beds24 calendar field holding this channel's nightly price */
   priceField: PriceField;
@@ -32,6 +33,7 @@ export type ChannelDef = {
 export const CHANNELS: ChannelDef[] = [
   { key: "booking", label: "Booking.com", priceField: "price1", currency: "EUR", symbol: "€", bookingChannel: "booking" },
   { key: "airbnb", label: "Airbnb", priceField: "price2", currency: "EUR", symbol: "€", bookingChannel: "airbnb" },
+  { key: "expedia", label: "Expedia", priceField: "price3", currency: "EUR", symbol: "€", bookingChannel: "expedia" },
 ];
 
 export const channelByKey = (k: string) => CHANNELS.find((c) => c.key === k);
