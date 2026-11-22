@@ -273,6 +273,26 @@ export async function saveNotes(id: string, form: FormData) {
   return back(id, { done: "notes" }, form);
 }
 
+/**
+ * People and bed setup of each room of the reservation (one room, or every room of a multi-room reservation).
+ * The price is not recalculated: the riad adjusts it in "Modifier le paiement" if needed.
+ */
+export async function saveStay(id: string, form: FormData) {
+  await requireUser();
+  if (await isOta(id)) return back(id, { error: "ota" }, form);
+  const ids = await groupIds(id);
+  const updates: { id: string; adults: number; bedSetup: "DOUBLE" | "TWIN" }[] = [];
+  for (const gid of ids) {
+    const adults = Number(form.get(`adults_${gid}`));
+    const bed = form.get(`bed_${gid}`);
+    if (!Number.isInteger(adults) || adults < 1 || adults > 6) return back(id, { error: "stay" }, form);
+    updates.push({ id: gid, adults, bedSetup: bed === "TWIN" ? "TWIN" : "DOUBLE" });
+  }
+  await db.$transaction(updates.map((u) => db.booking.update({ where: { id: u.id }, data: { adults: u.adults, bedSetup: u.bedSetup } })));
+  pushAll(ids); // the guest count follows in Beds24
+  return back(id, { done: "stay" }, form);
+}
+
 export type NewBookingState = { error?: string; detail?: string; values?: Record<string, string> };
 
 const SOURCES: BookingSource[] = ["WHATSAPP", "PHONE", "EMAIL", "BOOKING_COM", "AIRBNB", "AGENCY", "WALK_IN", "WEBSITE"];

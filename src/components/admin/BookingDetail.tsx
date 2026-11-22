@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { BookingStatus } from "@prisma/client";
-import { ArrowLeft, ArrowRight, BedDouble, ChevronDown, Expand, FileDown, FileText, Mail, MessageCircle, Phone, Users } from "lucide-react";
+import { ArrowLeft, ArrowRight, BedDouble, ChevronDown, Expand, FileDown, FileText, Mail, MessageCircle, Moon, PencilLine, Phone, Settings2, Users } from "lucide-react";
 import { db } from "@/lib/db";
 import { canManage, requireUser } from "@/lib/admin/guard";
 import { actionLabel, bedLabel, eur, frDate, nextStatuses, paymentLabel, sourceLabel, statusLabel } from "@/lib/admin/labels";
@@ -19,6 +19,7 @@ import {
   rejectProof,
   resendPaymentLink,
   restore,
+  saveStay,
   setStatus,
   saveNotes,
   savePayment,
@@ -44,6 +45,7 @@ const doneText: Record<string, string> = {
   payment: "Paiement enregistré.",
   status: "Statut modifié.",
   notes: "Notes enregistrées.",
+  stay: "Personnes et lits enregistrés.",
 };
 const emailText: Record<string, string> = {
   sent: "Email envoyé au client.",
@@ -55,6 +57,7 @@ const errorText: Record<string, string> = {
   transition: "Cette action n’est plus possible : le statut a changé entre-temps.",
   restore: "Impossible de rétablir : la chambre est déjà prise ou fermée sur ces dates.",
   payment: "Montant invalide.",
+  stay: "Nombre de personnes invalide (1 à 6 par chambre).",
   conflict: "Impossible : ces nuits viennent d’être prises entre-temps. Rien n’a été modifié. Proposez d’autres dates au client ou annulez la demande.",
   ota: "Réservation Booking.com / Airbnb : son statut se change sur la plateforme, puis il arrive ici tout seul.",
 };
@@ -113,7 +116,7 @@ export async function BookingDetail({
     where: { id },
     include: {
       guest: true,
-      room: { select: { name: true, slug: true } },
+      room: { select: { name: true, slug: true, maxAdults: true } },
       // never load the file bytes here
       proofs: { select: { id: true, filename: true, mimeType: true, size: true, createdAt: true }, orderBy: { createdAt: "desc" } },
       ...extrasInclude,
@@ -122,7 +125,7 @@ export async function BookingDetail({
   if (!b) notFound();
   // other rooms booked together (same guest, same dates): a family or a group entered as one reservation
   // the rooms of one reservation (same guest, same dates): shown and handled as one booking
-  const members = await groupMembers(b.id, { room: { select: { name: true } } });
+  const members = await groupMembers(b.id, { room: { select: { name: true, maxAdults: true } } });
   const isGroup = members.length > 1;
 
   const nightly = (Array.isArray(b.nightlyRates) ? b.nightlyRates : []) as { date: string; price: number }[];
@@ -139,10 +142,14 @@ export async function BookingDetail({
   // Booking.com / Airbnb reservation mirrored from Beds24: read-only here, managed on the platform
   const ota = b.reference.startsWith("B24-");
   const R = mode === "panel" && returnTo ? <input type="hidden" name="_return" value={returnTo} /> : null;
+  // the rooms of the stay (one, or every room of a multi-room reservation) and their guests
+  const rooms = isGroup ? members : [{ ...b, room: { name: b.room.name, maxAdults: b.room.maxAdults } }];
+  const totalAdults = rooms.reduce((n, r) => n + r.adults, 0);
+  const chip = "inline-flex items-center gap-1.5 rounded-full border border-rule bg-snow px-3.5 py-2 text-sm hover:border-earth";
 
 
   return (
-    <article className="grid gap-7">
+    <article className="grid gap-6">
       {/* top bar */}
       <div className={cn("flex flex-wrap items-center justify-between gap-3", mode === "panel" && "sticky top-0 z-10 -mx-5 border-b border-rule bg-snow/95 px-5 py-3 backdrop-blur sm:-mx-8 sm:px-8")}>
         {mode === "page" ? (
@@ -150,7 +157,10 @@ export async function BookingDetail({
             <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Réservations
           </Link>
         ) : (
-          <span className="font-mono text-sm text-earth">{b.reference}</span>
+          <span className="flex min-w-0 items-center gap-2">
+            <StatusBadge status={b.status} />
+            <span className="truncate font-mono text-sm text-earth">{b.reference}</span>
+          </span>
         )}
         <div className="flex items-center gap-2">
           {mode === "panel" && (
@@ -173,98 +183,156 @@ export async function BookingDetail({
 
       {/* who */}
       <header className="grid gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <StatusBadge status={b.status} className="px-3 py-1 text-sm" />
-          <span className="text-sm text-muted">
-            {mode === "page" && <span className="font-mono text-earth">{b.reference} · </span>}
+        <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+          {mode === "page" && <StatusBadge status={b.status} className="px-3 py-1 text-sm" />}
+          {mode === "page" && <span className="font-mono text-earth">{b.reference}</span>}
+          <span>
             {sourceLabel[b.source]} · reçue le {stamp(b.createdAt)}
           </span>
         </div>
-        <h1 className="text-4xl leading-tight sm:text-5xl">
+        <h1 className="text-3xl leading-tight sm:text-4xl">
           {b.guest.firstName} {b.guest.lastName}
         </h1>
-        <p className="text-sm text-muted">
-          {[b.guest.country, localeName[b.locale], b.guest.email, b.guest.phone].filter(Boolean).join(" · ")}
-        </p>
+        {[b.guest.country, localeName[b.locale], b.guest.email, b.guest.phone].some(Boolean) && (
+          <p className="text-sm text-muted" dir="auto">
+            {[b.guest.country, localeName[b.locale], b.guest.email, b.guest.phone].filter(Boolean).join(" · ")}
+          </p>
+        )}
         <div className="flex flex-wrap gap-2">
           {phoneDigits && (
-            <a href={`https://wa.me/${phoneDigits}?text=${encodeURIComponent(`${b.reference} · `)}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full bg-emerald-700 px-4 py-2 text-sm text-snow hover:bg-emerald-800">
+            <a href={`https://wa.me/${phoneDigits}?text=${encodeURIComponent(`${b.reference} · `)}`} target="_blank" rel="noopener noreferrer" className={cn(chip, "border-emerald-700 bg-emerald-700 text-snow hover:bg-emerald-800")}>
               <MessageCircle className="h-4 w-4" aria-hidden="true" /> WhatsApp
             </a>
           )}
           {phoneDigits && (
-            <a href={`tel:+${phoneDigits}`} className="inline-flex items-center gap-1.5 rounded-full border border-rule bg-snow px-4 py-2 text-sm hover:border-earth">
+            <a href={`tel:+${phoneDigits}`} className={chip}>
               <Phone className="h-4 w-4" aria-hidden="true" /> Appeler
             </a>
           )}
           {b.guest.email && (
-            <a href={`mailto:${b.guest.email}?subject=${encodeURIComponent(`Riad Berber Towers · ${b.reference}`)}`} className="inline-flex items-center gap-1.5 rounded-full border border-rule bg-snow px-4 py-2 text-sm hover:border-earth">
+            <a href={`mailto:${b.guest.email}?subject=${encodeURIComponent(`Riad Berber Towers · ${b.reference}`)}`} className={chip}>
               <Mail className="h-4 w-4" aria-hidden="true" /> Email
             </a>
           )}
           {voucher && (
-            <a href={`/admin/bookings/${b.id}/voucher`} className="inline-flex items-center gap-1.5 rounded-full border border-rule bg-snow px-4 py-2 text-sm hover:border-earth">
+            <a href={`/admin/bookings/${b.id}/voucher`} className={chip}>
               <FileDown className="h-4 w-4" aria-hidden="true" /> Fiche PDF
             </a>
           )}
         </div>
       </header>
 
-      {/* when */}
-      <div className="grid overflow-hidden rounded-[12px] border border-rule bg-snow sm:grid-cols-[1fr_auto_1fr_1.1fr]">
-        <div className="grid gap-0.5 p-4">
-          <span className="text-xs uppercase tracking-[0.14em] text-granite">Arrivée</span>
-          <span className="font-display text-2xl leading-tight first-letter:uppercase">{frDate(b.checkIn, { weekday: "short", day: "numeric", month: "short" })}</span>
-          <span className="text-xs text-muted">{b.arrivalTime ? `vers ${b.arrivalTime}` : frDate(b.checkIn, { year: "numeric" })}</span>
-        </div>
-        <span className="hidden place-items-center px-1 text-muted sm:grid" aria-hidden="true">
-          <ArrowRight className="h-5 w-5" />
-        </span>
-        <div className="grid gap-0.5 border-t border-rule p-4 sm:border-t-0">
-          <span className="text-xs uppercase tracking-[0.14em] text-granite">Départ</span>
-          <span className="font-display text-2xl leading-tight first-letter:uppercase">{frDate(b.checkOut, { weekday: "short", day: "numeric", month: "short" })}</span>
-          <span className="text-xs text-muted">{frDate(b.checkOut, { year: "numeric" })}</span>
-        </div>
-        <div className="grid content-center gap-1.5 border-t border-rule bg-paper/60 p-4 text-sm sm:border-s sm:border-t-0">
-          <span className="inline-flex items-center gap-2">
-            <BedDouble className="h-4 w-4 text-earth" aria-hidden="true" />
-            <b className="font-medium">{isGroup ? `${members.length} chambres : ${members.map((m) => m.room.name).join(", ")}` : b.room.name}</b>
-          </span>
-          <span className="inline-flex items-center gap-2 text-muted">
-            <Users className="h-4 w-4 text-earth" aria-hidden="true" />
-            {b.nights} nuit{b.nights > 1 ? "s" : ""} · {b.adults} adulte{b.adults > 1 ? "s" : ""}
-          </span>
-          <span className={cn("inline-flex w-fit items-center gap-2 rounded-full px-2.5 py-0.5 text-xs ring-1", b.bedSetup === "TWIN" ? "bg-sky-50 text-sky-900 ring-sky-200" : "bg-stone-100 text-stone-800 ring-stone-300")}>
-            {bedLabel[b.bedSetup]}
-          </span>
-        </div>
-      </div>
-
-      {isGroup && (
-        <section className="grid gap-3 rounded-[12px] border border-rule bg-snow p-4 text-sm">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-base font-medium">Réservation de {members.length} chambres</p>
-            <p className="text-muted">
-              Total <b className="text-ink">{eur(pay.total, b.currency)}</b> · {members.reduce((n, m) => n + m.adults, 0)} pers.
-            </p>
+      {/* the stay: dates, then every room with its guests and beds (editable) */}
+      <section className="overflow-hidden rounded-[14px] border border-rule bg-snow">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 border-b border-rule p-4 sm:grid-cols-[1fr_auto_1fr_auto]">
+          <div className="grid gap-0.5">
+            <span className="text-[11px] uppercase tracking-[0.14em] text-granite">Arrivée</span>
+            <span className="font-display text-xl leading-tight first-letter:uppercase sm:text-2xl">{frDate(b.checkIn, { weekday: "short", day: "numeric", month: "short" })}</span>
+            <span className="text-xs text-muted">{b.arrivalTime ? `vers ${b.arrivalTime}` : frDate(b.checkIn, { year: "numeric" })}</span>
           </div>
-          <ul className="grid divide-y divide-rule overflow-hidden rounded-[10px] border border-rule">
-            {members.map((g) => (
+          <ArrowRight className="h-5 w-5 text-muted" aria-hidden="true" />
+          <div className="grid gap-0.5">
+            <span className="text-[11px] uppercase tracking-[0.14em] text-granite">Départ</span>
+            <span className="font-display text-xl leading-tight first-letter:uppercase sm:text-2xl">{frDate(b.checkOut, { weekday: "short", day: "numeric", month: "short" })}</span>
+            <span className="text-xs text-muted">{frDate(b.checkOut, { year: "numeric" })}</span>
+          </div>
+          <div className="col-span-3 flex items-center gap-4 border-t border-rule pt-3 text-sm sm:col-span-1 sm:grid sm:gap-1 sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0">
+            <span className="inline-flex items-center gap-1.5">
+              <Moon className="h-4 w-4 text-earth" aria-hidden="true" />
+              <b className="font-medium">{b.nights}</b> nuit{b.nights > 1 ? "s" : ""}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Users className="h-4 w-4 text-earth" aria-hidden="true" />
+              <b className="font-medium">{totalAdults}</b> pers.
+            </span>
+            {isGroup && (
+              <span className="inline-flex items-center gap-1.5">
+                <BedDouble className="h-4 w-4 text-earth" aria-hidden="true" />
+                <b className="font-medium">{members.length}</b> chambres
+              </span>
+            )}
+          </div>
+        </div>
+
+        <ul className="divide-y divide-rule">
+          {rooms.map((g) => {
+            const row = (
+              <>
+                <span className="flex items-center gap-2">
+                  <BedDouble className="h-4 w-4 shrink-0 text-earth" aria-hidden="true" />
+                  <span className="min-w-0 flex-1 truncate font-medium">{g.room.name}</span>
+                  {isGroup && <span className="shrink-0 text-sm tabular-nums">{eur(Number(g.total), g.currency)}</span>}
+                </span>
+                <span className="flex flex-wrap items-center gap-1.5 ps-6">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-paper px-2.5 py-1 text-xs">
+                    <Users className="h-3.5 w-3.5" aria-hidden="true" /> {g.adults} pers.
+                  </span>
+                  <span className={cn("rounded-full px-2.5 py-1 text-xs ring-1", g.bedSetup === "TWIN" ? "bg-sky-50 text-sky-900 ring-sky-200" : "bg-stone-100 text-stone-800 ring-stone-300")}>{bedLabel[g.bedSetup]}</span>
+                  {isGroup && <StatusBadge status={g.status} />}
+                  {isGroup && <span className="font-mono text-[11px] text-muted">{g.reference}</span>}
+                </span>
+              </>
+            );
+            return (
               <li key={g.id}>
-                <a href={`/admin/bookings/${g.id}`} className={cn("flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2.5 hover:bg-paper", g.id === b.id && "bg-paper/70")}>
-                  <BedDouble className="h-4 w-4 text-earth" aria-hidden="true" />
-                  <span className="font-medium">{g.room.name}</span>
-                  <span className="font-mono text-xs text-muted">{g.reference}</span>
-                  <span className="text-muted">{g.adults} pers.</span>
-                  <span className="ms-auto">{eur(Number(g.total), g.currency)}</span>
-                  <StatusBadge status={g.status} />
-                </a>
+                {isGroup && g.id !== b.id ? (
+                  <a href={`/admin/bookings/${g.id}`} className="grid gap-1.5 px-4 py-3 hover:bg-paper/60">
+                    {row}
+                  </a>
+                ) : (
+                  <div className={cn("grid gap-1.5 px-4 py-3", isGroup && "bg-paper/50")}>{row}</div>
+                )}
               </li>
-            ))}
-          </ul>
-          <p className="text-xs text-muted">Une seule réservation : les changements de statut et le paiement s’appliquent à toutes les chambres, et la fiche PDF les liste toutes. Pour changer une seule chambre (l’annuler, par exemple), ouvrez-la et utilisez « Changer le statut » avec « seulement cette chambre ».</p>
-        </section>
-      )}
+            );
+          })}
+        </ul>
+
+        {!ota && (
+          <details className="group border-t border-rule" open={sp.error === "stay"}>
+            <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-sm text-earth hover:bg-paper/60 [&::-webkit-details-marker]:hidden">
+              <PencilLine className="h-4 w-4" aria-hidden="true" />
+              Modifier les personnes et les lits
+              <ChevronDown className="ms-auto h-4 w-4 text-muted transition-transform group-open:rotate-180" aria-hidden="true" />
+            </summary>
+            <form action={saveStay.bind(null, b.id)} className="grid gap-3 border-t border-rule bg-paper/40 p-4">
+              {R}
+              {rooms.map((g) => (
+                <div key={g.id} className="grid grid-cols-[100px_1fr] items-end gap-2 sm:grid-cols-[1fr_120px_200px]">
+                  <span className="col-span-2 text-sm font-medium sm:col-span-1">{g.room.name}</span>
+                  <label className="grid gap-1 text-xs text-muted">
+                    Personnes
+                    <select name={`adults_${g.id}`} defaultValue={g.adults} className={field}>
+                      {[1, 2, 3, 4, 5, 6].map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                          {n > (g.room.maxAdults ?? 2) ? " (au-delà de la capacité)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="grid gap-1 text-xs text-muted">
+                    Lits
+                    <select name={`bed_${g.id}`} defaultValue={g.bedSetup} className={field}>
+                      <option value="DOUBLE">{bedLabel.DOUBLE}</option>
+                      <option value="TWIN">{bedLabel.TWIN}</option>
+                    </select>
+                  </label>
+                </div>
+              ))}
+              <div className="flex flex-wrap items-center gap-3">
+                <SubmitButton variant="outline">Enregistrer</SubmitButton>
+                <p className="text-xs text-muted">Le prix ne change pas automatiquement : ajustez-le dans « Modifier le paiement » si besoin.</p>
+              </div>
+            </form>
+          </details>
+        )}
+
+        {isGroup && (
+          <p className="border-t border-rule bg-paper/40 px-4 py-2.5 text-xs text-muted">
+            Une seule réservation : statut, paiement et fiche PDF concernent les {members.length} chambres. Total {eur(pay.total, b.currency)}.
+          </p>
+        )}
+      </section>
 
       {ota && (
         <section className="grid gap-1 rounded-[12px] border border-sky-200 bg-sky-50 p-5 text-sm">
@@ -368,39 +436,6 @@ export async function BookingDetail({
             </div>
           )}
         </section>
-      )}
-
-      {!ota && (
-        <details className="group rounded-[12px] border border-rule bg-snow" open={sp.error === "transition"}>
-          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm">
-            Changer le statut{isGroup ? ` (${members.length} chambres)` : ""}
-            <ChevronDown className="h-4 w-4 text-muted transition-transform group-open:rotate-180" aria-hidden="true" />
-          </summary>
-          <form action={setStatus.bind(null, b.id)} className="flex flex-wrap items-end gap-3 border-t border-rule p-4">
-            {R}
-            <label className="grid gap-1 text-sm">
-              Nouveau statut
-              <select name="status" defaultValue={b.status} className={field}>
-                {(Object.keys(statusLabel) as BookingStatus[]).map((st) => (
-                  <option key={st} value={st}>
-                    {statusLabel[st]}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <SubmitButton variant="outline">Appliquer</SubmitButton>
-            {isGroup && (
-              <label className="flex items-center gap-1.5 text-xs text-muted">
-                <input type="checkbox" name="only" className="accent-[var(--earth)]" />
-                seulement {b.room.name} (pas les autres chambres)
-              </label>
-            )}
-            {b.guest.email && <Notify label="prévenir le client (en attente de paiement : envoie le lien de paiement)" />}
-            <p className="basis-full text-xs text-muted">
-              « En attente de paiement » crée la page de paiement du client (PayPal, Wise, virement). Remettre une réservation annulée vérifie d’abord que les nuits sont libres.
-            </p>
-          </form>
-        </details>
       )}
 
       {/* money */}
@@ -538,14 +573,50 @@ export async function BookingDetail({
         </form>
       </Section>
 
-      {/* history and danger zone */}
-      <footer className="grid gap-3 border-t border-rule pt-4 text-xs text-muted">
-        <p>
+      {/* secondary: status override, history, danger zone */}
+      <section className="grid gap-3">
+        <h2 className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-granite">
+          <Settings2 className="h-3.5 w-3.5" aria-hidden="true" /> Plus d’options
+        </h2>
+        {!ota && (
+        <details className="group rounded-[12px] border border-rule bg-snow" open={sp.error === "transition"}>
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm">
+            Changer le statut{isGroup ? ` (${members.length} chambres)` : ""}
+            <ChevronDown className="h-4 w-4 text-muted transition-transform group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <form action={setStatus.bind(null, b.id)} className="flex flex-wrap items-end gap-3 border-t border-rule p-4">
+            {R}
+            <label className="grid gap-1 text-sm">
+              Nouveau statut
+              <select name="status" defaultValue={b.status} className={field}>
+                {(Object.keys(statusLabel) as BookingStatus[]).map((st) => (
+                  <option key={st} value={st}>
+                    {statusLabel[st]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <SubmitButton variant="outline">Appliquer</SubmitButton>
+            {isGroup && (
+              <label className="flex items-center gap-1.5 text-xs text-muted">
+                <input type="checkbox" name="only" className="accent-[var(--earth)]" />
+                seulement {b.room.name} (pas les autres chambres)
+              </label>
+            )}
+            {b.guest.email && <Notify label="prévenir le client (en attente de paiement : envoie le lien de paiement)" />}
+            <p className="basis-full text-xs text-muted">
+              « En attente de paiement » crée la page de paiement du client (PayPal, Wise, virement). Remettre une réservation annulée vérifie d’abord que les nuits sont libres.
+            </p>
+          </form>
+        </details>
+      )}
+
+        <p className="text-xs text-muted">
           Créée le {stamp(b.createdAt)} · modifiée le {stamp(b.updatedAt)}
           {b.cancelledAt && ` · annulée le ${stamp(b.cancelledAt)}`} · statut : {statusLabel[b.status]}
         </p>
         {canManage(user.role) && !ota && (
-          <details className="rounded-[10px] border border-rose-200 bg-rose-50/50">
+          <details className="rounded-[12px] border border-rose-200 bg-rose-50/50">
             <summary className="cursor-pointer px-4 py-3 text-sm text-rose-900">Zone dangereuse</summary>
             <div className="grid gap-3 border-t border-rose-200 p-4">
               <p className="text-sm text-rose-900/80">
@@ -560,7 +631,7 @@ export async function BookingDetail({
             </div>
           </details>
         )}
-      </footer>
+      </section>
     </article>
   );
 }

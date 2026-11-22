@@ -6,7 +6,7 @@ import { BEDS24_ROOMS, SITE_REF_PREFIX, beds24RoomId, isOtaReference } from "./r
 /** Site statuses that occupy the room (the availability engine counts every non-cancelled booking). */
 const OCCUPYING = ["PENDING", "AWAITING_PAYMENT", "PAYMENT_REVIEW", "CONFIRMED", "CHECKED_IN", "CHECKED_OUT"];
 
-type B24Booking = { id: number; roomId: number; status: string; arrival: string; departure: string; reference?: string };
+type B24Booking = { id: number; roomId: number; status: string; arrival: string; departure: string; reference?: string; numAdult?: number };
 type PostResult = { success?: boolean; new?: { id?: number }; errors?: unknown; warnings?: unknown }[];
 
 const fail = (what: string, r: PostResult) => {
@@ -69,8 +69,8 @@ export async function pushBooking(id: string): Promise<void> {
     fail("création de la réservation", r);
     return;
   }
-  if (existing.status === status && existing.arrival === arrival && existing.departure === departure && existing.roomId === roomId) return;
-  const r = await b24<PostResult>("POST", "/bookings", [{ id: existing.id, roomId, status, arrival, departure }]);
+  if (existing.status === status && existing.arrival === arrival && existing.departure === departure && existing.roomId === roomId && existing.numAdult === b.adults) return;
+  const r = await b24<PostResult>("POST", "/bookings", [{ id: existing.id, roomId, status, arrival, departure, numAdult: b.adults }]);
   fail("mise à jour de la réservation", r);
 }
 
