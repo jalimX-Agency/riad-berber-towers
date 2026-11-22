@@ -172,17 +172,29 @@ export function ControlCalendar({
     return m;
   }, [data, n]);
 
-  const clashes = useMemo(() => {
+  // overlapping stays / closures: ids for the red rings, and readable pairs for the banner (phone included)
+  const { clashes, clashPairs } = useMemo(() => {
     const out = new Set<string>();
-    const items = [...data.bookings.map((b) => ({ id: b.id, roomId: b.roomId, s: b.checkIn, e: b.checkOut })), ...data.blocks.map((k) => ({ id: k.id, roomId: k.roomId, s: k.start, e: k.end }))];
+    type Item = { id: string; roomId: string; s: string; e: string; label: string; bookingId?: string };
+    const items: Item[] = [
+      ...data.bookings.map((b) => ({ id: b.id, roomId: b.roomId, s: b.checkIn, e: b.checkOut, bookingId: b.id, label: `${b.guest || "Sans nom"} (${b.ota ? (b.source === "AIRBNB" ? "Airbnb" : "Booking.com") : b.reference})` })),
+      ...data.blocks.map((k) => ({ id: k.id, roomId: k.roomId, s: k.start, e: k.end, label: k.kind === "maintenance" ? "Travaux" : k.kind === "beds24" ? "Fermée dans Beds24" : `Fermée${k.reason ? ` · ${k.reason}` : ""}` })),
+    ];
+    const pairs: { room: string; a: Item; b: Item; from: string; to: string }[] = [];
     for (let i = 0; i < items.length; i++)
       for (let j = i + 1; j < items.length; j++) {
         const x = items[i];
         const y = items[j];
-        if (x.roomId === y.roomId && x.s < y.e && y.s < x.e) out.add(x.id).add(y.id);
+        // two closures on the same nights sell nothing twice: only pairs with a stay are conflicts
+        if (x.roomId === y.roomId && x.s < y.e && y.s < x.e && (x.bookingId || y.bookingId)) {
+          out.add(x.id).add(y.id);
+          pairs.push({ room: data.rooms.find((r) => r.id === x.roomId)?.short ?? "", a: x, b: y, from: x.s > y.s ? x.s : y.s, to: x.e < y.e ? x.e : y.e });
+        }
       }
-    return out;
+    return { clashes: out, clashPairs: pairs };
   }, [data]);
+  const shortDay = (iso: string) => new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${iso}T00:00:00Z`)).replace(".", "");
+  const bookingHref = (id: string) => `${pageUrl}${pageUrl.includes("?") ? "&" : "?"}b=${encodeURIComponent(id)}`;
 
   // ── selection (drag across nights and rooms) ──
   const finish = useCallback(() => {
@@ -424,11 +436,35 @@ export function ControlCalendar({
           {data.beds24Error}
         </p>
       )}
-      {clashes.size > 0 && (
-        <p role="alert" className="flex items-center gap-2 rounded-[10px] border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">
-          <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
-          Conflit : deux séjours ou une fermeture se chevauchent (encadrés en rouge). Vérifiez avant de vendre ces nuits.
-        </p>
+      {clashPairs.length > 0 && (
+        <div role="alert" className="grid gap-2 rounded-[10px] border border-rose-300 bg-rose-50 p-3 text-sm text-rose-900">
+          <p className="flex items-center gap-2 font-medium">
+            <TriangleAlert className="h-4 w-4 shrink-0" aria-hidden="true" />
+            Conflit : {clashPairs.length > 1 ? `${clashPairs.length} chevauchements` : "un chevauchement"} sur les mêmes nuits. Vérifiez avant de vendre ces nuits.
+          </p>
+          <ul className="grid gap-1.5 ps-6">
+            {clashPairs.slice(0, 8).map((c) => (
+              <li key={`${c.a.id}-${c.b.id}`} className="leading-snug">
+                <b>{c.room}</b> · nuits du {shortDay(c.from)} au {shortDay(c.to)} (départ) :{" "}
+                {[c.a, c.b].map((it, i) => (
+                  <span key={it.id}>
+                    {i === 1 && " et "}
+                    {it.bookingId ? (
+                      <Link href={bookingHref(it.bookingId)} scroll={false} prefetch={false} className="underline underline-offset-2 hover:text-rose-700">
+                        {it.label}
+                      </Link>
+                    ) : (
+                      <span>{it.label}</span>
+                    )}
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
+          <p className="ps-6 text-xs text-rose-800">
+            Une fermeture en trop se rouvre depuis le calendrier ; une réservation annulée sur la plateforme disparaît après « Synchroniser ».
+          </p>
+        </div>
       )}
 
       <MobileAgenda data={data} canEdit={canEdit} today={today} filter={filter} pageUrl={pageUrl} onEdit={setDrawer} onBlock={setBlockMenu} />

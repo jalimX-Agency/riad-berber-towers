@@ -99,7 +99,17 @@ export async function applyChanges(raw: ApplyInput): Promise<ActionResult> {
         if (clash) return { ok: false, error: `${room.name} est déjà réservée (${clash.guest.lastName}, ${clash.reference}) sur ${frRange(r.start, r.end)}. Rien n’a été fermé.` };
       }
     }
-    await db.$transaction(rooms.flatMap((room) => ranges.map((r) => db.roomBlock.create({ data: { roomId: room.id, startDate: r.start, endDate: r.end, source: "MANUAL", reason: input.note } }))));
+    // only the nights not already closed get a new closure (closing twice used to stack two closures on the same nights)
+    const creates = [];
+    for (const room of rooms) {
+      const existing = await db.roomBlock.findMany({
+        where: { roomId: room.id, startDate: { lt: addDays(to, 1) }, endDate: { gt: from }, OR: [{ source: { in: ["MANUAL", "MAINTENANCE"] } }, { externalUid: { startsWith: "b24:cl:" } }] },
+        select: { startDate: true, endDate: true },
+      });
+      const closed = new Set(existing.flatMap((k) => eachNight(k.startDate, k.endDate).map(toISO)));
+      for (const r of runs(isos.filter((d) => !closed.has(d)))) creates.push(db.roomBlock.create({ data: { roomId: room.id, startDate: r.start, endDate: r.end, source: "MANUAL", reason: input.note } }));
+    }
+    if (creates.length) await db.$transaction(creates);
     await Promise.all(rooms.flatMap((room) => ranges.map((r) => setClosureSafe(room.slug, r.start, r.end, true))));
     done.push("chambre fermée partout");
   }
