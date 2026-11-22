@@ -236,7 +236,8 @@ export async function pullFromBeds24(): Promise<PullResult> {
 async function upsertOtaBooking(b: B24Booking, roomId: string, checkIn: Date, checkOut: Date): Promise<"created" | "updated" | "same"> {
   const reference = `${OTA_REF_PREFIX}${b.id}`;
   const source = sourceOf(b);
-  const currency = source === "AIRBNB" ? "MAD" : "EUR";
+  // Airbnb prices and bookings are in euros (the listing and the Beds24 mapping were switched from MAD to EUR)
+  const currency = "EUR";
   const total = Math.max(0, Number(b.price) || 0);
   const adults = Math.max(1, Math.min(10, Number(b.numAdult) || 2));
   const children = Math.max(0, Math.min(10, Number(b.numChild) || 0));

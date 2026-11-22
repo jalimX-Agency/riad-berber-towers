@@ -25,7 +25,7 @@ const inputSchema = z.object({
   weekdays: z.array(z.number().int().min(0).max(6)).max(7).default([]),
   site: money(10, 10_000),
   booking: money(20, 5000),
-  airbnb: money(100, 50_000),
+  airbnb: money(20, 5000),
   minStay: z.number().int().min(1).max(30).optional(),
   all: state,
   bookingState: state,
@@ -61,7 +61,7 @@ export async function applyChanges(raw: ApplyInput): Promise<ActionResult> {
   const user = await requireUser();
   if (!canManage(user.role)) return { ok: false, error: "Modification réservée au propriétaire et aux administrateurs." };
   const p = inputSchema.safeParse(raw);
-  if (!p.success) return { ok: false, error: "Valeurs refusées : vérifiez les prix (site 10–10 000 €, Booking 20–5 000 €, Airbnb 100–50 000 DH) et le séjour minimum (1–30)." };
+  if (!p.success) return { ok: false, error: "Valeurs refusées : vérifiez les prix (site 10–10 000 €, Booking 20–5 000 €, Airbnb 20–5 000 €) et le séjour minimum (1–30)." };
   const input = p.data;
 
   const from = parseDay(input.from);
@@ -162,7 +162,7 @@ export async function applyChanges(raw: ApplyInput): Promise<ActionResult> {
           channelState: { booking: input.bookingState, airbnb: input.airbnbState },
         });
         if (input.booking !== undefined) done.push(`Booking ${input.booking} €`);
-        if (input.airbnb !== undefined) done.push(`Airbnb ${input.airbnb} DH`);
+        if (input.airbnb !== undefined) done.push(`Airbnb ${input.airbnb} €`);
         if (input.bookingState === "close") done.push("fermée sur Booking.com");
         if (input.airbnbState === "close") done.push("fermée sur Airbnb");
         if (input.bookingState === "open") done.push("rouverte sur Booking.com");

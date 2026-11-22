@@ -34,7 +34,7 @@ const statusName: Partial<Record<BookingStatus, string>> = {
 type Filter = "all" | "airbnb" | "booking" | "direct";
 type PriceKey = "site" | "booking" | "airbnb" | "min";
 type Editing = { roomId: string; iso: string; k: PriceKey; d: number };
-const editLimits: Record<PriceKey, [number, number]> = { site: [10, 10_000], booking: [20, 5000], airbnb: [100, 50_000], min: [1, 30] };
+const editLimits: Record<PriceKey, [number, number]> = { site: [10, 10_000], booking: [20, 5000], airbnb: [20, 5000], min: [1, 30] };
 type Layers = { site: boolean; booking: boolean; airbnb: boolean; min: boolean };
 const DEFAULT_LAYERS: Layers = { site: true, booking: true, airbnb: true, min: false };
 
@@ -509,7 +509,7 @@ export function ControlCalendar({
                     className={cn("sticky start-0 z-20 flex h-8 items-center gap-1.5 border-e border-rule bg-snow px-2 text-xs text-muted", j === priceRows.length - 1 && "border-b")}
                   >
                     {k === "min" ? <span className="w-3.5 text-center">↔</span> : <ChannelMark channel={k} className="h-3.5 w-3.5" />}
-                    {k === "site" ? "Site €" : k === "booking" ? "Booking €" : k === "airbnb" ? "Airbnb DH" : "Séjour min."}
+                    {k === "site" ? "Site €" : k === "booking" ? "Booking €" : k === "airbnb" ? "Airbnb €" : "Séjour min."}
                   </div>
                 ))}
 

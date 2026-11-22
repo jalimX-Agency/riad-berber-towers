@@ -184,7 +184,7 @@ export function ActionDrawer({
             </label>
             <label className={label}>
               <span className="flex items-center gap-2">
-                <ChannelMark channel="airbnb" /> Airbnb · DH
+                <ChannelMark channel="airbnb" /> Airbnb · €
               </span>
               <input inputMode="numeric" value={airbnb} onChange={(e) => setAirbnb(e.target.value)} placeholder={current ? fmt(current.airbnb) || "fermé" : "inchangé"} className={field} />
             </label>

@@ -157,7 +157,7 @@ export function MobileAgenda({
                         {data.beds24Error ? "–" : night?.booking == null ? "fermé" : `${nf.format(night.booking)} €`} <ChannelMark channel="booking" className="h-3.5 w-3.5" />
                       </span>
                       <span className={cn("flex items-center gap-1", night?.airbnb == null && !data.beds24Error && "text-rose-700", data.beds24Error && "text-muted")}>
-                        {data.beds24Error ? "–" : night?.airbnb == null ? "fermé" : `${nf.format(night.airbnb)} DH`} <ChannelMark channel="airbnb" className="h-3.5 w-3.5" />
+                        {data.beds24Error ? "–" : night?.airbnb == null ? "fermé" : `${nf.format(night.airbnb)} €`} <ChannelMark channel="airbnb" className="h-3.5 w-3.5" />
                       </span>
                     </>
                   )}
