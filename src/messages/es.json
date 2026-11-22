@@ -454,11 +454,15 @@
   },
   "policy": {
     "title": "Bueno saberlo",
-    "adultsOnly": "Solo adultos: no se aceptan niños en el riad.",
+    "adultsOnly": "No se aceptan niños menores de 12 años en el riad.",
     "noPets": "No se admiten animales: las mascotas no están permitidas en el riad.",
+    "noParties": "No se permiten fiestas ni celebraciones dentro del riad.",
+    "noAlcohol": "No se permite el alcohol en el establecimiento.",
+    "marriage": "Los ciudadanos marroquíes y de todos los países árabes que se alojen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
     "guests": "Máximo {max} personas por habitación. La Suite Toubkal admite una tercera persona, con un {percent} % más en el precio.",
     "deposit": "Un anticipo del {percent} % confirma tu reserva. No es reembolsable.",
-    "balance": "El resto se paga en efectivo a la llegada: {currencies}."
+    "balance": "El resto se paga en efectivo a la llegada: {currencies}.",
+    "respect": "Te pedimos respetar estas normas para que todos disfruten de una estancia tranquila y agradable. Gracias por tu comprensión."
   },
   "pay": {
     "metaTitle": "Paga tu anticipo",

@@ -135,11 +135,15 @@ const es: PagesCopy = {
         },
         {
           q: "¿Aceptáis niños?",
-          a: "No. Riad Berber Towers es solo para adultos.",
+          a: "No se aceptan niños menores de 12 años. Los mayores de 12 años son bienvenidos.",
         },
         {
           q: "¿Puedo traer a mi mascota?",
           a: "No. Los animales no están permitidos en el riad.",
+        },
+        {
+          q: "¿Qué otras normas de la casa hay que conocer?",
+          a: "No se permiten fiestas ni celebraciones en el riad, ni alcohol en el establecimiento. Los ciudadanos marroquíes y de todos los países árabes que se alojen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
         },
         {
           q: "¿Cómo se paga?",
@@ -232,8 +236,11 @@ const es: PagesCopy = {
         {
           title: "6. Normas de la casa",
           paras: [
-            "El riad es solo para adultos: no se aceptan niños.",
+            "No se aceptan niños menores de 12 años.",
             "No se admiten animales.",
+            "No se permiten fiestas ni celebraciones dentro del riad.",
+            "No se permite el alcohol en el establecimiento.",
+            "Los ciudadanos marroquíes y de todos los países árabes que se alojen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
             "Hasta {max} personas por habitación. La suite Toubkal admite una tercera persona, con un {percent} % más en el precio.",
             "Respeta la tranquilidad de la casa y del pueblo, y cuida las habitaciones y su mobiliario. Los daños causados durante la estancia pueden cobrarse.",
           ],

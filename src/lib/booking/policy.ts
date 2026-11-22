@@ -6,7 +6,7 @@ export const STANDARD_OCCUPANCY = 2;
 export const MAX_GUESTS = 3;
 /** Surcharge on every night when the stay has more than STANDARD_OCCUPANCY adults. */
 export const EXTRA_GUEST_PERCENT = 10;
-/** Adults only: children are not accepted. */
+/** Children under 12 are not accepted (guests aged 12+ book as adults, so the engine never counts children). */
 export const CHILDREN_ALLOWED = false;
 /** Advance needed to confirm a booking, non-refundable. */
 export const DEPOSIT_PERCENT = 40;

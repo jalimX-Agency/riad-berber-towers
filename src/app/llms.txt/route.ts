@@ -26,7 +26,7 @@ export async function GET() {
 - Phone / WhatsApp: ${site.phones.join(", ")}
 - Rooms: ${rooms.map((r) => `${r.name} (from €${r.price}/night)`).join("; ")}
 - Every room: breakfast included, heated floors, Wi-Fi, one king-size bed or two separate beds
-- House rules: adults only (no children), no animals, up to 2 guests per room (Suite Toubkal takes a third guest)
+- House rules: no children under 12, no animals, no parties or celebrations, no alcohol on the premises; Moroccan nationals and nationals of all Arab countries staying as a couple must show a valid marriage certificate at check-in; up to 2 guests per room (Suite Toubkal takes a third guest)
 - Payment: ${DEPOSIT_PERCENT}% non-refundable advance to confirm, balance in cash on arrival (${CASH_CURRENCIES.join(", ")})
 - Languages of the website: English, French, Spanish, German, Arabic
 

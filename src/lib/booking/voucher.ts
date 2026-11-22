@@ -165,7 +165,7 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
   y -= 10;
   text(page, t("rules").toUpperCase(), M, y, 9, bold, EARTH);
   y -= 18;
-  for (const rule of [tp("adultsOnly"), tp("noPets"), tp("deposit", { percent: DEPOSIT_PERCENT })]) {
+  for (const rule of [tp("adultsOnly"), tp("noPets"), tp("noParties"), tp("noAlcohol"), tp("marriage"), tp("deposit", { percent: DEPOSIT_PERCENT })]) {
     page.drawCircle({ x: M + 3, y: y + 3, size: 1.6, color: EARTH });
     y = para(rule, M + 12, y, W - 2 * M - 12, 10, sans, INK);
   }
