@@ -453,16 +453,27 @@
     }
   },
   "policy": {
-    "title": "Bueno saberlo",
-    "adultsOnly": "No se aceptan niños menores de 12 años en el riad.",
-    "noPets": "No se admiten animales: las mascotas no están permitidas en el riad.",
-    "noParties": "No se permiten fiestas ni celebraciones dentro del riad.",
+    "title": "BUENO SABER – NORMAS DE LA CASA",
+    "intro": "Te pedimos que leas nuestras normas de la casa antes de reservar:",
+    "label": {
+      "children": "Niños",
+      "pets": "Mascotas",
+      "parties": "Fiestas y eventos",
+      "alcohol": "Alcohol",
+      "marriage": "Certificado de matrimonio",
+      "occupancy": "Ocupación de las habitaciones",
+      "deposit": "Anticipo de reserva",
+      "payment": "Pago"
+    },
+    "adultsOnly": "No se aceptan niños menores de 12 años.",
+    "noPets": "No se permiten animales.",
+    "noParties": "No se permiten fiestas ni celebraciones.",
     "noAlcohol": "No se permite el alcohol en el establecimiento.",
-    "marriage": "Los ciudadanos marroquíes y de todos los países árabes que se alojen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
-    "guests": "Máximo {max} personas por habitación. La Suite Toubkal admite una tercera persona, con un {percent} % más en el precio.",
-    "deposit": "Un anticipo del {percent} % confirma tu reserva. No es reembolsable.",
-    "balance": "El resto se paga en efectivo a la llegada: {currencies}.",
-    "respect": "Te pedimos respetar estas normas para que todos disfruten de una estancia tranquila y agradable. Gracias por tu comprensión."
+    "marriage": "Los ciudadanos marroquíes y de otros países árabes que viajen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
+    "guests": "Máximo {max} personas por habitación. La Suite Toubkal admite {total} personas, con un suplemento del {percent} % por la tercera persona.",
+    "deposit": "Se requiere un anticipo no reembolsable del {percent} % para confirmar tu reserva.",
+    "balance": "El resto se paga en efectivo a la llegada. Aceptamos: {currencies}.",
+    "respect": "Gracias por tu comprensión y colaboración. ¡Estaremos encantados de recibirte en Riad Berber Towers!"
   },
   "pay": {
     "metaTitle": "Paga tu anticipo",

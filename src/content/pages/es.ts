@@ -143,7 +143,7 @@ const es: PagesCopy = {
         },
         {
           q: "¿Qué otras normas de la casa hay que conocer?",
-          a: "No se permiten fiestas ni celebraciones en el riad, ni alcohol en el establecimiento. Los ciudadanos marroquíes y de todos los países árabes que se alojen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
+          a: "No se permiten fiestas ni celebraciones en el riad, ni alcohol en el establecimiento. Los ciudadanos marroquíes y de otros países árabes que viajen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
         },
         {
           q: "¿Cómo se paga?",
@@ -240,7 +240,7 @@ const es: PagesCopy = {
             "No se admiten animales.",
             "No se permiten fiestas ni celebraciones dentro del riad.",
             "No se permite el alcohol en el establecimiento.",
-            "Los ciudadanos marroquíes y de todos los países árabes que se alojen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
+            "Los ciudadanos marroquíes y de otros países árabes que viajen en pareja deben presentar un certificado de matrimonio válido a la llegada.",
             "Hasta {max} personas por habitación. La suite Toubkal admite una tercera persona, con un {percent} % más en el precio.",
             "Respeta la tranquilidad de la casa y del pueblo, y cuida las habitaciones y su mobiliario. Los daños causados durante la estancia pueden cobrarse.",
           ],

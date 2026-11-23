@@ -453,16 +453,27 @@
     }
   },
   "policy": {
-    "title": "Gut zu wissen",
-    "adultsOnly": "Kinder unter 12 Jahren werden im Riad nicht aufgenommen.",
-    "noPets": "Keine Tiere: Haustiere sind im Riad nicht erlaubt.",
-    "noParties": "Partys und Feiern sind im Riad nicht erlaubt.",
+    "title": "GUT ZU WISSEN – HAUSORDNUNG",
+    "intro": "Bitte lesen Sie vor der Buchung unsere Hausordnung:",
+    "label": {
+      "children": "Kinder",
+      "pets": "Haustiere",
+      "parties": "Partys und Veranstaltungen",
+      "alcohol": "Alkohol",
+      "marriage": "Heiratsurkunde",
+      "occupancy": "Zimmerbelegung",
+      "deposit": "Anzahlung",
+      "payment": "Zahlung"
+    },
+    "adultsOnly": "Kinder unter 12 Jahren werden nicht aufgenommen.",
+    "noPets": "Tiere sind nicht erlaubt.",
+    "noParties": "Partys und Feiern sind nicht erlaubt.",
     "noAlcohol": "Alkohol ist im Haus nicht erlaubt.",
-    "marriage": "Marokkanische Staatsangehörige und Staatsangehörige aller arabischen Länder, die als Paar übernachten, müssen bei der Ankunft eine gültige Heiratsurkunde vorlegen.",
-    "guests": "Höchstens {max} Gäste pro Zimmer. Die Suite Toubkal nimmt einen dritten Gast auf, mit einem Aufpreis von {percent} %.",
-    "deposit": "Eine Anzahlung von {percent} % bestätigt Ihre Buchung. Sie wird nicht erstattet.",
-    "balance": "Der Rest wird bei der Ankunft in bar bezahlt: {currencies}.",
-    "respect": "Bitte halten Sie diese Regeln ein, damit alle einen ruhigen und angenehmen Aufenthalt genießen. Vielen Dank für Ihr Verständnis."
+    "marriage": "Marokkanische Staatsangehörige und Staatsangehörige anderer arabischer Länder, die als Paar reisen, müssen bei der Ankunft eine gültige Heiratsurkunde vorlegen.",
+    "guests": "Höchstens {max} Gäste pro Zimmer. Die Suite Toubkal bietet Platz für {total} Gäste, mit einem Aufpreis von {percent} % für den dritten Gast.",
+    "deposit": "Zur Bestätigung Ihrer Buchung ist eine nicht erstattbare Anzahlung von {percent} % erforderlich.",
+    "balance": "Der Restbetrag wird bei der Ankunft in bar bezahlt. Wir akzeptieren: {currencies}.",
+    "respect": "Vielen Dank für Ihr Verständnis und Ihre Mitarbeit. Wir freuen uns darauf, Sie im Riad Berber Towers willkommen zu heißen!"
   },
   "pay": {
     "metaTitle": "Anzahlung leisten",

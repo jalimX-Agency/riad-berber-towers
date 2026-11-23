@@ -139,7 +139,7 @@ const en: PagesCopy = {
         },
         {
           q: "What other house rules should I know?",
-          a: "No parties or celebrations inside the riad, and no alcohol on the premises. Moroccan nationals and nationals of all Arab countries staying as a couple must present a valid marriage certificate at check-in.",
+          a: "No parties or celebrations inside the riad, and no alcohol on the premises. Moroccan nationals and nationals of other Arab countries travelling as a couple must present a valid marriage certificate at check-in.",
         },
         {
           q: "How do I pay?",
@@ -236,7 +236,7 @@ const en: PagesCopy = {
             "Animals are not allowed.",
             "No parties or celebrations are allowed inside the riad.",
             "Alcohol is not permitted on the premises.",
-            "Moroccan nationals and nationals of all Arab countries staying as a couple must present a valid marriage certificate at check-in.",
+            "Moroccan nationals and nationals of other Arab countries travelling as a couple must present a valid marriage certificate at check-in.",
             "Up to {max} guests per room. Suite Toubkal takes a third guest, with {percent}% added to the price.",
             "Please respect the calm of the house and of the village, and take care of the rooms and their furnishings. Damage caused during the stay may be charged.",
           ],

@@ -453,16 +453,27 @@
     }
   },
   "policy": {
-    "title": "Good to know",
-    "adultsOnly": "Children under 12 are not accepted at the riad.",
-    "noPets": "No animals: pets are not allowed at the riad.",
-    "noParties": "No parties or celebrations are allowed inside the riad.",
+    "title": "GOOD TO KNOW – HOUSE RULES",
+    "intro": "Please take a moment to review our house rules before booking:",
+    "label": {
+      "children": "Children",
+      "pets": "Pets",
+      "parties": "Parties & Events",
+      "alcohol": "Alcohol",
+      "marriage": "Marriage Certificate",
+      "occupancy": "Room Occupancy",
+      "deposit": "Booking Deposit",
+      "payment": "Payment"
+    },
+    "adultsOnly": "Children under 12 are not accepted.",
+    "noPets": "Animals are not permitted.",
+    "noParties": "Parties and celebrations are not allowed.",
     "noAlcohol": "Alcohol is not permitted on the premises.",
-    "marriage": "Moroccan nationals and nationals of all Arab countries staying as a couple must present a valid marriage certificate at check-in.",
-    "guests": "Up to {max} guests per room. Suite Toubkal takes a third guest, with {percent}% added to the price.",
-    "deposit": "A {percent}% advance confirms your booking. It is not refundable.",
-    "balance": "The rest is paid in cash on arrival: {currencies}.",
-    "respect": "Please respect these rules so that everyone enjoys a peaceful, comfortable stay. Thank you for your understanding."
+    "marriage": "Moroccan nationals and nationals of other Arab countries travelling as a couple must present a valid marriage certificate at check-in.",
+    "guests": "Maximum {max} guests per room. Suite Toubkal accommodates {total} guests with a {percent}% supplement for the third guest.",
+    "deposit": "A {percent}% non-refundable deposit is required to confirm your reservation.",
+    "balance": "The remaining balance is payable in cash upon arrival. We accept {currencies}.",
+    "respect": "Thank you for your understanding and cooperation. We look forward to welcoming you to Riad Berber Towers!"
   },
   "pay": {
     "metaTitle": "Pay your deposit",

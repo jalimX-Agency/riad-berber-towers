@@ -139,7 +139,7 @@ const fr: PagesCopy = {
         },
         {
           q: "Quelles autres règles de la maison faut-il connaître ?",
-          a: "Aucune fête ni célébration dans le riad, et pas d’alcool dans l’établissement. Les ressortissants marocains et de tous les pays arabes séjournant en couple doivent présenter un acte de mariage valide à l’arrivée.",
+          a: "Aucune fête ni célébration dans le riad, et pas d’alcool dans l’établissement. Les ressortissants marocains et ceux des autres pays arabes voyageant en couple doivent présenter un acte de mariage valide à l’arrivée.",
         },
         {
           q: "Comment payer ?",
@@ -236,7 +236,7 @@ const fr: PagesCopy = {
             "Les animaux ne sont pas admis.",
             "Aucune fête ni célébration n’est autorisée dans le riad.",
             "L’alcool n’est pas autorisé dans l’établissement.",
-            "Les ressortissants marocains et de tous les pays arabes séjournant en couple doivent présenter un acte de mariage valide à l’arrivée.",
+            "Les ressortissants marocains et ceux des autres pays arabes voyageant en couple doivent présenter un acte de mariage valide à l’arrivée.",
             "Jusqu’à {max} personnes par chambre. La suite Toubkal accueille une troisième personne, avec {percent} % de plus sur le prix.",
             "Merci de respecter le calme de la maison et du village, et de prendre soin des chambres et de leur mobilier. Les dégâts causés pendant le séjour peuvent être facturés.",
           ],

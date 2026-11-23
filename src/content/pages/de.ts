@@ -139,7 +139,7 @@ const de: PagesCopy = {
         },
         {
           q: "Welche weiteren Hausregeln gibt es?",
-          a: "Keine Partys oder Feiern im Riad und kein Alkohol im Haus. Marokkanische Staatsangehörige und Staatsangehörige aller arabischen Länder, die als Paar übernachten, müssen bei der Ankunft eine gültige Heiratsurkunde vorlegen.",
+          a: "Keine Partys oder Feiern im Riad und kein Alkohol im Haus. Marokkanische Staatsangehörige und Staatsangehörige anderer arabischer Länder, die als Paar reisen, müssen bei der Ankunft eine gültige Heiratsurkunde vorlegen.",
         },
         {
           q: "Wie bezahle ich?",
@@ -236,7 +236,7 @@ const de: PagesCopy = {
             "Tiere sind nicht erlaubt.",
             "Partys und Feiern sind im Riad nicht erlaubt.",
             "Alkohol ist im Haus nicht erlaubt.",
-            "Marokkanische Staatsangehörige und Staatsangehörige aller arabischen Länder, die als Paar übernachten, müssen bei der Ankunft eine gültige Heiratsurkunde vorlegen.",
+            "Marokkanische Staatsangehörige und Staatsangehörige anderer arabischer Länder, die als Paar reisen, müssen bei der Ankunft eine gültige Heiratsurkunde vorlegen.",
             "Bis zu {max} Gäste pro Zimmer. Die Suite Toubkal nimmt einen dritten Gast auf, mit {percent} % Aufschlag.",
             "Bitte respektieren Sie die Ruhe des Hauses und des Dorfes und gehen Sie sorgsam mit den Zimmern und ihrer Einrichtung um. Während des Aufenthalts verursachte Schäden können berechnet werden.",
           ],

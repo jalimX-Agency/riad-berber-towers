@@ -11,7 +11,7 @@ export const CHILDREN_ALLOWED = false;
 /** Advance needed to confirm a booking, non-refundable. */
 export const DEPOSIT_PERCENT = 40;
 /** The balance is paid in cash on arrival, in one of these currencies. */
-export const CASH_CURRENCIES = ["MAD", "USD", "EUR", "GBP"] as const;
+export const CASH_CURRENCIES = ["MAD", "EUR", "USD", "GBP"] as const;
 
 export const withExtraGuest = (price: number, adults: number) =>
   adults > STANDARD_OCCUPANCY ? Math.round(price * (1 + EXTRA_GUEST_PERCENT / 100)) : price;
