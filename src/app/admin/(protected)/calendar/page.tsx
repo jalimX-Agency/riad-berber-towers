@@ -18,8 +18,9 @@ export default async function CalendarPage({ searchParams }: Props) {
   const sp = await searchParams;
   const today = todayInImlil();
   const view = sp.view === "14" ? 14 : 31;
-  // a few days of history so yesterday's departures stay visible
-  const start = parseDay(sp.start ?? "") ?? addDays(today, -2);
+  // the calendar starts today: past nights can't be sold any more and Beds24 no longer returns their prices
+  const asked = parseDay(sp.start ?? "");
+  const start = asked && asked > today ? asked : today;
   const data = await loadCalendar(start, addDays(start, view));
 
   return (

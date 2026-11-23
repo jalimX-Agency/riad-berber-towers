@@ -331,9 +331,16 @@ export function ControlCalendar({
           <h1 className="text-2xl sm:text-4xl">{rangeTitle}</h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Link href={href(shift(-view))} className="grid h-9 w-9 place-items-center rounded-full border border-rule bg-snow hover:border-earth" aria-label="Période précédente">
-            <ChevronLeft className="h-4 w-4" />
-          </Link>
+          {data.from > today ? (
+            <Link href={href(shift(-view) < today ? today : shift(-view))} className="grid h-9 w-9 place-items-center rounded-full border border-rule bg-snow hover:border-earth" aria-label="Période précédente">
+              <ChevronLeft className="h-4 w-4" />
+            </Link>
+          ) : (
+            // already at today: nothing before it is shown
+            <span className="grid h-9 w-9 place-items-center rounded-full border border-rule bg-snow opacity-40" aria-hidden="true">
+              <ChevronLeft className="h-4 w-4" />
+            </span>
+          )}
           <Link href={href(today)} className="rounded-full border border-rule bg-snow px-4 py-1.5 text-sm hover:border-earth">
             Aujourd’hui
           </Link>
@@ -342,6 +349,7 @@ export function ControlCalendar({
           </Link>
           <input
             type="date"
+            min={today}
             aria-label="Aller à la date"
             className="rounded-full border border-rule bg-snow px-3 py-1.5 text-sm"
             onChange={(e) => e.target.value && router.push(href(e.target.value))}
