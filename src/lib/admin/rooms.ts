@@ -18,4 +18,4 @@ async function loadRooms(): Promise<AdminRoom[]> {
  * Active rooms for admin filters and grids. Rooms almost never change, so they are cached
  * across requests; base-price changes call revalidateTag(ROOMS_TAG).
  */
-export const getActiveRooms: () => Promise<AdminRoom[]> = unstable_cache(loadRooms, ["admin-active-rooms"], { tags: [ROOMS_TAG], revalidate: 3600 });
+export const getActiveRooms: () => Promise<AdminRoom[]> = unstable_cache(loadRooms, ["admin-active-rooms"], { tags: [ROOMS_TAG], revalidate: 86_400 });

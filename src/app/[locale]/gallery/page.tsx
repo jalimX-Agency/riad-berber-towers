@@ -9,7 +9,8 @@ import { pagesCopy } from "@/lib/pages";
 import { GalleryGrid, type GalleryPhoto } from "@/components/site/GalleryGrid";
 
 // room photos come from the admin; refresh hourly
-export const revalidate = 3600;
+// refreshed once a day (free Vercel/Neon plans); saving prices or rooms in the admin refreshes at once
+export const revalidate = 86400;
 
 type Props = { params: Promise<{ locale: string }> };
 

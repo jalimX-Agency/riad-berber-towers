@@ -8,7 +8,12 @@ const r2Host = process.env.NEXT_PUBLIC_R2_URL ? new URL(process.env.NEXT_PUBLIC_
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
-    formats: ["image/avif", "image/webp"],
+    // Vercel Hobby counts every optimized size and format: WebP only (AVIF doubled the count and is slow to encode),
+    // fewer sizes, and a long cache so an image is optimized once a month at most
+    formats: ["image/webp"],
+    deviceSizes: [640, 828, 1200, 1920],
+    imageSizes: [96, 256, 384],
+    minimumCacheTTL: 2_678_400,
     remotePatterns: r2Host ? [{ protocol: "https", hostname: r2Host }] : [],
   },
   async redirects() {

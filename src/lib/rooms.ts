@@ -1,7 +1,9 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import type { Locale } from "@prisma/client";
 import { db } from "@/lib/db";
 import { mediaUrl } from "@/lib/media";
+import { ROOMS_TAG } from "@/lib/admin/rooms";
 
 export type RoomView = {
   id: string;
@@ -24,12 +26,23 @@ export type RoomView = {
 
 type DbRoom = Awaited<ReturnType<typeof loadRooms>>[number];
 
-const loadRooms = () =>
-  db.room.findMany({
-    where: { active: true },
-    orderBy: { order: "asc" },
-    include: { translations: true },
-  });
+/**
+ * Rooms with their translations, cached across requests (free Neon plan: the site's menu and footer need the room
+ * list on every page, so without this cache every dynamic page woke the database). Saving base prices in Paramètres
+ * calls revalidateTag(ROOMS_TAG); otherwise the copy refreshes once a day.
+ */
+const loadRooms = unstable_cache(
+  async () =>
+    (
+      await db.room.findMany({
+        where: { active: true },
+        orderBy: { order: "asc" },
+        include: { translations: true },
+      })
+    ).map((r) => ({ ...r, basePrice: Number(r.basePrice) })),
+  ["site-rooms"],
+  { tags: [ROOMS_TAG], revalidate: 86_400 },
+);
 
 function toView(r: DbRoom, locale: string): RoomView {
   const t = r.translations.find((x) => x.locale === locale) ?? r.translations.find((x) => x.locale === "en");

@@ -14,7 +14,8 @@ import { WhatsAppIcon } from "@/components/site/icons";
 import { BookingBox } from "@/components/booking/BookingBox";
 import { todayInImlil, toISO } from "@/lib/booking/dates";
 
-export const revalidate = 3600;
+// refreshed once a day (free Vercel/Neon plans); saving prices or rooms in the admin refreshes at once
+export const revalidate = 86400;
 
 type Params = { params: Promise<{ locale: string; slug: string }> };
 

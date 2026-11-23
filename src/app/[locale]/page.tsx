@@ -13,7 +13,8 @@ import { HouseStrip, type StripItem } from "@/components/home/HouseStrip";
 import { HomeHero } from "@/components/home/HomeHero";
 
 // prices change from the admin (which revalidates "/"); the date picker's "today" refreshes hourly
-export const revalidate = 3600;
+// refreshed once a day (free Vercel/Neon plans); saving prices or rooms in the admin refreshes at once
+export const revalidate = 86400;
 
 const STAGES = [
   { id: "ground", num: "00", floor: 0 },
