@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { mediaUrl } from "@/lib/media";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -87,7 +88,7 @@ export function AdminNav({ user, pending }: { user: string; pending: number }) {
 
   const brand = (
     <Link href="/admin" className="flex items-center gap-2.5">
-      <Image src="/brand/rbt-emblem-ivory.svg" alt="" width={28} height={31} />
+      <Image src={mediaUrl("brand/rbt-emblem-ivory.svg")} unoptimized alt="" width={28} height={31} />
       <span className="font-display text-lg leading-tight text-snow">
         Riad Berber Towers
         <span className="block font-sans text-[10px] uppercase tracking-[0.18em] text-snow/60">Administration</span>

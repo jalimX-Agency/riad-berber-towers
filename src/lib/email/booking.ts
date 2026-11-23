@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
+import { mediaUrl } from "@/lib/media";
 import { getSettings } from "@/lib/settings";
 import { formatPrice } from "@/lib/rooms";
 import { localePath } from "@/i18n/routing";
@@ -27,7 +28,7 @@ function layout(body: string, dir: "ltr" | "rtl") {
   return `<!doctype html><html dir="${dir}"><body style="margin:0;background:#EEE7D6;font-family:Georgia,'Times New Roman',serif;color:#2F2016">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#EEE7D6;padding:32px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#F7F3EA;border:1px solid #d9cfb9">
-<tr><td style="padding:28px 32px 8px"><img src="${site.url}/brand/rbt-horizontal-color-email.png" alt="${site.name}" width="220" style="display:block;width:220px;max-width:100%"></td></tr>
+<tr><td style="padding:28px 32px 8px"><img src="${mediaUrl("brand/rbt-horizontal-color-email.png")}" alt="${site.name}" width="220" style="display:block;width:220px;max-width:100%"></td></tr>
 <tr><td style="padding:8px 32px 32px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6">${body}</td></tr>
 <tr><td style="padding:16px 32px;background:#4A3628;color:#EEE7D6;font-family:Arial,Helvetica,sans-serif;font-size:12px">${site.name} · Imlil, High Atlas · ${site.phones[0]} · ${site.email}</td></tr>
 </table></td></tr></table></body></html>`;

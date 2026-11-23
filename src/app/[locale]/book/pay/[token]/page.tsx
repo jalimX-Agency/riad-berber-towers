@@ -5,6 +5,7 @@ import { ChevronDown, CircleCheck, Clock, Download, ExternalLink, XCircle } from
 import { Link } from "@/i18n/navigation";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
+import { mediaUrl } from "@/lib/media";
 import { getSettings } from "@/lib/settings";
 import { formatPrice } from "@/lib/rooms";
 import { formatStayDate } from "@/lib/email/booking";
@@ -170,7 +171,7 @@ export default async function PayPage({ params }: Props) {
                         </div>
                         {settings.wiseLink === site.wiseLink && (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src="/brand/wise-qr.jpg" alt={t("wiseQrAlt")} width={140} height={140} loading="lazy" className="h-[140px] w-[140px] rounded-[10px] border border-rule" />
+                          <img src={mediaUrl("brand/wise-qr.jpg")} alt={t("wiseQrAlt")} width={140} height={140} loading="lazy" className="h-[140px] w-[140px] rounded-[10px] border border-rule" />
                         )}
                       </div>
                     </details>

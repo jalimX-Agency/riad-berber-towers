@@ -12,6 +12,7 @@ import { nextStatuses } from "@/lib/admin/labels";
 import { parseStayQuery } from "@/lib/booking/availability";
 import { adminGuestSchema, createBooking, restoreBooking } from "@/lib/booking/create";
 import { groupIds } from "@/lib/booking/group";
+import { deletePrivate, proofKey } from "@/lib/storage/r2";
 import { sendStatusEmail } from "@/lib/email/booking";
 import { cancelInBeds24, pushBookingSafe } from "@/lib/beds24/push";
 import { beds24Conflict, beds24HasRoom } from "@/lib/beds24/live";
@@ -408,16 +409,21 @@ async function withGroups(ids: string[]) {
 
 async function hardDelete(selection: string[]) {
   const ids = await withGroups(selection);
+  const proofKeys: string[] = [];
   const { count, refs } = await db.$transaction(async (tx) => {
     // mirrored Booking.com / Airbnb reservations are never deleted here: they would come back at the next sync
     const rows = await tx.booking.findMany({ where: { id: { in: ids }, reference: { not: { startsWith: OTA_REF_PREFIX } } }, select: { id: true, guestId: true, reference: true, checkIn: true } });
     const guestIds = [...new Set(rows.map((r) => r.guestId))];
+    // their payment proofs live in R2: remember the keys before the rows go (cascade)
+    const proofIds = (await tx.paymentProof.findMany({ where: { bookingId: { in: rows.map((r) => r.id) } }, select: { id: true } })).map((p) => p.id);
+    proofKeys.push(...proofIds.map(proofKey));
     const { count } = await tx.booking.deleteMany({ where: { id: { in: rows.map((r) => r.id) } } });
     await tx.guest.deleteMany({ where: { id: { in: guestIds }, bookings: { none: {} } } });
     return { count, refs: rows.map((r) => ({ reference: r.reference, checkIn: r.checkIn })) };
   });
   // the nights must reopen on Booking.com / Airbnb too
   after(() => cancelInBeds24(refs));
+  after(() => deletePrivate(proofKeys));
   return count;
 }
 

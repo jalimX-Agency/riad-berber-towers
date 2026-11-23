@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { mediaUrl } from "@/lib/media";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { footerNav } from "@/lib/nav";
@@ -18,7 +19,7 @@ export async function SiteFooter() {
       <WeaveBand />
       <div className="container-site grid gap-12 py-16 md:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
         <div className="grid content-start gap-5">
-          <Image src="/brand/rbt-stacked-ivory.svg" alt="Riad Berber Towers" width={3904} height={3606} className="h-auto w-48" />
+          <Image src={mediaUrl("brand/rbt-stacked-ivory.svg")} unoptimized alt="Riad Berber Towers" width={3904} height={3606} className="h-auto w-48" />
           <p className="max-w-[28ch] text-sm text-snow/70">{brand("descriptor")}</p>
         </div>
 

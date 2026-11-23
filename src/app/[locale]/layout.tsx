@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { mediaUrl } from "@/lib/media";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: t("title"),
       description: t("description"),
       url: localePath(locale),
-      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: site.name }],
+      images: [{ url: mediaUrl("brand/og-image.png"), width: 1200, height: 630, alt: site.name }],
     },
     twitter: { card: "summary_large_image" },
     icons: {
@@ -71,7 +72,7 @@ export default async function LocaleLayout({
     url,
     email: site.email,
     telephone: site.phones,
-    image: [`${site.url}/og-image.png`, ...rooms.slice(0, 3).map((r) => r.cover)].filter(Boolean),
+    image: [mediaUrl("brand/og-image.png"), ...rooms.slice(0, 3).map((r) => r.cover)].filter(Boolean),
     logo: `${site.url}/android-chrome-512.png`,
     slogan: "Breathe the Atlas",
     foundingDate: "2025",

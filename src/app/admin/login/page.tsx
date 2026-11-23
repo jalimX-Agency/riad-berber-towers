@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { mediaUrl } from "@/lib/media";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -29,7 +30,7 @@ export default function AdminLogin() {
   return (
     <main className="min-h-dvh grid place-items-center px-4">
       <form onSubmit={onSubmit} className="w-full max-w-sm grid gap-4 rounded-[--radius-card] border border-rule bg-paper p-8">
-        <Image src="/brand/rbt-emblem-color.svg" alt="" width={64} height={71} className="justify-self-center" />
+        <Image src={mediaUrl("brand/rbt-emblem-color.svg")} unoptimized alt="" width={64} height={71} className="justify-self-center" />
         <h1 className="text-3xl text-center">Administration</h1>
         <label className="grid gap-1 text-sm">
           Email

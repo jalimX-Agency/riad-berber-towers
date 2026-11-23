@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { mediaUrl } from "@/lib/media";
 import { routing } from "@/i18n/routing";
 import { site } from "@/lib/site";
 
 const OG_LOCALE: Record<string, string> = { en: "en_GB", fr: "fr_FR", es: "es_ES", de: "de_DE", ar: "ar_MA" };
-const DEFAULT_IMAGE = { url: "/og-image.png", width: 1200, height: 630, alt: site.name };
+const DEFAULT_IMAGE = { url: mediaUrl("brand/og-image.png"), width: 1200, height: 630, alt: site.name };
 
 type Img = { url: string | URL; width?: number; height?: number; alt?: string };
 

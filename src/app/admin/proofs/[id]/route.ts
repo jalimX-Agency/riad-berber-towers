@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/admin/guard";
+import { getPrivate, proofKey } from "@/lib/storage/r2";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params;
   const p = await db.paymentProof.findUnique({ where: { id }, select: { data: true, mimeType: true, filename: true } });
   if (!p) return new Response("Not found", { status: 404 });
-  return new Response(new Uint8Array(p.data), {
+  // stored in R2 (empty data in the database) or, for older proofs not moved yet, in the database
+  const bytes = p.data.length ? new Uint8Array(p.data) : await getPrivate(proofKey(id));
+  if (!bytes) return new Response("Not found", { status: 404 });
+  return new Response(Buffer.from(bytes), {
     headers: {
       "Content-Type": p.mimeType,
       "Content-Disposition": `inline; filename="${p.filename.replace(/[^\w.\-]/g, "_")}"`,

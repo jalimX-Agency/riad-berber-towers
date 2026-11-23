@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { mediaUrl } from "@/lib/media";
 import { useTranslations } from "next-intl";
 import { Menu, X } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -127,7 +128,8 @@ function Brand({ ivory = false }: { ivory?: boolean }) {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-3" aria-label="Riad Berber Towers">
       <Image
-        src={ivory ? "/brand/rbt-emblem-ivory.svg" : "/brand/rbt-emblem-color.svg"}
+        src={mediaUrl(ivory ? "brand/rbt-emblem-ivory.svg" : "brand/rbt-emblem-color.svg")}
+        unoptimized
         alt=""
         width={2483}
         height={2727}

@@ -1,9 +1,8 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import { site } from "@/lib/site";
+import { mediaUrl } from "@/lib/media";
 import { formatPrice } from "@/lib/rooms";
 import { formatStayDate } from "@/lib/email/booking";
 import { bookingPayment } from "./payment";
@@ -92,7 +91,10 @@ export async function buildVoucher(bookingId: string): Promise<{ filename: strin
 
   // header: logo + title
   try {
-    const png = await doc.embedPng(await readFile(path.join(process.cwd(), "public/brand/rbt-horizontal-color-email.png")));
+    // the logo lives in R2 with the other images (falls back to the site name if it can't be fetched)
+    const res = await fetch(mediaUrl("brand/rbt-horizontal-color-email.png"), { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error(`logo HTTP ${res.status}`);
+    const png = await doc.embedPng(new Uint8Array(await res.arrayBuffer()));
     const w = 190;
     page.drawImage(png, { x: M, y: 770, width: w, height: (png.height / png.width) * w });
   } catch {

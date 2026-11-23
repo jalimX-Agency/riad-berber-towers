@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { sendProofToOwner } from "@/lib/email/booking";
 import { MAX_PROOF_BYTES } from "@/lib/booking/policy";
 import { groupIds } from "@/lib/booking/group";
+import { proofKey, putPrivate, r2Configured } from "@/lib/storage/r2";
 
 export const dynamic = "force-dynamic";
 
@@ -52,10 +53,22 @@ export async function POST(req: Request) {
   // several rooms booked together share the payment: the whole reservation goes to "payment being checked"
   const ids = await groupIds(booking.id);
   const filename = (file.name || "proof").replace(/[^\w.\- ]/g, "_").slice(-100);
-  await db.$transaction([
-    db.paymentProof.create({ data: { bookingId: booking.id, filename, mimeType, size: bytes.length, data: bytes } }),
-    db.booking.updateMany({ where: { id: { in: ids }, status: { in: ["AWAITING_PAYMENT", "PAYMENT_REVIEW"] } }, data: { status: "PAYMENT_REVIEW" } }),
-  ]);
+  // the file goes to Cloudflare R2; the database row keeps only its name, type and size (empty data = stored in R2)
+  const useR2 = r2Configured();
+  const proof = await db.paymentProof.create({
+    data: { bookingId: booking.id, filename, mimeType, size: bytes.length, data: useR2 ? new Uint8Array(0) : bytes },
+    select: { id: true },
+  });
+  if (useR2) {
+    try {
+      await putPrivate(proofKey(proof.id), bytes, mimeType);
+    } catch (e) {
+      console.error("[proof] R2 upload failed", e);
+      await db.paymentProof.delete({ where: { id: proof.id } });
+      return NextResponse.json({ error: "server" }, { status: 502 });
+    }
+  }
+  await db.booking.updateMany({ where: { id: { in: ids }, status: { in: ["AWAITING_PAYMENT", "PAYMENT_REVIEW"] } }, data: { status: "PAYMENT_REVIEW" } });
   // tell the riad after the response, so the guest doesn't wait for the email
   after(() => sendProofToOwner(booking.id));
   return NextResponse.json({ ok: true });

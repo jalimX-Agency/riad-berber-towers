@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { mediaUrl } from "@/lib/media";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
@@ -72,7 +73,8 @@ export function buildInProgressPage(page: WipPage, path = `/${page}`) {
           </p>
         </div>
         <Image
-          src="/brand/rbt-emblem-color.svg"
+          src={mediaUrl("brand/rbt-emblem-color.svg")}
+          unoptimized
           alt=""
           width={2483}
           height={2727}
