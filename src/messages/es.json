@@ -163,7 +163,7 @@
     "book": {
       "label": "Reserva directa",
       "title": "Elige tus fechas",
-      "text": "Mira qué habitaciones están libres y el precio de tu estancia. Un anticipo del 40 % confirma tu reserva; el resto se paga en efectivo en el riad."
+      "text": "Mira qué habitaciones están libres y el precio de tu estancia. Un anticipo del 20 % confirma tu reserva; el resto se paga en efectivo en el riad."
     }
   },
   "footer": {
@@ -299,7 +299,7 @@
   },
   "book": {
     "title": "Completa tu reserva",
-    "intro": "Dinos quién viene. En esta web no se paga nada: al recibir tu solicitud, te enviamos los datos para pagar el anticipo del 40 % que confirma tu estancia.",
+    "intro": "Dinos quién viene. En esta web no se paga nada: al recibir tu solicitud, te enviamos los datos para pagar el anticipo del 20 % que confirma tu estancia.",
     "firstName": "Nombre",
     "lastName": "Apellidos",
     "email": "Correo electrónico",
@@ -352,7 +352,7 @@
     "confirmed": {
       "title": "Solicitud recibida",
       "body": "Gracias, {name}. Hemos enviado los detalles a {email}.",
-      "next": "El riad revisa la disponibilidad. Si tu habitación está libre, recibirás un correo con un enlace para pagar el anticipo del 40 % (PayPal, Wise o transferencia bancaria).",
+      "next": "El riad revisa la disponibilidad. Si tu habitación está libre, recibirás un correo con un enlace para pagar el anticipo del 20 % (PayPal, Wise o transferencia bancaria).",
       "whatsapp": "Escríbenos por WhatsApp",
       "whatsappMessage": "Hola, sobre mi reserva {reference} en Riad Berber Towers: ",
       "home": "Volver al inicio"
@@ -417,7 +417,7 @@
       "subject": "Tu solicitud de reserva {reference} · Riad Berber Towers",
       "title": "Gracias, {name}",
       "intro": "Hemos recibido tu solicitud de reserva. Estos son los detalles:",
-      "next": "Revisamos la disponibilidad y te respondemos por correo. Si tu habitación está libre, recibirás un enlace para pagar el anticipo del 40 % (no reembolsable), que confirma tu reserva. ¿Dudas? Responde a este correo o escríbenos por WhatsApp.",
+      "next": "Revisamos la disponibilidad y te respondemos por correo. Si tu habitación está libre, recibirás un enlace para pagar el anticipo del 20 % (no reembolsable), que confirma tu reserva. ¿Dudas? Responde a este correo o escríbenos por WhatsApp.",
       "signoff": "Hasta pronto en Imlil. El equipo de Riad Berber Towers"
     },
     "confirmed": {
@@ -436,7 +436,7 @@
     "accepted": {
       "subject": "Tu habitación está disponible · paga el anticipo {reference}",
       "title": "Buenas noticias, {name}: tu habitación está disponible",
-      "intro": "Hemos aceptado tu solicitud de reserva. Para confirmarla, paga el anticipo del 40 % y envíanos el comprobante en tu página de pago.",
+      "intro": "Hemos aceptado tu solicitud de reserva. Para confirmarla, paga el anticipo del 20 % y envíanos el comprobante en tu página de pago.",
       "next": "Tu reserva queda confirmada en cuanto revisemos el pago. El anticipo no es reembolsable."
     },
     "declined": {

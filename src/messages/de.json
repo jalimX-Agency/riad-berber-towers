@@ -163,7 +163,7 @@
     "book": {
       "label": "Direkt buchen",
       "title": "Wählen Sie Ihre Daten",
-      "text": "Sehen Sie, welche Zimmer frei sind und was Ihr Aufenthalt kostet. Eine Anzahlung von 40 % bestätigt Ihre Buchung; der Rest wird im Riad in bar bezahlt."
+      "text": "Sehen Sie, welche Zimmer frei sind und was Ihr Aufenthalt kostet. Eine Anzahlung von 20 % bestätigt Ihre Buchung; der Rest wird im Riad in bar bezahlt."
     }
   },
   "footer": {
@@ -299,7 +299,7 @@
   },
   "book": {
     "title": "Buchung abschließen",
-    "intro": "Sagen Sie uns, wer kommt. Auf dieser Website wird nichts bezahlt: Nach Eingang Ihrer Anfrage senden wir Ihnen die Angaben für die Anzahlung von 40 %, die Ihren Aufenthalt bestätigt.",
+    "intro": "Sagen Sie uns, wer kommt. Auf dieser Website wird nichts bezahlt: Nach Eingang Ihrer Anfrage senden wir Ihnen die Angaben für die Anzahlung von 20 %, die Ihren Aufenthalt bestätigt.",
     "firstName": "Vorname",
     "lastName": "Nachname",
     "email": "E-Mail",
@@ -352,7 +352,7 @@
     "confirmed": {
       "title": "Anfrage erhalten",
       "body": "Vielen Dank, {name}. Wir haben die Details an {email} geschickt.",
-      "next": "Das Riad prüft die Verfügbarkeit. Ist Ihr Zimmer frei, erhalten Sie eine E-Mail mit einem Link, um die Anzahlung von 40 % zu leisten (PayPal, Wise oder Banküberweisung).",
+      "next": "Das Riad prüft die Verfügbarkeit. Ist Ihr Zimmer frei, erhalten Sie eine E-Mail mit einem Link, um die Anzahlung von 20 % zu leisten (PayPal, Wise oder Banküberweisung).",
       "whatsapp": "Auf WhatsApp schreiben",
       "whatsappMessage": "Hallo, zu meiner Buchung {reference} im Riad Berber Towers: ",
       "home": "Zurück zur Startseite"
@@ -417,7 +417,7 @@
       "subject": "Ihre Buchungsanfrage {reference} · Riad Berber Towers",
       "title": "Vielen Dank, {name}",
       "intro": "Wir haben Ihre Buchungsanfrage erhalten. Hier sind die Details:",
-      "next": "Wir prüfen die Verfügbarkeit und antworten per E-Mail. Ist Ihr Zimmer frei, erhalten Sie einen Link für die Anzahlung von 40 % (nicht erstattbar), die Ihre Buchung bestätigt. Fragen? Antworten Sie auf diese E-Mail oder schreiben Sie uns auf WhatsApp.",
+      "next": "Wir prüfen die Verfügbarkeit und antworten per E-Mail. Ist Ihr Zimmer frei, erhalten Sie einen Link für die Anzahlung von 20 % (nicht erstattbar), die Ihre Buchung bestätigt. Fragen? Antworten Sie auf diese E-Mail oder schreiben Sie uns auf WhatsApp.",
       "signoff": "Bis bald in Imlil. Ihr Team von Riad Berber Towers"
     },
     "confirmed": {
@@ -436,7 +436,7 @@
     "accepted": {
       "subject": "Ihr Zimmer ist verfügbar · Anzahlung {reference}",
       "title": "Gute Nachrichten, {name}: Ihr Zimmer ist verfügbar",
-      "intro": "Wir haben Ihre Buchungsanfrage angenommen. Zur Bestätigung leisten Sie bitte die Anzahlung von 40 % und senden Sie uns den Nachweis auf Ihrer Zahlungsseite.",
+      "intro": "Wir haben Ihre Buchungsanfrage angenommen. Zur Bestätigung leisten Sie bitte die Anzahlung von 20 % und senden Sie uns den Nachweis auf Ihrer Zahlungsseite.",
       "next": "Ihre Buchung ist bestätigt, sobald wir die Zahlung geprüft haben. Die Anzahlung wird nicht erstattet."
     },
     "declined": {

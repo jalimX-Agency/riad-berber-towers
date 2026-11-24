@@ -81,7 +81,7 @@ export type CreateResult =
   | { ok: false; error: "too_many" };
 
 /**
- * Create a booking request (status PENDING; 40% advance to confirm, balance in cash at the riad).
+ * Create a booking request (status PENDING; 20% advance to confirm, balance in cash at the riad).
  * Price and availability are recomputed inside the transaction; nothing from the browser is trusted.
  * A per-room advisory lock serialises concurrent requests for the same room, so two guests
  * can't both get the last nights.
@@ -179,7 +179,7 @@ export async function createBooking(input: {
               total: (admin?.total ?? a.total) + extrasSum,
               currency: room.currency,
               nightlyRates: a.nightly,
-              // owner policy: 40% non-refundable advance to confirm, balance in cash on arrival
+              // owner policy: 20% non-refundable advance to confirm, balance in cash on arrival
               depositAmount: splitPayment((admin?.total ?? a.total) + extrasSum).deposit,
               arrivalTime: guest.arrivalTime === "unknown" ? "" : guest.arrivalTime,
               specialRequests: requests,

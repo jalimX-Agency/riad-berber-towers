@@ -163,7 +163,7 @@
     "book": {
       "label": "Book direct",
       "title": "Choose your dates",
-      "text": "See which rooms are free and the price of your stay. A 40% advance confirms your booking; the rest is paid in cash at the riad."
+      "text": "See which rooms are free and the price of your stay. A 20% advance confirms your booking; the rest is paid in cash at the riad."
     }
   },
   "footer": {
@@ -299,7 +299,7 @@
   },
   "book": {
     "title": "Complete your booking",
-    "intro": "Tell us who is coming. Nothing is paid on this website: once we receive your request, we send you the details to pay the 40% advance that confirms your stay.",
+    "intro": "Tell us who is coming. Nothing is paid on this website: once we receive your request, we send you the details to pay the 20% advance that confirms your stay.",
     "firstName": "First name",
     "lastName": "Last name",
     "email": "Email",
@@ -352,7 +352,7 @@
     "confirmed": {
       "title": "Request received",
       "body": "Thank you, {name}. We have sent the details to {email}.",
-      "next": "The riad checks availability. If your room is free, you will receive an email with a link to pay the 40% deposit (PayPal, Wise or bank transfer).",
+      "next": "The riad checks availability. If your room is free, you will receive an email with a link to pay the 20% deposit (PayPal, Wise or bank transfer).",
       "whatsapp": "Message us on WhatsApp",
       "whatsappMessage": "Hello, about my booking {reference} at Riad Berber Towers: ",
       "home": "Back to home"
@@ -417,7 +417,7 @@
       "subject": "Your booking request {reference} · Riad Berber Towers",
       "title": "Thank you, {name}",
       "intro": "We have received your booking request. Here are the details:",
-      "next": "We check availability and reply by email. If your room is free, you will receive a link to pay the 40% deposit (non-refundable), which confirms your booking. Questions? Reply to this email or write to us on WhatsApp.",
+      "next": "We check availability and reply by email. If your room is free, you will receive a link to pay the 20% deposit (non-refundable), which confirms your booking. Questions? Reply to this email or write to us on WhatsApp.",
       "signoff": "See you soon in Imlil. The Riad Berber Towers team"
     },
     "confirmed": {
@@ -436,7 +436,7 @@
     "accepted": {
       "subject": "Your room is available · pay the deposit {reference}",
       "title": "Good news, {name}: your room is available",
-      "intro": "We have accepted your booking request. To confirm it, please pay the 40% deposit and send us the proof on your payment page.",
+      "intro": "We have accepted your booking request. To confirm it, please pay the 20% deposit and send us the proof on your payment page.",
       "next": "Your booking is confirmed once we have checked the payment. The deposit is not refundable."
     },
     "declined": {

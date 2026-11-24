@@ -163,7 +163,7 @@
     "book": {
       "label": "Réservez en direct",
       "title": "Choisissez vos dates",
-      "text": "Voyez quelles chambres sont libres et le prix de votre séjour. Un acompte de 40 % confirme votre réservation ; le solde se règle en espèces au riad."
+      "text": "Voyez quelles chambres sont libres et le prix de votre séjour. Un acompte de 20 % confirme votre réservation ; le solde se règle en espèces au riad."
     }
   },
   "footer": {
@@ -299,7 +299,7 @@
   },
   "book": {
     "title": "Finaliser votre réservation",
-    "intro": "Dites-nous qui vient. Rien n’est payé sur ce site : dès réception de votre demande, nous vous envoyons les coordonnées pour régler l’acompte de 40 % qui confirme votre séjour.",
+    "intro": "Dites-nous qui vient. Rien n’est payé sur ce site : dès réception de votre demande, nous vous envoyons les coordonnées pour régler l’acompte de 20 % qui confirme votre séjour.",
     "firstName": "Prénom",
     "lastName": "Nom",
     "email": "E-mail",
@@ -352,7 +352,7 @@
     "confirmed": {
       "title": "Demande reçue",
       "body": "Merci, {name}. Nous avons envoyé le récapitulatif à {email}.",
-      "next": "Le riad vérifie la disponibilité. Si votre chambre est libre, vous recevrez un email avec un lien pour régler l’acompte de 40 % (PayPal, Wise ou virement bancaire).",
+      "next": "Le riad vérifie la disponibilité. Si votre chambre est libre, vous recevrez un email avec un lien pour régler l’acompte de 20 % (PayPal, Wise ou virement bancaire).",
       "whatsapp": "Nous écrire sur WhatsApp",
       "whatsappMessage": "Bonjour, au sujet de ma réservation {reference} au Riad Berber Towers : ",
       "home": "Retour à l’accueil"
@@ -417,7 +417,7 @@
       "subject": "Votre demande de réservation {reference} · Riad Berber Towers",
       "title": "Merci, {name}",
       "intro": "Nous avons bien reçu votre demande de réservation. Voici le récapitulatif :",
-      "next": "Nous vérifions la disponibilité et vous répondons par email. Si votre chambre est libre, vous recevrez un lien pour régler l’acompte de 40 % (non remboursable), qui confirme votre réservation. Une question ? Répondez à cet email ou écrivez-nous sur WhatsApp.",
+      "next": "Nous vérifions la disponibilité et vous répondons par email. Si votre chambre est libre, vous recevrez un lien pour régler l’acompte de 20 % (non remboursable), qui confirme votre réservation. Une question ? Répondez à cet email ou écrivez-nous sur WhatsApp.",
       "signoff": "À très bientôt à Imlil. L’équipe du Riad Berber Towers"
     },
     "confirmed": {
@@ -436,7 +436,7 @@
     "accepted": {
       "subject": "Votre chambre est disponible · acompte à régler {reference}",
       "title": "Bonne nouvelle, {name} : votre chambre est disponible",
-      "intro": "Nous avons accepté votre demande de réservation. Pour la confirmer, réglez l’acompte de 40 % et envoyez-nous la preuve sur votre page de paiement.",
+      "intro": "Nous avons accepté votre demande de réservation. Pour la confirmer, réglez l’acompte de 20 % et envoyez-nous la preuve sur votre page de paiement.",
       "next": "Votre réservation est confirmée dès que nous avons vérifié le paiement. L’acompte n’est pas remboursable."
     },
     "declined": {

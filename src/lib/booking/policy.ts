@@ -9,7 +9,7 @@ export const EXTRA_GUEST_PERCENT = 10;
 /** Children under 12 are not accepted (guests aged 12+ book as adults, so the engine never counts children). */
 export const CHILDREN_ALLOWED = false;
 /** Advance needed to confirm a booking, non-refundable. */
-export const DEPOSIT_PERCENT = 40;
+export const DEPOSIT_PERCENT = 20;
 /** The balance is paid in cash on arrival, in one of these currencies. */
 export const CASH_CURRENCIES = ["MAD", "EUR", "USD", "GBP"] as const;
 
